@@ -1,0 +1,4392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Oba – Rise of Kingdoms</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
+
+    :root {
+      --regal-plum: #4B167A;
+      --antique-gold: #D4AF37;
+      --amethyst-purple: #8E44AD;
+      --warm-gold: #F2C14E;
+      --midnight-blue: #1B2A6B;
+      --coastal-gold: #C9A227;
+      --terracotta: #A65A2A;
+      --muted-gold: #BF922A;
+      --near-black: #141218;
+      --vivid-gold: #FFD700;
+      --cream: #f0e6d3;
+      --cream-muted: #d4c8bc;
+      --tech-border: #3a2a1a;
+    }
+    body {
+      font-family: 'Afacad', sans-serif;
+      background: var(--near-black);
+      color: var(--cream);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    .screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 0.4s ease;
+      overflow-y: auto;
+    }
+    .screen.active { display: flex; }
+
+    /* ─── MAIN MENU with background ─── */
+    #menu-screen {
+      background: var(--near-black);
+      justify-content: center;
+      position: relative;
+    }
+    #menu-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('menu_background.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5;
+      z-index: 0;
+    }
+    #menu-screen > * { position: relative; z-index: 1; }
+
+    /* ─── NEW GAME MENU with background ─── */
+    #newgame-screen {
+      background: var(--near-black);
+      position: relative;
+    }
+    #newgame-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('menu_background.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+      z-index: 0;
+    }
+    #newgame-screen > * { position: relative; z-index: 1; }
+
+    #menu-logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      width: 100%;
+      max-width: 750px;
+      padding: 0 20px;
+    }
+    #menu-logo-container img {
+      width: 100%;
+      max-height: 270px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.25));
+    }
+    #menu-text-logo {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 4.5rem;
+      color: var(--antique-gold);
+      text-shadow: 0 0 60px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0,0,0,0.9);
+      letter-spacing: 8px;
+      line-height: 1.1;
+      text-align: center;
+    }
+    #menu-text-logo::before,
+    #menu-text-logo::after {
+      content: '⚔';
+      font-size: 2.5rem;
+      opacity: 0.3;
+      margin: 0 8px;
+      color: var(--amethyst-purple);
+    }
+    #menu-screen .menu-subtitle {
+      font-size: 1.1rem;
+      color: var(--warm-gold);
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      margin-bottom: 2.8rem;
+      opacity: 0.7;
+      font-weight: 300;
+      text-align: center;
+    }
+    .menu-btn {
+      font-family: 'Afacad', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 14px 40px;
+      margin: 6px 0;
+      border: 2px solid var(--antique-gold);
+      border-radius: 6px;
+      background: rgba(75, 22, 122, 0.3);
+      color: var(--cream);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      min-width: 220px;
+      text-align: center;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-btn:active { transform: scale(0.96); }
+    .menu-btn.primary {
+      border-color: var(--vivid-gold);
+      background: rgba(212, 175, 55, 0.15);
+      font-size: 1.4rem;
+      padding: 16px 50px;
+      color: var(--vivid-gold);
+    }
+    .menu-btn.primary:hover { background: rgba(212, 175, 55, 0.25); }
+    .menu-btn.secondary {
+      border-color: #4a3528;
+      background: rgba(74, 53, 40, 0.15);
+      color: #b8957a;
+    }
+    .menu-btn.secondary:hover { background: rgba(74, 53, 40, 0.35); }
+    .menu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .menu-decoration {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(142, 68, 173, 0.08) 0%, transparent 70%);
+    }
+    .menu-decoration.tl { top: -120px; left: -120px; }
+    .menu-decoration.br { bottom: -120px; right: -120px; }
+    .menu-decoration.tr { top: -120px; right: -120px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); }
+
+    /* ─── NEW GAME MENU ─── */
+    #newgame-screen {
+      padding: 16px 12px;
+      justify-content: flex-start;
+      padding-top: 10px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .ng-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 8px 12px 8px;
+      flex-shrink: 0;
+    }
+    .ng-header h2 {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1.8rem;
+      color: var(--antique-gold);
+      letter-spacing: 2px;
+      margin: 0 auto;
+    }
+    .ng-header .back-btn {
+      font-size: 1.2rem;
+      padding: 4px 16px;
+      border: none;
+      background: rgba(20,18,24,0.5);
+      color: #b8957a;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ng-header .back-btn:active { background: rgba(74,53,40,0.3); }
+
+    .ng-container {
+      width: 100%;
+      max-width: 600px;
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+    .ng-card {
+      background: rgba(27, 42, 107, 0.35);
+      border: 1px solid rgba(201, 162, 39, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .ng-card h3 {
+      font-size: 0.9rem;
+      color: var(--coastal-gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+      padding-bottom: 6px;
+      font-weight: 600;
+    }
+    .ng-option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .ng-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(20,18,24,0.3);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .ng-option:active { background: rgba(212,175,55,0.1); }
+    .ng-option.selected {
+      border-color: var(--coastal-gold);
+      background: rgba(212,175,55,0.08);
+    }
+    .ng-option input[type="radio"] {
+      accent-color: var(--coastal-gold);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ng-option label {
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--cream-muted);
+      flex: 1;
+      font-weight: 400;
+    }
+    .ng-option .ng-desc {
+      font-size: 0.65rem;
+      color: #6b5a4a;
+      text-align: right;
+    }
+    #custom-options {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(42,26,16,0.3);
+      display: none;
+    }
+    #custom-options .ng-option label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+    }
+    #custom-options .ng-option input,
+    #custom-options .ng-option select {
+      background: #1a0e08;
+      border: 1px solid #3a281e;
+      color: var(--cream);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      width: 60px;
+    }
+    #custom-options .ng-option select { width: auto; }
+
+    .ng-tribe-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .ng-tribe-item {
+      padding: 6px 2px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background: rgba(20,18,24,0.4);
+      cursor: pointer;
+      transition: 0.15s;
+      font-size: 0.7rem;
+      text-align: center;
+      color: #b8a898;
+      font-weight: 400;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ng-tribe-item:active { background: rgba(212,175,55,0.15); }
+    .ng-tribe-item.active {
+      border-color: var(--coastal-gold);
+      background: rgba(212,175,55,0.12);
+      color: var(--cream);
+      box-shadow: 0 0 20px rgba(212,175,55,0.05);
+    }
+    .ng-tribe-item .tribe-icon {
+      font-size: 1.8rem;
+      display: block;
+      line-height: 1.2;
+    }
+    .ng-tribe-item .tribe-name { font-size: 0.6rem; margin-top: 2px; }
+
+    .ng-opponent-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    #opponent-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      flex: 1;
+    }
+    #opponent-list .opp-tag {
+      background: rgba(30,18,12,0.6);
+      padding: 2px 12px;
+      border-radius: 14px;
+      border: 1px solid #3a281e;
+      font-size: 0.7rem;
+      color: var(--cream-muted);
+    }
+    .ng-actions-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .ng-actions-row button {
+      font-size: 0.75rem;
+      padding: 4px 14px;
+      border: 1px solid #4a3528;
+      background: rgba(20,12,8,0.5);
+      color: var(--cream-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ng-actions-row button:active { background: rgba(74,53,40,0.3); }
+    .ng-actions-row button.danger {
+      border-color: #6a2a1a;
+      color: #b85a4a;
+    }
+
+    .ng-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 16px;
+      font-size: 0.85rem;
+      color: var(--cream-muted);
+    }
+    .ng-summary .sum-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(42,26,16,0.2);
+    }
+    .ng-summary .sum-row .label { color: #6b5a4a; }
+    .ng-summary .sum-row .value { color: var(--cream); font-weight: 500; }
+
+    .ng-start-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border: 2px solid var(--vivid-gold);
+      border-radius: 12px;
+      background: rgba(255, 215, 0, 0.08);
+      color: var(--vivid-gold);
+      cursor: pointer;
+      transition: 0.25s;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ng-start-btn:active { background: rgba(255,215,0,0.2); transform: scale(0.98); }
+    .ng-start-btn:hover { background: rgba(255,215,0,0.15); }
+
+    /* ─── GAME SCREEN ─── */
+    #game-screen {
+      background: var(--near-black);
+      padding: 0;
+      justify-content: flex-start;
+    }
+    #game-canvas-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1B2A6B 0%, #0a0f2a 100%);
+      cursor: grab;
+      touch-action: none;
+    }
+    #gameCanvas:active { cursor: grabbing; }
+
+    #game-ui {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #game-ui>* { pointer-events: auto; }
+
+    .gui-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: linear-gradient(180deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .gui-top-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .gui-top-left .tribe-name {
+      font-size: 1rem;
+      color: var(--warm-gold);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gui-top-left .tribe-name .tribe-icon img { width: 24px; height: 24px; border-radius: 4px; }
+    .gui-top-left .turn-counter {
+      font-size: 0.85rem;
+      color: var(--coastal-gold);
+      font-weight: 600;
+      background: rgba(0,0,0,0.3);
+      padding: 1px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(201, 162, 39, 0.2);
+    }
+    .gui-top-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .gui-resource {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.8rem;
+      color: var(--cream-muted);
+      background: rgba(20, 18, 24, 0.6);
+      padding: 1px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(201, 162, 39, 0.15);
+      backdrop-filter: blur(2px);
+    }
+    .gui-resource .icon { font-size: 0.9rem; }
+    .gui-resource .val {
+      font-weight: 700;
+      color: var(--cream);
+      min-width: 18px;
+      text-align: center;
+    }
+    .gui-resource.gold .val { color: var(--vivid-gold); }
+    .gui-menu-btn {
+      padding: 3px 12px;
+      border: 1px solid #4a3528;
+      background: rgba(20,18,24,0.6);
+      color: #b8957a;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: 0.2s;
+      letter-spacing: 0.5px;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .gui-menu-btn:active { background: rgba(74,53,40,0.4); }
+    .gui-menu-btn.tech-btn {
+      border-color: var(--coastal-gold);
+      color: var(--coastal-gold);
+    }
+    .gui-menu-btn.tech-btn:hover { background: rgba(201, 162, 39, 0.1); }
+
+    .gui-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px 10px;
+      background: linear-gradient(0deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .gui-unit-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      background: rgba(20,18,24,0.7);
+      border-radius: 6px;
+      border: 1px solid rgba(166, 90, 42, 0.3);
+      min-height: 30px;
+      flex: 1 1 140px;
+      flex-wrap: wrap;
+    }
+    .gui-unit-info .unit-name {
+      font-weight: 700;
+      color: var(--terracotta);
+      font-size: 0.8rem;
+      min-width: 50px;
+    }
+    .gui-unit-info .unit-stats {
+      font-size: 0.65rem;
+      color: #b8957a;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .gui-unit-info .unit-stats span {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+    }
+    .gui-unit-info .unit-stats .stat-val {
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .gui-actions {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .gui-action-btn {
+      padding: 3px 10px;
+      border: 1px solid #3a281e;
+      background: rgba(20,18,24,0.6);
+      color: var(--cream-muted);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: 0.2s;
+      letter-spacing: 0.3px;
+      font-family: inherit;
+      font-weight: 500;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .gui-action-btn:active:not(:disabled) { background: rgba(74,53,40,0.3); }
+    .gui-action-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    .gui-action-btn.primary {
+      border-color: var(--coastal-gold);
+      color: var(--coastal-gold);
+      background: rgba(201, 162, 39, 0.1);
+    }
+    .gui-action-btn.primary:active:not(:disabled) { background: rgba(201, 162, 39, 0.2); }
+    .gui-action-btn.danger {
+      border-color: #6a2a1a;
+      color: #b85a4a;
+    }
+    .gui-action-btn.end-turn {
+      border-color: var(--vivid-gold);
+      background: rgba(255, 215, 0, 0.06);
+      color: var(--vivid-gold);
+      font-weight: 600;
+    }
+    .gui-action-btn.end-turn:active:not(:disabled) { background: rgba(255, 215, 0, 0.15); }
+    .gui-action-btn.heal {
+      border-color: #4caf50;
+      color: #4caf50;
+      background: rgba(76, 175, 80, 0.08);
+    }
+    .gui-action-btn.heal:active:not(:disabled) { background: rgba(76, 175, 80, 0.2); }
+    .gui-action-btn.invigorate {
+      border-color: #9b59b6;
+      color: #9b59b6;
+      background: rgba(155, 89, 182, 0.08);
+    }
+    .gui-action-btn.invigorate:active:not(:disabled) { background: rgba(155, 89, 182, 0.2); }
+
+    /* ─── POPUP ACTION MENU ─── */
+    #action-popup {
+      position: absolute;
+      background: rgba(20, 18, 24, 0.92);
+      backdrop-filter: blur(8px);
+      border: 2px solid var(--coastal-gold);
+      border-radius: 10px;
+      padding: 6px 4px;
+      display: none;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 110px;
+      z-index: 50;
+      pointer-events: auto;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+      transition: opacity 0.15s ease;
+    }
+    #action-popup button {
+      background: rgba(27, 42, 107, 0.3);
+      border: 1px solid rgba(201, 162, 39, 0.15);
+      border-radius: 4px;
+      color: var(--cream);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-family: 'Afacad', sans-serif;
+      cursor: pointer;
+      transition: 0.15s;
+      text-align: left;
+      white-space: nowrap;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #action-popup button:hover:not(:disabled) {
+      background: rgba(201, 162, 39, 0.2);
+      border-color: var(--coastal-gold);
+    }
+    #action-popup button:active:not(:disabled) { transform: scale(0.96); }
+    #action-popup button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    #action-popup button.primary {
+      border-color: var(--vivid-gold);
+      color: var(--vivid-gold);
+      background: rgba(255, 215, 0, 0.08);
+    }
+    #action-popup button.primary:hover:not(:disabled) { background: rgba(255, 215, 0, 0.18); }
+    #action-popup button.danger {
+      border-color: #6a2a1a;
+      color: #b85a4a;
+    }
+    #action-popup button.danger:hover:not(:disabled) { background: rgba(106, 42, 26, 0.2); }
+    #action-popup button.heal-btn {
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+    #action-popup button.heal-btn:hover:not(:disabled) { background: rgba(76, 175, 80, 0.15); }
+    #action-popup button.invigorate-btn {
+      border-color: #9b59b6;
+      color: #9b59b6;
+    }
+    #action-popup button.invigorate-btn:hover:not(:disabled) { background: rgba(155, 89, 182, 0.15); }
+    #action-popup .action-icon {
+      margin-right: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: radial-gradient(ellipse at 50% 40%, var(--regal-plum) 0%, var(--near-black) 100%);
+      border: 2px solid var(--antique-gold);
+      border-radius: 14px;
+      padding: 24px 20px;
+      max-width: 620px;
+      width: 92%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.9);
+    }
+    .modal-box h2 {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1.6rem;
+      color: var(--antique-gold);
+      margin-bottom: 6px;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .modal-box p {
+      color: var(--cream-muted);
+      line-height: 1.5;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+    .modal-box .gameplay-section {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(20, 18, 24, 0.4);
+      border-radius: 8px;
+      border-left: 3px solid var(--antique-gold);
+    }
+    .modal-box .gameplay-section strong {
+      color: var(--warm-gold);
+    }
+    .modal-box .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .modal-box .modal-actions button {
+      padding: 6px 20px;
+      border: 1px solid var(--vivid-gold);
+      background: rgba(255, 215, 0, 0.08);
+      color: var(--vivid-gold);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      letter-spacing: 1px;
+      font-family: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .modal-box .modal-actions button:active { background: rgba(255, 215, 0, 0.18); }
+    .modal-box .modal-actions button.primary {
+      background: rgba(255, 215, 0, 0.15);
+    }
+
+    /* ─── TECH TREE VISUAL ─── */
+    .tech-tree-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 0;
+      overflow-x: auto;
+    }
+    .tech-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .tech-node {
+      background: rgba(20,18,24,0.6);
+      border: 2px solid #4a3528;
+      border-radius: 6px;
+      padding: 4px 8px;
+      min-width: 70px;
+      text-align: center;
+      font-size: 0.7rem;
+      transition: 0.2s;
+    }
+    .tech-node.researched {
+      border-color: var(--vivid-gold);
+      background: rgba(255,215,0,0.08);
+    }
+    .tech-node.available {
+      border-color: var(--coastal-gold);
+      cursor: pointer;
+      background: rgba(201,162,39,0.08);
+    }
+    .tech-node.available:hover {
+      background: rgba(201,162,39,0.2);
+      transform: scale(1.02);
+    }
+    .tech-node.locked {
+      opacity: 0.5;
+    }
+    .tech-node .tech-name { font-weight: 600; color: var(--cream); }
+    .tech-node .tech-cost { font-size: 0.55rem; color: #b8957a; }
+    .tech-node .tech-status {
+      font-size: 0.5rem;
+      display: block;
+      margin-top: 1px;
+    }
+    .tech-node .tech-status.done { color: #4caf50; }
+    .tech-node .tech-status.avail { color: var(--coastal-gold); }
+    .tech-node .tech-status.locked { color: #6b5a4a; }
+    .tech-group-label {
+      font-size: 0.6rem;
+      color: #6b5a4a;
+      text-align: center;
+      width: 100%;
+      margin: 2px 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(74,53,40,0.3);
+      padding-bottom: 2px;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #1a0e08; }
+    ::-webkit-scrollbar-thumb { background: var(--coastal-gold); border-radius: 2px; }
+
+    @media (max-width: 820px) {
+      #menu-text-logo { font-size: 3.6rem; letter-spacing: 4px; }
+      #menu-text-logo::before, #menu-text-logo::after { font-size: 2rem; margin: 0 6px; }
+      #menu-screen .menu-subtitle { font-size: 0.8rem; letter-spacing: 6px; margin-bottom: 2rem; }
+      .menu-btn { font-size: 1rem; padding: 12px 28px; min-width: 180px; }
+      .menu-btn.primary { font-size: 1.1rem; padding: 14px 36px; }
+      .ng-tribe-grid { grid-template-columns: repeat(4, 1fr); }
+      .ng-option-grid { grid-template-columns: 1fr 1fr; }
+      .ng-summary { grid-template-columns: 1fr 1fr; }
+      #menu-logo-container { max-width: 500px; }
+      #menu-logo-container img { max-height: 180px; }
+      .tech-node { min-width: 60px; padding: 4px 6px; font-size: 0.6rem; }
+    }
+    @media (max-width: 480px) {
+      #menu-text-logo { font-size: 2.4rem; letter-spacing: 2px; }
+      #menu-text-logo::before, #menu-text-logo::after { font-size: 1.2rem; margin: 0 4px; }
+      .ng-tribe-grid { grid-template-columns: repeat(3, 1fr); }
+      .ng-option-grid { grid-template-columns: 1fr; }
+      .ng-summary { grid-template-columns: 1fr; }
+      .ng-header h2 { font-size: 1.4rem; }
+      .ng-card { padding: 12px; }
+      #menu-logo-container { max-width: 350px; }
+      #menu-logo-container img { max-height: 120px; }
+      .tech-node { min-width: 50px; padding: 3px 4px; font-size: 0.55rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- MAIN MENU -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="menu-screen" class="screen active">
+  <div class="menu-decoration tl"></div>
+  <div class="menu-decoration br"></div>
+  <div class="menu-decoration tr"></div>
+  <div id="menu-logo-container">
+    <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none;" />
+    <div id="menu-text-logo" class="menu-title" style="display: block;">OBA</div>
+  </div>
+  <div class="menu-subtitle">— Rise of Kingdoms —</div>
+  <button class="menu-btn primary" onclick="showScreen('newgame-screen')">⚔ New Game</button>
+  <button class="menu-btn secondary" disabled>📂 Load Game</button>
+  <button class="menu-btn secondary" disabled>🌐 Multiplayer</button>
+  <button class="menu-btn secondary" onclick="showHowToPlay()">📖 How to Play</button>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- NEW GAME MENU -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="newgame-screen" class="screen">
+  <div class="ng-header">
+    <button class="back-btn" onclick="showScreen('menu-screen')">←</button>
+    <h2>New Campaign</h2>
+    <div style="width:40px;"></div>
+  </div>
+  <div class="ng-container">
+    <div class="ng-card">
+      <h3>Game Mode</h3>
+      <div class="ng-option-grid" id="mode-grid">
+        <div class="ng-option selected" data-mode="conquest">
+          <input type="radio" name="mode" value="conquest" checked id="mode-conquest" />
+          <label for="mode-conquest">Conquest</label>
+          <span class="ng-desc">Defeat all</span>
+        </div>
+        <div class="ng-option" data-mode="sandsoftime">
+          <input type="radio" name="mode" value="sandsoftime" id="mode-sandsoftime" />
+          <label for="mode-sandsoftime">Sands of Time</label>
+          <span class="ng-desc">Control most hexes</span>
+        </div>
+        <div class="ng-option" data-mode="oba">
+          <input type="radio" name="mode" value="oba" id="mode-oba" />
+          <label for="mode-oba">Oba</label>
+          <span class="ng-desc">Conquest · Aggressive AI</span>
+        </div>
+        <div class="ng-option" data-mode="custom">
+          <input type="radio" name="mode" value="custom" id="mode-custom" />
+          <label for="mode-custom">Custom</label>
+          <span class="ng-desc">Configure</span>
+        </div>
+      </div>
+      <div id="custom-options">
+        <div class="ng-option"><label>Turns: <input type="number" id="custom-turns" value="50" min="10" max="200" /></label></div>
+        <div class="ng-option"><label>Opponents: <input type="number" id="custom-opponents" value="5" min="1" max="11" /></label></div>
+        <div class="ng-option"><label>Difficulty: <select id="custom-difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label></div>
+      </div>
+    </div>
+
+    <div class="ng-card">
+      <h3>Your Tribe</h3>
+      <div class="ng-tribe-grid" id="tribe-grid"></div>
+    </div>
+
+    <div class="ng-card">
+      <h3>Opponents</h3>
+      <div class="ng-opponent-area">
+        <div id="opponent-list"></div>
+      </div>
+      <div class="ng-actions-row">
+        <button id="add-ai-btn">+ Add AI</button>
+        <button id="remove-ai-btn" class="danger">− Remove</button>
+      </div>
+    </div>
+
+    <div class="ng-card">
+      <h3>Campaign Summary</h3>
+      <div class="ng-summary" id="campaign-summary">
+        <div class="sum-row"><span class="label">Tribe</span><span class="value" id="sum-tribe">—</span></div>
+        <div class="sum-row"><span class="label">Mode</span><span class="value" id="sum-mode">Conquest</span></div>
+        <div class="sum-row"><span class="label">Opponents</span><span class="value" id="sum-opps">5</span></div>
+        <div class="sum-row"><span class="label">Difficulty</span><span class="value" id="sum-diff">Normal</span></div>
+        <div class="sum-row"><span class="label">Turn Limit</span><span class="value" id="sum-turns">∞</span></div>
+      </div>
+    </div>
+
+    <button class="ng-start-btn" id="start-game-btn">⚔ Begin Campaign ⚔</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- GAME SCREEN -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="game-screen" class="screen">
+  <div id="game-canvas-wrapper">
+    <canvas id="gameCanvas"></canvas>
+    <div id="game-ui">
+      <div class="gui-top">
+        <div class="gui-top-left">
+          <span class="tribe-name" id="gui-tribe-name"></span>
+          <span class="turn-counter" id="gui-turn">Turn 0</span>
+        </div>
+        <div class="gui-top-right">
+          <div class="gui-resource gold"><span class="icon">🪙</span><span class="val" id="gui-gold">0</span></div>
+          <div class="gui-resource"><span class="icon">🏙️</span><span class="val" id="gui-cities">0</span></div>
+          <div class="gui-resource"><span class="icon">⚔️</span><span class="val" id="gui-units">0</span></div>
+          <div class="gui-resource"><span class="icon">🔬</span><span class="val" id="gui-research">0</span></div>
+          <div class="gui-resource"><span class="icon">🌍</span><span class="val" id="gui-influence">0</span></div>
+          <button class="gui-menu-btn tech-btn" onclick="showTechTree()">📜 Tech</button>
+          <button class="gui-menu-btn" onclick="showInGameMenu()">☰ Menu</button>
+        </div>
+      </div>
+
+      <div class="gui-bottom">
+        <div class="gui-unit-info" id="gui-unit-info">
+          <span class="unit-name" id="unit-name-display">No selection</span>
+          <span class="unit-stats">
+            <span>⚔ <span class="stat-val" id="unit-atk">—</span></span>
+            <span>🛡 <span class="stat-val" id="unit-def">—</span></span>
+            <span>👣 <span class="stat-val" id="unit-mov">—</span></span>
+            <span>❤️ <span class="stat-val" id="unit-hp">—</span></span>
+          </span>
+        </div>
+        <div class="gui-actions">
+          <button class="gui-action-btn end-turn" id="btn-end-turn" onclick="endTurn()">⏭ End Turn</button>
+        </div>
+      </div>
+
+      <!-- ─── POPUP ACTION MENU ─── -->
+      <div id="action-popup">
+        <button data-action="move"><span class="action-icon">🚶</span> Move</button>
+        <button data-action="attack"><span class="action-icon">⚔️</span> Attack</button>
+        <button data-action="skip"><span class="action-icon">⏭</span> Skip</button>
+        <button data-action="heal" class="heal-btn"><span class="action-icon">💚</span> First Aid</button>
+        <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span> Invigorate</button>
+        <button data-action="build-harbor"><span class="action-icon">⛵</span> Build Harbor</button>
+        <button data-action="build-raft"><span class="action-icon">🪵</span> Build Raft</button>
+        <button data-action="manage-city"><span class="action-icon">🏗️</span> Manage City</button>
+        <button data-action="upgrade-city"><span class="action-icon">⬆</span> Upgrade City</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- MODAL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box" id="modal-box">
+    <h2 id="modal-title">Title</h2>
+    <div id="modal-body">Content</div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<script>
+// ─── ASSET PATHS ──────────────────────────────────────────────
+const TRIBE_IDS = ['zulu', 'ashanti', 'yoruba', 'maasai', 'berber', 'hausa', 'dogon', 'songhai', 'oromo', 'tutsi', 'swahili', 'nubian'];
+const UNIT_TYPES = ['scout', 'foot', 'mounted', 'shield', 'ranged', 'elite', 'tank', 'general'];
+const NAVAL_TYPES = ['raft', 'galley', 'warship'];
+
+const ASSET_PATHS = {};
+for (const id of TRIBE_IDS) ASSET_PATHS[`tribe_${id}`] = `tribe_${id}.png`;
+for (const tribe of TRIBE_IDS) {
+  for (const unit of [...UNIT_TYPES, ...NAVAL_TYPES]) {
+    ASSET_PATHS[`${tribe}_${unit}`] = `${tribe}_${unit}.png`;
+  }
+}
+ASSET_PATHS['settlement_village'] = 'settlement_village.png';
+ASSET_PATHS['settlement_town'] = 'settlement_town.png';
+ASSET_PATHS['settlement_city'] = 'settlement_city.png';
+ASSET_PATHS['settlement_capital'] = 'settlement_capital.png';
+ASSET_PATHS['hex_plains'] = 'hex_plains.png';
+ASSET_PATHS['hex_forest'] = 'hex_forest.png';
+ASSET_PATHS['hex_mountain'] = 'hex_mountain.png';
+ASSET_PATHS['hex_water'] = 'hex_water.png';
+ASSET_PATHS['hex_hill'] = 'hex_hill.png';
+ASSET_PATHS['resource_gold'] = 'resource_gold.png';
+ASSET_PATHS['resource_food'] = 'resource_food.png';
+ASSET_PATHS['resource_wood'] = 'resource_wood.png';
+ASSET_PATHS['resource_stone'] = 'resource_stone.png';
+ASSET_PATHS['resource_fish'] = 'resource_fish.png';
+ASSET_PATHS['ui_gold'] = 'ui_gold.png';
+ASSET_PATHS['ui_sword'] = 'ui_sword.png';
+ASSET_PATHS['ui_shield'] = 'ui_shield.png';
+ASSET_PATHS['ui_move'] = 'ui_move.png';
+ASSET_PATHS['ui_health'] = 'ui_health.png';
+ASSET_PATHS['logo_oba'] = 'logo_oba.png';
+ASSET_PATHS['menu_background'] = 'menu_background.png';
+
+const RESOURCE_MAP = {
+  '🪙': 'resource_gold',
+  '🌾': 'resource_food',
+  '🪵': 'resource_wood',
+  '🪨': 'resource_stone',
+  '🐟': 'resource_fish'
+};
+
+let images = {};
+let imagesLoaded = false;
+
+function loadImages(callback) {
+  const total = Object.keys(ASSET_PATHS).length;
+  let loaded = 0;
+  for (const [key, path] of Object.entries(ASSET_PATHS)) {
+    const img = new Image();
+    img.onload = () => {
+      loaded++;
+      if (key === 'logo_oba') {
+        const logoImg = document.getElementById('main-logo');
+        const textLogo = document.getElementById('menu-text-logo');
+        if (logoImg) { logoImg.src = path; logoImg.style.display = 'block'; if (textLogo) textLogo.style.display = 'none'; }
+      }
+      if (loaded === total) { imagesLoaded = true; if (callback) callback(); }
+    };
+    img.onerror = () => {
+      loaded++;
+      if (key === 'logo_oba') {
+        const logoImg = document.getElementById('main-logo');
+        const textLogo = document.getElementById('menu-text-logo');
+        if (logoImg) logoImg.style.display = 'none';
+        if (textLogo) textLogo.style.display = 'block';
+      }
+      if (loaded === total) { imagesLoaded = true; if (callback) callback(); }
+    };
+    img.src = path;
+    images[key] = img;
+  }
+}
+
+// ─── UNIQUE SETTLEMENT NAMES ────────────────────────────────
+const SETTLEMENT_NAMES = [
+  // West African kingdoms and cities
+  'Timbuktu', 'Gao', 'Koumbi Saleh', 'Djenne', 'Niani', 'Walata', 'Oualata', 'Audaghost',
+  'Kano', 'Zaria', 'Katsina', 'Gobir', 'Zamfara', 'Nupe', 'Oyo', 'Ile Ife', 'Benin City',
+  'Kumasi', 'Accra', 'Elmina', 'Meroe', 'Aksum', 'Lalibela', 'Harar', 'Gondar',
+  // East African cities
+  'Kilwa', 'Mombasa', 'Zanzibar', 'Pemba', 'Malindi', 'Sofala', 'Mogadishu', 'Lamu',
+  'Pate', 'Merca', 'Gedi', 'Barawa', 'Gobro', 'Tabwa', 'Ujiji', 'Tabora',
+  // Central & Southern
+  'Mbanza Kongo', 'Kigali', 'Bujumbura', 'Gitega', 'Meroe', 'Nakfa', 'Massawa',
+  'Bulawayo', 'Great Zimbabwe', 'Khami', 'Durban', 'Maputo', 'Luanda', 'Benguela',
+  // Sahara & Sahel
+  'Chinguetti', 'Ouadane', 'Idjil', 'Azawad', 'Agadez', 'Bilma', 'Djado', 'Tadmekka',
+  'Essouk', 'Araouane', 'Taoudenni', 'Tassili', 'Hoggar', 'Tibesti', 'Borkou',
+  // East African kingdoms
+  'Nubia', 'Dongola', 'Soba', 'Alodia', 'Makuria', 'Nobatia', 'Blemmye', 'Beja',
+  'Axum', 'Adulis', 'Matara', 'Yeha', 'Kush', 'Napata', 'Meroe',
+  // West African coastal
+  'Grand-Bassam', 'Assinie', 'Axim', 'Sekondi', 'Cape Coast', 'Anomabu', 'Shama',
+  'Ouidah', 'Porto-Novo', 'Lagos', 'Calabar', 'Bonny', 'Brass', 'Opobo'
+];
+
+let usedSettlementNames = [];
+
+function getUniqueSettlementName() {
+  const available = SETTLEMENT_NAMES.filter(n => !usedSettlementNames.includes(n));
+  if (available.length === 0) {
+    // Fallback: generate a name
+    const prefixes = ['New', 'Great', 'Ancient', 'Golden', 'Sacred'];
+    const suffix = SETTLEMENT_NAMES[Math.floor(Math.random() * SETTLEMENT_NAMES.length)];
+    return prefixes[Math.floor(Math.random() * prefixes.length)] + ' ' + suffix;
+  }
+  const name = available[Math.floor(Math.random() * available.length)];
+  usedSettlementNames.push(name);
+  return name;
+}
+
+function resetSettlementNames() {
+  usedSettlementNames = [];
+}
+
+// ─── TECH TREE ──────────────────────────────────────────────
+const TECH_TREE = [
+  { id: 'masonry', name: 'Masonry', cost: 30, bonus: 'city_defense', desc: '+1 defense for all cities', requires: [], tier: 0 },
+  { id: 'bronze_working', name: 'Bronze Working', cost: 40, bonus: 'unit_attack', desc: '+1 attack for all units', requires: [], tier: 0 },
+  { id: 'horseback', name: 'Horseback Riding', cost: 50, bonus: 'unit_move_mounted', desc: '+1 move for mounted', requires: [], tier: 0 },
+  { id: 'sailing', name: 'Sailing', cost: 45, bonus: 'harbor_unlock', desc: 'Build Harbors & Rafts', requires: [], tier: 0 },
+  { id: 'iron_working', name: 'Iron Working', cost: 60, bonus: 'unit_attack2', desc: '+2 attack for foot units', requires: ['bronze_working'], tier: 1 },
+  { id: 'engineering', name: 'Engineering', cost: 70, bonus: 'unit_hp', desc: '+5 HP for all units', requires: ['masonry'], tier: 1 },
+  { id: 'philosophy', name: 'Philosophy', cost: 80, bonus: 'research_bonus', desc: '+20% research speed', requires: ['masonry'], tier: 1 },
+  { id: 'navigation', name: 'Navigation', cost: 65, bonus: 'galley_unlock', desc: 'Build Galleys (fast ships)', requires: ['sailing'], tier: 1 },
+  { id: 'trade', name: 'Trade', cost: 55, bonus: 'gold_income', desc: '+2 gold per city', requires: ['philosophy'], tier: 2 },
+  { id: 'architecture', name: 'Architecture', cost: 60, bonus: 'city_upgrade_cost', desc: 'City upgrades cost 20% less', requires: ['masonry', 'engineering'], tier: 2 },
+  { id: 'medicine', name: 'Medicine', cost: 70, bonus: 'heal_rate', desc: 'Units heal +3 HP per turn', requires: ['philosophy'], tier: 2 },
+  { id: 'siegecraft', name: 'Siegecraft', cost: 75, bonus: 'city_attack', desc: '+2 attack against cities', requires: ['iron_working'], tier: 2 },
+  { id: 'shipbuilding', name: 'Shipbuilding', cost: 85, bonus: 'warship_unlock', desc: 'Build Warships (combat ships)', requires: ['navigation'], tier: 2 },
+  { id: 'steel_working', name: 'Steel Working', cost: 90, bonus: 'unit_attack3', desc: '+2 attack for all units', requires: ['iron_working', 'engineering'], tier: 3 },
+];
+
+function getTechsByTier() {
+  const tiers = {};
+  for (const tech of TECH_TREE) {
+    if (!tiers[tech.tier]) tiers[tech.tier] = [];
+    tiers[tech.tier].push(tech);
+  }
+  return tiers;
+}
+
+const WONDERS = [
+  { id: 'pyramids', name: 'Pyramids of Giza', cost: 120, bonus: 'gold', desc: '+5 gold per turn', requires: 'masonry' },
+  { id: 'great_zimbabwe', name: 'Great Zimbabwe', cost: 140, bonus: 'production', desc: '+3 production per city', requires: 'bronze_working' },
+  { id: 'timbuktu', name: 'University of Timbuktu', cost: 100, bonus: 'research', desc: '+4 research per turn', requires: 'philosophy' },
+  { id: 'obelisks', name: 'Axum Obelisks', cost: 90, bonus: 'vision', desc: '+2 vision for all units', requires: 'masonry' },
+];
+
+// ─── AI PERSONALITIES ──────────────────────────────────────
+const AI_PERSONALITIES = {
+  zulu: { aggression: 0.9, coordination: 0.8, expansion: 0.8, defense: 0.4, tactic: 'rush' },
+  ashanti: { aggression: 0.6, coordination: 0.7, expansion: 0.7, defense: 0.6, tactic: 'balanced' },
+  yoruba: { aggression: 0.5, coordination: 0.6, expansion: 0.5, defense: 0.7, tactic: 'defensive' },
+  maasai: { aggression: 0.8, coordination: 0.9, expansion: 0.9, defense: 0.3, tactic: 'mobile' },
+  berber: { aggression: 0.7, coordination: 0.8, expansion: 0.8, defense: 0.5, tactic: 'hit_and_run' },
+  hausa: { aggression: 0.5, coordination: 0.6, expansion: 0.8, defense: 0.6, tactic: 'trade' },
+  dogon: { aggression: 0.4, coordination: 0.5, expansion: 0.4, defense: 0.8, tactic: 'defensive' },
+  songhai: { aggression: 0.8, coordination: 0.7, expansion: 0.9, defense: 0.4, tactic: 'river_rush' },
+  oromo: { aggression: 0.7, coordination: 0.8, expansion: 0.7, defense: 0.5, tactic: 'highland' },
+  tutsi: { aggression: 0.6, coordination: 0.7, expansion: 0.6, defense: 0.6, tactic: 'cattle_raids' },
+  swahili: { aggression: 0.5, coordination: 0.6, expansion: 0.7, defense: 0.7, tactic: 'trade' },
+  nubian: { aggression: 0.7, coordination: 0.7, expansion: 0.6, defense: 0.6, tactic: 'archer' },
+};
+
+function getAIPersonality(tribeId) {
+  return AI_PERSONALITIES[tribeId] || { aggression: 0.6, coordination: 0.6, expansion: 0.6, defense: 0.6, tactic: 'balanced' };
+}
+
+// ─── TRIBES DATA ──────────────────────────────────────────────
+const TRIBES_DATA = [{
+  id: 'zulu', name: 'Zulu', icon: '🛡️', color: '#c0392b', secondary: '#e74c3c', desc: 'Fierce warriors of the south',
+  units: {
+    scout: { name: 'Impi Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Impi Warrior', move: 2, atk: 5, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Impi', move: 4, atk: 6, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Assegai Thrower', move: 2, atk: 6, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Zulu Elite', move: 3, atk: 7, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Shaka', move: 3, atk: 6, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'All units +1 atk' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'ashanti', name: 'Ashanti', icon: '👑', color: '#d4a017', secondary: '#f1c40f', desc: 'Golden kingdom of the west',
+  units: {
+    scout: { name: 'Akyeame Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Ashanti Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Noble', move: 4, atk: 5, def: 4, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Golden Shield', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Bowman', move: 2, atk: 5, def: 3, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Ashanti Elite', move: 3, atk: 6, def: 6, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Osei Tutu', move: 3, atk: 6, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: '+1 gold per city' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'yoruba', name: 'Yoruba', icon: '🔱', color: '#2e7d32', secondary: '#43a047', desc: 'Spiritual warriors of the forest',
+  units: {
+    scout: { name: 'Ode Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Ogun Warrior', move: 2, atk: 5, def: 3, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Equestrian', move: 4, atk: 5, def: 4, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Ofa Archer', move: 2, atk: 6, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Yoruba Elite', move: 3, atk: 7, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'Sacred Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Oranmiyan', move: 3, atk: 6, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Units heal +2/turn' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'maasai', name: 'Maasai', icon: '🏹', color: '#c0392b', secondary: '#e67e22', desc: 'Lion-hearted nomads of the savanna',
+  units: {
+    scout: { name: 'Moran Scout', move: 6, atk: 1, def: 1, hp: 12, cost: 20, vision: 5, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Moran Warrior', move: 3, atk: 5, def: 3, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Moran', move: 5, atk: 6, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 6, hp: 24, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Olmoran Archer', move: 3, atk: 6, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Maasai Elite', move: 4, atk: 7, def: 4, hp: 26, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 7, def: 7, hp: 38, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Mbatian', move: 4, atk: 6, def: 4, hp: 28, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: '+1 move to all units' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'berber', name: 'Berber', icon: '🐪', color: '#8d6e3f', secondary: '#b8953f', desc: 'Desert riders of the north',
+  units: {
+    scout: { name: 'Desert Scout', move: 6, atk: 1, def: 1, hp: 12, cost: 20, vision: 5, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Berber Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Camel Rider', move: 5, atk: 6, def: 4, hp: 24, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Berber Archer', move: 2, atk: 5, def: 3, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Berber Elite', move: 4, atk: 6, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Camel', move: 3, atk: 7, def: 6, hp: 36, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Kahina', move: 3, atk: 6, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Desert combat bonus' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'hausa', name: 'Hausa', icon: '⚔️', color: '#6d4c41', secondary: '#8d6e63', desc: 'Trading empire of the Sahel',
+  units: {
+    scout: { name: 'Dan Kasuwa Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Hausa Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Warrior', move: 4, atk: 5, def: 4, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Hausa Bowman', move: 2, atk: 5, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Hausa Elite', move: 3, atk: 6, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Amina', move: 3, atk: 7, def: 4, hp: 28, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Trade routes +2 gold' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'dogon', name: 'Dogon', icon: '🌙', color: '#37474f', secondary: '#546e7a', desc: 'Mystical cliff-dwellers of Mali',
+  units: {
+    scout: { name: 'Cliff Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Dogon Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Hunter', move: 4, atk: 5, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Dogon Archer', move: 2, atk: 6, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Dogon Elite', move: 3, atk: 6, def: 6, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 7, def: 7, hp: 38, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Nommo', move: 3, atk: 5, def: 6, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Vision range +2' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'songhai', name: 'Songhai', icon: '⛵', color: '#f39c12', secondary: '#e67e22', desc: 'Mighty river empire of the Niger',
+  units: {
+    scout: { name: 'River Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Songhai Warrior', move: 2, atk: 5, def: 3, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Warrior', move: 4, atk: 6, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Canoe Archer', move: 2, atk: 6, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Songhai Elite', move: 3, atk: 7, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Askia', move: 3, atk: 7, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: '+1 attack to all units' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'oromo', name: 'Oromo', icon: '🐆', color: '#4caf50', secondary: '#66bb6a', desc: 'Highland warriors of Ethiopia',
+  units: {
+    scout: { name: 'Highland Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Oromo Warrior', move: 2, atk: 5, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Warrior', move: 4, atk: 6, def: 4, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Oromo Archer', move: 2, atk: 5, def: 3, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Oromo Elite', move: 3, atk: 7, def: 6, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Gada', move: 3, atk: 6, def: 6, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Highland combat bonus' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'tutsi', name: 'Tutsi', icon: '🐄', color: '#5d4037', secondary: '#795548', desc: 'Cattle-herding nobility of Rwanda',
+  units: {
+    scout: { name: 'Cattle Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Tutsi Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Warrior', move: 4, atk: 5, def: 4, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Tutsi Archer', move: 2, atk: 5, def: 3, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Tutsi Elite', move: 3, atk: 6, def: 6, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 7, def: 7, hp: 38, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Rwanda', move: 3, atk: 6, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Cattle provide +1 gold' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'swahili', name: 'Swahili', icon: '🌊', color: '#00897b', secondary: '#26a69a', desc: 'Coastal traders of East Africa',
+  units: {
+    scout: { name: 'Dhow Scout', move: 6, atk: 1, def: 1, hp: 12, cost: 20, vision: 5, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Swahili Warrior', move: 2, atk: 4, def: 3, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Coastal Rider', move: 4, atk: 5, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Swahili Archer', move: 2, atk: 5, def: 3, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Swahili Elite', move: 3, atk: 6, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 7, def: 7, hp: 38, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Tippu Tip', move: 3, atk: 5, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Trade +3 gold per turn' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}, {
+  id: 'nubian', name: 'Nubian', icon: '🏺', color: '#4e342e', secondary: '#6d4c41', desc: 'Archers of the Nile Valley',
+  units: {
+    scout: { name: 'Nile Scout', move: 5, atk: 1, def: 1, hp: 12, cost: 20, vision: 4, techRequired: null, attackRange: 1, isNaval: false },
+    foot: { name: 'Nubian Warrior', move: 2, atk: 4, def: 4, hp: 20, cost: 40, vision: 2, techRequired: null, attackRange: 1, isNaval: false },
+    mounted: { name: 'Mounted Archer', move: 4, atk: 6, def: 3, hp: 22, cost: 55, vision: 3, techRequired: 'horseback', attackRange: 1, isNaval: false },
+    shield: { name: 'Shield Bearer', move: 2, atk: 2, def: 7, hp: 26, cost: 45, vision: 2, techRequired: 'masonry', attackRange: 1, isNaval: false },
+    ranged: { name: 'Nubian Archer', move: 2, atk: 7, def: 2, hp: 16, cost: 50, vision: 3, techRequired: 'bronze_working', attackRange: 2, isNaval: false },
+    elite: { name: 'Nubian Elite', move: 3, atk: 7, def: 5, hp: 28, cost: 70, vision: 3, techRequired: 'iron_working', attackRange: 1, isNaval: false },
+    tank: { name: 'War Elephant', move: 2, atk: 8, def: 7, hp: 40, cost: 100, vision: 2, techRequired: 'engineering', attackRange: 1, isNaval: false },
+    general: { name: 'Taharqa', move: 3, atk: 7, def: 5, hp: 30, cost: 120, vision: 4, techRequired: 'philosophy', attackRange: 1, isNaval: false, ability: 'Archers +1 range' },
+    raft: { name: 'Raft', move: 1, atk: 0, def: 0, hp: 8, cost: 20, vision: 1, techRequired: 'sailing', attackRange: 0, isNaval: true },
+    galley: { name: 'Galley', move: 3, atk: 2, def: 1, hp: 15, cost: 40, vision: 2, techRequired: 'navigation', attackRange: 1, isNaval: true },
+    warship: { name: 'Warship', move: 2, atk: 5, def: 4, hp: 25, cost: 70, vision: 3, techRequired: 'shipbuilding', attackRange: 2, isNaval: true }
+  }
+}];
+
+// ─── TECH HELPERS ────────────────────────────────────────────
+function isTechAvailable(tribe, techId) {
+  if (tribe.techs.includes(techId)) return true;
+  const tech = TECH_TREE.find(t => t.id === techId);
+  if (!tech) return false;
+  if (tech.requires && tech.requires.length > 0) {
+    for (const req of tech.requires) {
+      if (!tribe.techs.includes(req)) return false;
+    }
+  }
+  return true;
+}
+function getAvailableTechs(tribe) {
+  return TECH_TREE.filter(t => !tribe.techs.includes(t.id) && isTechAvailable(tribe, t.id));
+}
+function getAvailableUnits(tribe) {
+  const tribeData = TRIBES_DATA.find(t => t.id === tribe.id);
+  if (!tribeData) return {};
+  const result = {};
+  for (const [type, def] of Object.entries(tribeData.units)) {
+    if (!def.techRequired || tribe.techs.includes(def.techRequired)) {
+      result[type] = def;
+    }
+  }
+  return result;
+}
+function getAvailableWonders(tribe) {
+  return WONDERS.filter(w => !tribe.wonders.includes(w.id) && (w.requires ? tribe.techs.includes(w.requires) : true));
+}
+function getTechCost(techId) { const tech = TECH_TREE.find(t => t.id === techId); return tech ? tech.cost : 999; }
+function getWonderCost(wonderId) { const w = WONDERS.find(w => w.id === wonderId); return w ? w.cost : 999; }
+function isTechResearched(tribe, techId) { return tribe.techs.includes(techId); }
+function isWonderBuilt(tribe, wonderId) { return tribe.wonders.includes(wonderId); }
+
+// ─── TECH TREE VIEW ──────────────────────────────────────────
+function showTechTree() {
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player) return;
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').textContent = '📜 Technology Tree';
+
+  const tiers = getTechsByTier();
+  const tierNames = ['Foundations', 'Craftsmanship', 'Advancement', 'Mastery'];
+  let html = `<div class="tech-tree-container">`;
+
+  for (let tier = 0; tier <= 3; tier++) {
+    const techs = tiers[tier] || [];
+    if (techs.length === 0) continue;
+    html += `<div class="tech-group-label">— ${tierNames[tier] || `Tier ${tier}`} —</div>`;
+    html += `<div class="tech-row">`;
+    for (const tech of techs) {
+      const researched = player.techs.includes(tech.id);
+      const available = isTechAvailable(player, tech.id);
+      let status = researched ? '✅ Researched' : (available ? '🔓 Available' : '🔒 Locked');
+      let statusClass = researched ? 'done' : (available ? 'avail' : 'locked');
+      let nodeClass = 'tech-node';
+      if (researched) nodeClass += ' researched';
+      else if (available) nodeClass += ' available';
+      else nodeClass += ' locked';
+
+      let onclick = '';
+      if (available && !researched) {
+        onclick = `onclick="researchTechFromTree('${tech.id}')"`;
+      }
+
+      html += `<div class="${nodeClass}" ${onclick}>
+        <div class="tech-name">${tech.name}</div>
+        <div class="tech-cost">${tech.cost} 🔬</div>
+        <div class="tech-status ${statusClass}">${status}</div>
+        <div style="font-size:0.5rem;color:#6b5a4a;margin-top:2px;">${tech.desc}</div>
+      </div>`;
+    }
+    html += `</div>`;
+    if (tier < 3 && tiers[tier + 1] && tiers[tier + 1].length > 0) {
+      html += `<div style="text-align:center;color:#4a3528;font-size:1.2rem;">⬇</div>`;
+    }
+  }
+
+  // Wonders
+  html += `<div class="tech-group-label" style="margin-top:12px;">— Wonders —</div>`;
+  html += `<div class="tech-row">`;
+  for (const wonder of WONDERS) {
+    const built = player.wonders.includes(wonder.id);
+    const available = wonder.requires ? player.techs.includes(wonder.requires) : true;
+    let status = built ? '✅ Built' : (available ? '🔓 Available' : '🔒 Locked');
+    let statusClass = built ? 'done' : (available ? 'avail' : 'locked');
+    let nodeClass = 'tech-node';
+    if (built) nodeClass += ' researched';
+    else if (available) nodeClass += ' available';
+    else nodeClass += ' locked';
+    let onclick = '';
+    if (available && !built) {
+      onclick = `onclick="alert('Build wonders through city production!')"`;
+    }
+    html += `<div class="${nodeClass}" ${onclick}>
+      <div class="tech-name">${wonder.name}</div>
+      <div class="tech-cost">${wonder.cost} 🏗️</div>
+      <div class="tech-status ${statusClass}">${status}</div>
+      <div style="font-size:0.5rem;color:#6b5a4a;">${wonder.desc}</div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  html += `</div>`;
+  html += `<div style="text-align:center;font-size:0.7rem;color:#6b5a4a;margin-top:8px;">💡 Click an available tech to research it (costs production from a city)</div>`;
+
+  document.getElementById('modal-body').innerHTML = html;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button class="primary" onclick="closeModal()">Close</button>`;
+  overlay.classList.add('active');
+}
+
+function researchTechFromTree(techId) {
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player) return;
+  const city = player.cities.find(c => c.owner === player.id);
+  if (!city) { alert('You need a city to research technologies!'); return; }
+  if (city.project) { alert('This city is already working on a project!'); return; }
+  const tech = TECH_TREE.find(t => t.id === techId);
+  if (!tech) return;
+  if (player.techs.includes(techId)) { alert('Already researched!'); return; }
+  if (!isTechAvailable(player, techId)) { alert('Prerequisites not met!'); return; }
+  setCityProject(city, 'tech', techId);
+  closeModal();
+  updateUI();
+  render();
+  alert(`Researching ${tech.name} in ${city.name}!`);
+}
+
+// ─── GAME STATE ──────────────────────────────────────────────
+let G = {
+  screen: 'menu-screen',
+  playerTribeId: null,
+  opponents: [],
+  gameMode: 'conquest',
+  turn: 0,
+  maxTurns: 999,
+  difficulty: 'normal',
+  tribes: [],
+  units: [],
+  cities: [],
+  harbors: [],
+  selectedUnit: null,
+  selectedHex: null,
+  selectedCity: null,
+  selectedHarbor: null,
+  gameOver: false,
+  winner: null,
+  map: [],
+  mapWidth: 20,
+  mapHeight: 14,
+  hexSize: 110,
+  animating: false,
+  playerGold: 60,
+  aliveTribes: [],
+  aiActive: false,
+  turnPhase: 'player',
+  unitIdCounter: 0,
+  cityIdCounter: 0,
+  harborIdCounter: 0,
+  neutralVillages: 0,
+  eliminationMessages: [],
+  turnHealBonus: 3, // From medicine tech
+};
+
+const camera = { x: 0, y: 0, zoom: 1.0, minZoom: 0.3, maxZoom: 3.0, centered: false };
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// ─── HEX UTILITIES ───────────────────────────────────────────
+function hexCornerShortened(cx, cy, size, i) {
+  const angle = Math.PI / 180 * (60 * i - 30);
+  let dx = size * Math.cos(angle);
+  let dy = size * Math.sin(angle);
+  dy *= 0.8;
+  return { x: cx + dx, y: cy + dy };
+}
+function hexPolygonShortened(cx, cy, size) {
+  const pts = [];
+  for (let i = 0; i < 6; i++) pts.push(hexCornerShortened(cx, cy, size, i));
+  return pts;
+}
+function hexToPixel(q, r, size) {
+  const x = size * (Math.sqrt(3) * q + Math.sqrt(3) / 2 * r);
+  const y = size * (3 / 2 * r * 0.8);
+  return { x, y };
+}
+function pixelToHex(px, py, size) {
+  const adjustedPy = py / 0.8;
+  const q = (Math.sqrt(3) / 3 * px - 1 / 3 * adjustedPy) / size;
+  const r = (2 / 3 * adjustedPy) / size;
+  return hexRound(q, r);
+}
+function hexRound(q, r) {
+  const s = -q - r;
+  let rq = Math.round(q), rr = Math.round(r), rs = Math.round(s);
+  const dq = Math.abs(rq - q), dr = Math.abs(rr - r), ds = Math.abs(rs - s);
+  if (dq > dr && dq > ds) rq = -rr - rs;
+  else if (dr > ds) rr = -rq - rs;
+  return { q: rq, r: rr };
+}
+function hexDistance(a, b) {
+  return (Math.abs(a.q - b.q) + Math.abs(a.r - b.r) + Math.abs(a.q + a.r - b.q - b.r)) / 2;
+}
+function hexNeighbors(q, r) {
+  const dirs = [[1,0],[0,1],[-1,1],[-1,0],[0,-1],[1,-1]];
+  return dirs.map(d => ({ q: q + d[0], r: r + d[1] }));
+}
+function hexKey(q, r) { return q + ',' + r; }
+function inMap(q, r) { return q >= 0 && q < G.mapWidth && r >= 0 && r < G.mapHeight; }
+function worldToScreen(wx, wy) { return { x: wx * camera.zoom + camera.x, y: wy * camera.zoom + camera.y }; }
+function screenToWorld(sx, sy) { return { x: (sx - camera.x) / camera.zoom, y: (sy - camera.y) / camera.zoom }; }
+function getHexFromScreen(sx, sy) {
+  const w = screenToWorld(sx, sy);
+  return pixelToHex(w.x, w.y, G.hexSize);
+}
+function centerCamera() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  const size = G.hexSize;
+  const centerWorld = hexToPixel(G.mapWidth/2, G.mapHeight/2, size);
+  camera.x = w/2 - centerWorld.x * camera.zoom;
+  camera.y = h/2 - centerWorld.y * camera.zoom;
+  camera.centered = true;
+}
+
+function centerCameraOnPlayerCity() {
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player || player.cities.length === 0) {
+    centerCamera();
+    return;
+  }
+  const city = player.cities[0];
+  const size = G.hexSize;
+  const pos = hexToPixel(city.q, city.r, size);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  camera.x = w/2 - pos.x * camera.zoom;
+  camera.y = h/2 - pos.y * camera.zoom;
+  camera.centered = true;
+  render();
+}
+
+// ─── INFLUENCE ──────────────────────────────────────────────
+function getCityInfluence(city) {
+  const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
+  const tiles = [];
+  for (let dr = -radius; dr <= radius; dr++) {
+    for (let dq = -radius; dq <= radius; dq++) {
+      const q = city.q + dq;
+      const r = city.r + dr;
+      if (inMap(q, r) && hexDistance({ q: city.q, r: city.r }, { q, r }) <= radius) {
+        tiles.push({ q, r });
+      }
+    }
+  }
+  return tiles;
+}
+
+// Compute a map of influence colour per tile (for rendering)
+function computeInfluenceMap() {
+  const influence = {};
+  // For each city, assign its owner's colour to all influenced tiles
+  for (const city of G.cities) {
+    const tiles = getCityInfluence(city);
+    let color = '#555555'; // neutral grey
+    if (!city.isNeutral && city.owner) {
+      const tribe = G.tribes.find(t => t.id === city.owner);
+      if (tribe) color = tribe.color;
+    } else if (city.isNeutral) {
+      color = '#666666';
+    }
+    for (const t of tiles) {
+      const key = hexKey(t.q, t.r);
+      // If multiple cities overlap, we could blend, but we just take the first encountered (or we can use strongest level)
+      // For simplicity, if already set, we keep the existing (first found) – this is fine for visual.
+      if (!influence[key]) {
+        influence[key] = color;
+      }
+    }
+  }
+  return influence;
+}
+
+function getTribeControlledTiles(tribeId) {
+  const tiles = new Set();
+  const tribe = getTribe(tribeId);
+  if (!tribe) return 0;
+  for (const city of tribe.cities) {
+    const influence = getCityInfluence(city);
+    for (const tile of influence) tiles.add(hexKey(tile.q, tile.r));
+  }
+  return tiles.size;
+}
+function isTileInfluencedByOther(q, r, tribeId) {
+  for (const city of G.cities) {
+    if (city.owner === tribeId) continue;
+    const influence = getCityInfluence(city);
+    for (const tile of influence) {
+      if (tile.q === q && tile.r === r) return true;
+    }
+  }
+  return false;
+}
+function calculateTileYield(q, r) {
+  const tile = G.map[r]?.[q];
+  if (!tile) return 0;
+  switch (tile.terrain) {
+    case 'plains': return 1;
+    case 'forest': return 2;
+    case 'hill': return 2;
+    case 'mountain': return 3;
+    case 'water': return 1;
+    default: return 0;
+  }
+}
+function getTribeYield(tribeId) {
+  const tribe = getTribe(tribeId);
+  if (!tribe) return 0;
+  const tiles = new Set();
+  let yieldTotal = 0;
+  for (const city of tribe.cities) {
+    const influence = getCityInfluence(city);
+    for (const tile of influence) {
+      const key = hexKey(tile.q, tile.r);
+      if (!tiles.has(key)) {
+        tiles.add(key);
+        yieldTotal += calculateTileYield(tile.q, tile.r);
+      }
+    }
+  }
+  return yieldTotal;
+}
+
+// ─── FOG OF WAR ─────────────────────────────────────────────
+function updateVisibility() {
+  for (let r = 0; r < G.mapHeight; r++) {
+    for (let q = 0; q < G.mapWidth; q++) {
+      G.map[r][q].visible = false;
+    }
+  }
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player) return;
+  for (const unit of G.units) {
+    if (unit.tribeId !== player.id) continue;
+    const vision = getUnitVision(unit);
+    const q = unit.q, r = unit.r;
+    for (let dr = -vision; dr <= vision; dr++) {
+      for (let dq = -vision; dq <= vision; dq++) {
+        const tq = q + dq, tr = r + dr;
+        if (inMap(tq, tr) && hexDistance({ q, r }, { q: tq, r: tr }) <= vision) {
+          G.map[tr][tq].visible = true;
+          G.map[tr][tq].explored = true;
+        }
+      }
+    }
+  }
+  for (const city of G.cities) {
+    if (city.owner !== player.id) continue;
+    const vision = 2;
+    const q = city.q, r = city.r;
+    for (let dr = -vision; dr <= vision; dr++) {
+      for (let dq = -vision; dq <= vision; dq++) {
+        const tq = q + dq, tr = r + dr;
+        if (inMap(tq, tr) && hexDistance({ q, r }, { q: tq, r: tr }) <= vision) {
+          G.map[tr][tq].visible = true;
+          G.map[tr][tq].explored = true;
+        }
+      }
+    }
+  }
+}
+function getUnitVision(unit) {
+  const tribeData = TRIBES_DATA.find(t => t.id === unit.tribeId);
+  if (!tribeData) return 2;
+  const unitDef = tribeData.units[unit.type];
+  if (!unitDef) return 2;
+  let vision = unitDef.vision || 2;
+  const tribe = G.tribes.find(t => t.id === unit.tribeId);
+  if (tribe && tribe.wonders && tribe.wonders.includes('obelisks')) vision += 2;
+  return vision;
+}
+
+// ─── HEALING FUNCTIONS ──────────────────────────────────────
+function healUnit(unit) {
+  if (unit.hasMoved || unit.hasAttacked || unit.hasHealed) return false;
+  const healAmount = Math.max(3, Math.floor(unit.maxHp * 0.25));
+  unit.hp = Math.min(unit.maxHp, unit.hp + healAmount);
+  unit.hasHealed = true;
+  unit.hasMoved = true; // Consume action
+  return true;
+}
+
+function invigorateTroops(general) {
+  if (general.hasMoved || general.hasAttacked || general.hasUsedAbility) return false;
+  const tribe = getTribe(general.tribeId);
+  if (!tribe) return false;
+
+  const radius = 3;
+  const affectedUnits = G.units.filter(u => 
+    u.tribeId === general.tribeId && 
+    u.active && 
+    hexDistance({ q: general.q, r: general.r }, { q: u.q, r: u.r }) <= radius
+  );
+
+  let healedCount = 0;
+  let boostedCount = 0;
+
+  for (const u of affectedUnits) {
+    // Heal (40% of max HP)
+    const healAmount = Math.max(5, Math.floor(u.maxHp * 0.4));
+    if (u.hp < u.maxHp) {
+      u.hp = Math.min(u.maxHp, u.hp + healAmount);
+      healedCount++;
+    } else {
+      // Full health: boost stats for 1 turn
+      u.boosted = true;
+      u.boostedAtk = (u.boostedAtk || 0) + 1;
+      u.boostedDef = (u.boostedDef || 0) + 1;
+      u.boostedTurns = 1;
+      boostedCount++;
+    }
+  }
+
+  general.hasUsedAbility = true;
+  general.hasMoved = true;
+  return { healedCount, boostedCount };
+}
+
+function applyBoostedStats(unit) {
+  if (!unit.boosted || !unit.boostedTurns) return;
+  // Stats are already applied via boostedAtk/Def, just track turns
+}
+
+function clearBoostedStats(unit) {
+  if (unit.boosted && unit.boostedTurns !== undefined) {
+    unit.boostedTurns--;
+    if (unit.boostedTurns <= 0) {
+      unit.boosted = false;
+      unit.boostedAtk = 0;
+      unit.boostedDef = 0;
+    }
+  }
+}
+
+// ─── MAP GENERATION ──────────────────────────────────────────
+function generateMap() {
+  const w = G.mapWidth, h = G.mapHeight;
+  G.map = [];
+
+  // Elevation
+  const elevation = [];
+  for (let r = 0; r < h; r++) {
+    elevation[r] = [];
+    for (let q = 0; q < w; q++) {
+      let val = 0;
+      val += Math.sin(q * 0.15 + r * 0.12) * 0.3;
+      val += Math.sin(q * 0.3 + r * 0.25 + 1.2) * 0.2;
+      val += Math.cos(q * 0.07 - r * 0.09 + 0.7) * 0.4;
+      val += Math.random() * 0.15;
+      elevation[r][q] = Math.max(0, Math.min(1, val + 0.5));
+    }
+  }
+
+  // Terrain
+  for (let r = 0; r < h; r++) {
+    G.map[r] = [];
+    for (let q = 0; q < w; q++) {
+      const elev = elevation[r][q];
+      let terrain;
+      if (elev < 0.2) terrain = 'water';
+      else if (elev < 0.25) terrain = 'water';
+      else if (elev < 0.35) terrain = 'plains';
+      else if (elev < 0.45) terrain = 'plains';
+      else if (elev < 0.55) terrain = 'forest';
+      else if (elev < 0.65) terrain = 'forest';
+      else if (elev < 0.75) terrain = 'hill';
+      else if (elev < 0.85) terrain = 'hill';
+      else terrain = 'mountain';
+      if (terrain === 'mountain' && Math.random() < 0.4) terrain = 'hill';
+      if (r === 0 || r === h-1 || q === 0 || q === w-1) {
+        if (terrain === 'mountain') terrain = 'hill';
+        if (Math.random() < 0.3) terrain = 'water';
+      }
+      G.map[r][q] = { q, r, terrain, owner: null, city: null, unit: null, harbor: null, explored: false, visible: false, isRiver: false, resource: null };
+    }
+  }
+
+  // Rivers
+  for (let r = 0; r < h; r++) {
+    for (let q = 0; q < w; q++) {
+      if (G.map[r][q].terrain === 'mountain' && Math.random() < 0.35) {
+        let currentQ = q, currentR = r;
+        let steps = 0;
+        while (steps < 30) {
+          let lowestElev = elevation[currentR][currentQ];
+          let nextQ = currentQ, nextR = currentR;
+          const neighbors = hexNeighbors(currentQ, currentR);
+          for (const n of neighbors) {
+            if (!inMap(n.q, n.r)) continue;
+            if (elevation[n.r][n.q] < lowestElev) {
+              lowestElev = elevation[n.r][n.q];
+              nextQ = n.q; nextR = n.r;
+            }
+          }
+          if (nextQ === currentQ && nextR === currentR) break;
+          currentQ = nextQ; currentR = nextR;
+          steps++;
+          if (G.map[currentR][currentQ].terrain === 'water') break;
+          if (G.map[currentR][currentQ].terrain !== 'mountain') {
+            G.map[currentR][currentQ].terrain = 'water';
+            G.map[currentR][currentQ].isRiver = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Lakes
+  for (let r = 2; r < h-2; r++) {
+    for (let q = 2; q < w-2; q++) {
+      if (G.map[r][q].terrain !== 'water' && elevation[r][q] < 0.25) {
+        const neighbors = hexNeighbors(q, r);
+        let waterCount = 0;
+        for (const n of neighbors) {
+          if (!inMap(n.q, n.r)) continue;
+          if (G.map[n.r][n.q].terrain === 'water' || elevation[n.r][n.q] < 0.2) waterCount++;
+        }
+        if (waterCount >= 3 && Math.random() < 0.4) {
+          G.map[r][q].terrain = 'water';
+          for (const n of neighbors) {
+            if (inMap(n.q, n.r) && Math.random() < 0.3 && G.map[n.r][n.q].terrain !== 'water') {
+              G.map[n.r][n.q].terrain = 'water';
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Coastal water
+  for (let r = 0; r < h; r++) {
+    for (let q = 0; q < w; q++) {
+      if (r === 0 || r === h-1 || q === 0 || q === w-1) {
+        if (Math.random() < 0.25 && G.map[r][q].terrain !== 'water') {
+          G.map[r][q].terrain = 'water';
+        }
+      }
+    }
+  }
+
+  // Resources
+  const resourceTypes = {
+    mountain: ['🪙'],
+    plains: ['🌾'],
+    forest: ['🪵'],
+    hill: ['🪨'],
+    water: ['🐟']
+  };
+  for (let r = 0; r < h; r++) {
+    for (let q = 0; q < w; q++) {
+      const tile = G.map[r][q];
+      if (tile.terrain === 'water') continue;
+      if (tile.city) continue;
+      if (Math.random() > 0.25) continue;
+      const possible = resourceTypes[tile.terrain];
+      if (possible && possible.length > 0) {
+        tile.resource = possible[Math.floor(Math.random() * possible.length)];
+      }
+    }
+  }
+  for (let r = 0; r < h; r++) {
+    for (let q = 0; q < w; q++) {
+      const tile = G.map[r][q];
+      if (tile.terrain === 'water' && Math.random() < 0.2) {
+        tile.resource = '🐟';
+      }
+    }
+  }
+
+  // Neutral villages with unique names
+  const numVillages = Math.floor(Math.random() * 8) + 8;
+  let placed = 0, attempts = 0;
+  while (placed < numVillages && attempts < 500) {
+    attempts++;
+    const q = 2 + Math.floor(Math.random() * (w - 4));
+    const r = 2 + Math.floor(Math.random() * (h - 4));
+    const tile = G.map[r]?.[q];
+    if (!tile) continue;
+    if (tile.terrain === 'water' || tile.terrain === 'mountain') continue;
+    if (tile.city) continue;
+    let tooClose = false;
+    for (const c of G.cities) {
+      if (c.isNeutral && hexDistance({ q, r }, { q: c.q, r: c.r }) < 4) { tooClose = true; break; }
+    }
+    if (tooClose) continue;
+    if (tile.terrain === 'plains' || tile.terrain === 'forest' || Math.random() < 0.3) {
+      const city = { 
+        id: G.cityIdCounter++, 
+        q, r, 
+        owner: null, 
+        name: getUniqueSettlementName(), 
+        level: 1, 
+        production: 0, 
+        progress: 0, 
+        project: null, 
+        isNeutral: true 
+      };
+      G.cities.push(city);
+      tile.city = city;
+      placed++;
+    }
+  }
+  G.neutralVillages = placed;
+}
+
+// ─── PLAYER PLACEMENT ──────────────────────────────────────
+function placeStartingPositions() {
+  const w = G.mapWidth, h = G.mapHeight;
+  const positions = [];
+  const numTribes = G.tribes.length;
+
+  for (let i = 0; i < numTribes; i++) {
+    let bestPos = null;
+    let bestDist = -1;
+    const attemptsPerPos = 50;
+
+    for (let attempt = 0; attempt < attemptsPerPos; attempt++) {
+      let q, r;
+      const edgeBias = Math.random();
+      if (edgeBias < 0.25) {
+        const corner = Math.floor(Math.random() * 4);
+        q = corner === 0 ? 2 : corner === 1 ? w - 3 : corner === 2 ? 2 : w - 3;
+        r = corner < 2 ? 2 : h - 3;
+        q += Math.floor(Math.random() * 4) - 2;
+        r += Math.floor(Math.random() * 4) - 2;
+      } else if (edgeBias < 0.6) {
+        const edge = Math.floor(Math.random() * 4);
+        if (edge === 0) { q = 2 + Math.floor(Math.random() * (w - 4)); r = 2; }
+        else if (edge === 1) { q = 2 + Math.floor(Math.random() * (w - 4)); r = h - 3; }
+        else if (edge === 2) { q = 2; r = 2 + Math.floor(Math.random() * (h - 4)); }
+        else { q = w - 3; r = 2 + Math.floor(Math.random() * (h - 4)); }
+      } else {
+        q = 3 + Math.floor(Math.random() * (w - 6));
+        r = 3 + Math.floor(Math.random() * (h - 6));
+      }
+      q = Math.max(1, Math.min(w - 2, q));
+      r = Math.max(1, Math.min(h - 2, r));
+
+      const tile = G.map[r]?.[q];
+      if (!tile) continue;
+      if (tile.terrain === 'water' || tile.terrain === 'mountain') continue;
+      if (tile.city) continue;
+
+      let minDist = Infinity;
+      for (const p of positions) {
+        const d = hexDistance({ q, r }, { q: p.q, r: p.r });
+        if (d < minDist) minDist = d;
+      }
+      if (positions.length === 0) minDist = 999;
+
+      for (const c of G.cities) {
+        if (c.isNeutral) {
+          const d = hexDistance({ q, r }, { q: c.q, r: c.r });
+          if (d < 3) minDist = 0;
+        }
+      }
+      if (isTileInfluencedByOther(q, r, G.tribes[i]?.id || 'none')) minDist = 0;
+
+      if (minDist > bestDist) {
+        bestDist = minDist;
+        bestPos = { q, r };
+      }
+    }
+
+    if (bestPos && bestDist > 2) {
+      positions.push({ q: bestPos.q, r: bestPos.r, tribeIdx: i });
+    } else {
+      for (let rr = 0; rr < h; rr++) {
+        for (let qq = 0; qq < w; qq++) {
+          if (G.map[rr]?.[qq] && G.map[rr][qq].terrain !== 'water' && G.map[rr][qq].terrain !== 'mountain' && !G.map[rr][qq].city) {
+            let ok = true;
+            for (const p of positions) {
+              if (hexDistance({ q: qq, r: rr }, { q: p.q, r: p.r }) < 4) { ok = false; break; }
+            }
+            if (ok) { positions.push({ q: qq, r: rr, tribeIdx: i }); break; }
+          }
+        }
+        if (positions.length > i) break;
+      }
+    }
+  }
+
+  for (const pos of positions) {
+    const tribe = G.tribes[pos.tribeIdx];
+    if (!tribe) continue;
+    const existingCity = G.map[pos.r][pos.q].city;
+    if (existingCity) {
+      const idx = G.cities.indexOf(existingCity);
+      if (idx > -1) G.cities.splice(idx, 1);
+      existingCity.owner = tribe.id;
+      existingCity.isNeutral = false;
+      existingCity.name = getUniqueSettlementName();
+      existingCity.level = 2;
+      tribe.cities.push(existingCity);
+      G.map[pos.r][pos.q].owner = tribe.id;
+    } else {
+      const city = { 
+        id: G.cityIdCounter++, 
+        q: pos.q, r: pos.r, 
+        owner: tribe.id, 
+        name: getUniqueSettlementName(), 
+        level: 2, 
+        production: 0, 
+        progress: 0, 
+        project: null, 
+        isNeutral: false 
+      };
+      G.cities.push(city);
+      tribe.cities.push(city);
+      G.map[pos.r][pos.q].city = city;
+      G.map[pos.r][pos.q].owner = tribe.id;
+    }
+
+    const spawnTiles = [
+      { q: pos.q, r: pos.r },
+      { q: pos.q + 1, r: pos.r },
+      { q: pos.q - 1, r: pos.r + 1 },
+      { q: pos.q + 1, r: pos.r - 1 },
+      { q: pos.q, r: pos.r + 1 },
+    ];
+    let spawnCount = 0;
+    for (const st of spawnTiles) {
+      if (inMap(st.q, st.r) && isTilePassable(st.q, st.r, false) && !G.map[st.r][st.q].unit) {
+        const type = spawnCount === 0 ? 'foot' : spawnCount === 1 ? 'scout' : 'foot';
+        if (spawnUnit(tribe.id, st.q, st.r, type)) spawnCount++;
+        if (spawnCount >= 2) break;
+      }
+    }
+    if (spawnCount === 0) {
+      const neighbors = hexNeighbors(pos.q, pos.r);
+      for (const n of neighbors) {
+        if (inMap(n.q, n.r) && isTilePassable(n.q, n.r, false) && !G.map[n.r][n.q].unit) {
+          spawnUnit(tribe.id, n.q, n.r, 'foot');
+          break;
+        }
+      }
+    }
+  }
+  updateVisibility();
+}
+
+function initTribes(playerTribeId, opponentIds) {
+  G.tribes = []; G.aliveTribes = [];
+  resetSettlementNames();
+  const pTribe = TRIBES_DATA.find(t => t.id === playerTribeId);
+  if (!pTribe) return;
+  G.playerTribeId = playerTribeId;
+  const player = {
+    id: playerTribeId, name: pTribe.name, icon: pTribe.icon, color: pTribe.color, secondary: pTribe.secondary,
+    isPlayer: true, alive: true, gold: G.playerGold, cities: [], units: [], techs: [], wonders: [],
+    researchPoints: 0, active: true, generalActive: false, eliminated: false
+  };
+  G.tribes.push(player); G.aliveTribes.push(player);
+
+  const avail = TRIBES_DATA.filter(t => t.id !== playerTribeId);
+  const shuffled = avail.sort(() => Math.random() - 0.5);
+  const selected = opponentIds.length > 0 ? opponentIds.filter(id => id !== playerTribeId) :
+                   shuffled.slice(0, Math.min(5, shuffled.length)).map(t => t.id);
+  const uniqueOpps = [...new Set(selected)];
+  for (const oppId of uniqueOpps) {
+    const tData = TRIBES_DATA.find(t => t.id === oppId);
+    if (!tData) continue;
+    const opp = {
+      id: tData.id, name: tData.name, icon: tData.icon, color: tData.color, secondary: tData.secondary,
+      isPlayer: false, alive: true, gold: 30 + Math.floor(Math.random() * 30),
+      cities: [], units: [], techs: [], wonders: [], researchPoints: 0,
+      active: true, generalActive: false, ai: true, eliminated: false
+    };
+    G.tribes.push(opp); G.aliveTribes.push(opp);
+  }
+  placeStartingPositions();
+}
+
+// ─── UNIT MANAGEMENT ──────────────────────────────────────
+function spawnUnit(tribeId, q, r, type, hp) {
+  if (!inMap(q, r)) return null;
+  const tribeData = TRIBES_DATA.find(t => t.id === tribeId);
+  if (!tribeData) return null;
+  const unitDef = tribeData.units[type];
+  if (!unitDef) return null;
+  if (!isTilePassable(q, r, unitDef.isNaval)) return null;
+  const tile = G.map[r]?.[q];
+  if (!tile || tile.unit) return null;
+  const tribe = G.tribes.find(t => t.id === tribeId);
+  if (!tribe) return null;
+  const unit = {
+    id: G.unitIdCounter++,
+    tribeId, type, q, r,
+    name: unitDef.name,
+    move: unitDef.move, atk: unitDef.atk, def: unitDef.def,
+    hp: hp || unitDef.hp, maxHp: unitDef.hp,
+    cost: unitDef.cost,
+    vision: unitDef.vision || 2,
+    attackRange: unitDef.attackRange || 1,
+    hasMoved: false, hasAttacked: false, hasHealed: false, hasUsedAbility: false,
+    isGeneral: type === 'general',
+    ability: unitDef.ability || null,
+    isNaval: unitDef.isNaval || false,
+    active: true,
+    boosted: false, boostedAtk: 0, boostedDef: 0, boostedTurns: 0
+  };
+  G.units.push(unit); tile.unit = unit; tribe.units.push(unit);
+  if (tribe.isPlayer) updateVisibility();
+  return unit;
+}
+function removeUnit(unit) {
+  const tile = G.map[unit.r]?.[unit.q];
+  if (tile && tile.unit === unit) tile.unit = null;
+  const tribe = G.tribes.find(t => t.id === unit.tribeId);
+  if (tribe) { const idx = tribe.units.indexOf(unit); if (idx > -1) tribe.units.splice(idx, 1); }
+  const idx = G.units.indexOf(unit); if (idx > -1) G.units.splice(idx, 1);
+}
+function getUnitAt(q, r) { const tile = G.map[r]?.[q]; return tile ? tile.unit : null; }
+function getTribe(id) { return G.tribes.find(t => t.id === id); }
+function isTilePassable(q, r, isNaval) {
+  const tile = G.map[r]?.[q];
+  if (!tile) return false;
+  if (isNaval) return tile.terrain === 'water';
+  return tile.terrain !== 'water';
+}
+function getUnitMoveCost(unit, q, r) {
+  const tile = G.map[r]?.[q];
+  if (!tile) return 999;
+  if (unit.isNaval) {
+    if (tile.terrain === 'water') return 1;
+    return 999;
+  }
+  if (tile.terrain === 'mountain') return 3;
+  if (tile.terrain === 'forest') return 2;
+  if (tile.terrain === 'hill') return 2;
+  if (tile.terrain === 'water') return 999;
+  return 1;
+}
+
+// ─── HARBOR FUNCTIONS ─────────────────────────────────────
+function canBuildHarbor(unit) {
+  const tribe = getTribe(unit.tribeId);
+  if (!tribe) return false;
+  if (!tribe.techs.includes('sailing')) return false;
+  if (unit.hasMoved) return false;
+  const neighbors = hexNeighbors(unit.q, unit.r);
+  for (const n of neighbors) {
+    if (!inMap(n.q, n.r)) continue;
+    const tile = G.map[n.r]?.[n.q];
+    if (!tile) continue;
+    if (tile.terrain !== 'water') continue;
+    if (tile.harbor) continue;
+    const landNeighbors = hexNeighbors(n.q, n.r);
+    let hasOwnedLand = false;
+    for (const ln of landNeighbors) {
+      if (!inMap(ln.q, ln.r)) continue;
+      const landTile = G.map[ln.r]?.[ln.q];
+      if (landTile && landTile.terrain !== 'water' && landTile.owner === tribe.id) {
+        hasOwnedLand = true;
+        break;
+      }
+    }
+    if (hasOwnedLand) return true;
+  }
+  return false;
+}
+function buildHarbor(unit) {
+  if (!canBuildHarbor(unit)) return false;
+  const tribe = getTribe(unit.tribeId);
+  const neighbors = hexNeighbors(unit.q, unit.r);
+  for (const n of neighbors) {
+    if (!inMap(n.q, n.r)) continue;
+    const tile = G.map[n.r]?.[n.q];
+    if (!tile || tile.terrain !== 'water' || tile.harbor) continue;
+    const landNeighbors = hexNeighbors(n.q, n.r);
+    let hasOwnedLand = false;
+    for (const ln of landNeighbors) {
+      if (!inMap(ln.q, ln.r)) continue;
+      const landTile = G.map[ln.r]?.[ln.q];
+      if (landTile && landTile.terrain !== 'water' && landTile.owner === tribe.id) {
+        hasOwnedLand = true;
+        break;
+      }
+    }
+    if (hasOwnedLand) {
+      const harbor = { id: G.harborIdCounter++, q: n.q, r: n.r, owner: tribe.id, production: 0, project: null };
+      G.harbors.push(harbor);
+      tile.harbor = harbor;
+      unit.hasMoved = true;
+      updateVisibility();
+      return true;
+    }
+  }
+  return false;
+}
+function canBuildRaft(unit) {
+  const tribe = getTribe(unit.tribeId);
+  if (!tribe) return false;
+  if (!tribe.techs.includes('sailing')) return false;
+  if (unit.hasMoved) return false;
+  if (unit.isNaval) return false;
+  if (tribe.gold < 20) return false;
+  const tile = G.map[unit.r]?.[unit.q];
+  if (!tile || tile.terrain !== 'forest') return false;
+  const neighbors = hexNeighbors(unit.q, unit.r);
+  for (const n of neighbors) {
+    if (!inMap(n.q, n.r)) continue;
+    const waterTile = G.map[n.r]?.[n.q];
+    if (waterTile && waterTile.terrain === 'water' && !waterTile.unit) {
+      return true;
+    }
+  }
+  return false;
+}
+function buildRaft(unit) {
+  if (!canBuildRaft(unit)) return false;
+  const tribe = getTribe(unit.tribeId);
+  const neighbors = hexNeighbors(unit.q, unit.r);
+  for (const n of neighbors) {
+    if (!inMap(n.q, n.r)) continue;
+    const waterTile = G.map[n.r]?.[n.q];
+    if (waterTile && waterTile.terrain === 'water' && !waterTile.unit) {
+      const raft = spawnUnit(tribe.id, n.q, n.r, 'raft');
+      if (raft) {
+        tribe.gold -= 20;
+        unit.hasMoved = true;
+        updateVisibility();
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function processHarborProduction(harbor) {
+  if (!harbor.project) return;
+  const tribe = getTribe(harbor.owner);
+  if (!tribe) return;
+  let prodPerTurn = 2;
+  if (tribe.wonders && tribe.wonders.includes('great_zimbabwe')) prodPerTurn += 3;
+  harbor.production += prodPerTurn;
+  const project = harbor.project;
+  let cost = 0;
+  if (project.type === 'unit') {
+    const tribeData = TRIBES_DATA.find(t => t.id === tribe.id);
+    if (!tribeData) return;
+    const unitDef = tribeData.units[project.id];
+    if (!unitDef) return;
+    if (unitDef.techRequired && !tribe.techs.includes(unitDef.techRequired)) {
+      harbor.project = null; harbor.production = 0; return;
+    }
+    cost = unitDef.cost;
+  }
+  if (cost && harbor.production >= cost) {
+    if (project.type === 'unit') {
+      const unit = spawnUnit(tribe.id, harbor.q, harbor.r, project.id);
+      if (unit) {
+        harbor.project = null;
+        harbor.production = 0;
+        updateVisibility();
+      }
+    }
+  }
+}
+
+// ─── CITY CAPTURE ─────────────────────────────────────────
+function captureNeutralVillage(city, newOwnerId) {
+  if (city.owner === newOwnerId) return;
+  const oldOwner = city.owner;
+  city.owner = newOwnerId;
+  city.isNeutral = false;
+  city.name = getUniqueSettlementName();
+  const tribe = getTribe(newOwnerId);
+  if (tribe) {
+    tribe.cities.push(city);
+    if (oldOwner) {
+      const oldTribe = getTribe(oldOwner);
+      if (oldTribe) {
+        const idx = oldTribe.cities.indexOf(city);
+        if (idx > -1) oldTribe.cities.splice(idx, 1);
+      }
+    }
+  }
+  G.map[city.r][city.q].owner = newOwnerId;
+  const neighbors = hexNeighbors(city.q, city.r);
+  const shuffled = neighbors.sort(() => Math.random() - 0.5);
+  for (const n of shuffled) {
+    if (inMap(n.q, n.r) && !G.map[n.r][n.q].unit && isTilePassable(n.q, n.r, false)) {
+      spawnUnit(newOwnerId, n.q, n.r, 'foot');
+      break;
+    }
+  }
+  if (oldOwner) checkTribeEliminated(oldOwner);
+}
+function captureCity(city, newOwnerId) {
+  const oldOwnerId = city.owner;
+  if (oldOwnerId === newOwnerId) return;
+  if (city.isNeutral) {
+    captureNeutralVillage(city, newOwnerId);
+    return;
+  }
+  const oldTribe = G.tribes.find(t => t.id === oldOwnerId);
+  if (oldTribe) {
+    const idx = oldTribe.cities.indexOf(city);
+    if (idx > -1) oldTribe.cities.splice(idx, 1);
+  }
+  city.owner = newOwnerId;
+  const newTribe = G.tribes.find(t => t.id === newOwnerId);
+  if (newTribe) newTribe.cities.push(city);
+  G.map[city.r][city.q].owner = newOwnerId;
+  city.project = null;
+  city.progress = 0;
+  const neighbors = hexNeighbors(city.q, city.r);
+  for (const n of neighbors) {
+    if (inMap(n.q, n.r) && !G.map[n.r][n.q].unit && isTilePassable(n.q, n.r, false)) {
+      spawnUnit(newOwnerId, n.q, n.r, 'foot');
+      break;
+    }
+  }
+  checkTribeEliminated(oldOwnerId);
+}
+
+// ─── COMBAT ──────────────────────────────────────────────
+function resolveCombat(attacker, defender) {
+  let atk = attacker.atk + (attacker.boostedAtk || 0);
+  let def = defender.def + (defender.boostedDef || 0);
+  const atkPower = atk + (Math.random() * 2 - 1);
+  const defPower = def + (Math.random() * 2 - 1);
+  const atkRoll = atkPower + (Math.random() * 0.5);
+  const defRoll = defPower + (Math.random() * 0.5);
+  const damage = Math.max(1, Math.floor(atkRoll - defRoll * 0.6 + 2));
+  const defDamage = Math.max(0, Math.floor(defRoll - atkRoll * 0.4 + 1));
+  return { damage, defDamage };
+}
+function performAttack(attacker, defender) {
+  const result = resolveCombat(attacker, defender);
+  defender.hp -= result.damage; attacker.hp -= result.defDamage;
+  attacker.hasAttacked = true;
+  if (defender.hp <= 0) {
+    const tile = G.map[defender.r]?.[defender.q];
+    if (tile && tile.unit === defender) tile.unit = null;
+    const tribe = G.tribes.find(t => t.id === defender.tribeId);
+    if (tribe) { const idx = tribe.units.indexOf(defender); if (idx > -1) tribe.units.splice(idx, 1); }
+    const idx = G.units.indexOf(defender); if (idx > -1) G.units.splice(idx, 1);
+    checkTribeEliminated(defender.tribeId);
+    return { killed: true, damage: result.damage, defDamage: result.defDamage };
+  }
+  if (attacker.hp <= 0) {
+    const tile = G.map[attacker.r]?.[attacker.q];
+    if (tile && tile.unit === attacker) tile.unit = null;
+    const tribe = G.tribes.find(t => t.id === attacker.tribeId);
+    if (tribe) { const idx = tribe.units.indexOf(attacker); if (idx > -1) tribe.units.splice(idx, 1); }
+    const idx = G.units.indexOf(attacker); if (idx > -1) G.units.splice(idx, 1);
+    checkTribeEliminated(attacker.tribeId);
+    return { killed: true, damage: result.damage, defDamage: result.defDamage };
+  }
+  return { killed: false, damage: result.damage, defDamage: result.defDamage };
+}
+function checkTribeEliminated(tribeId) {
+  const tribe = G.tribes.find(t => t.id === tribeId);
+  if (!tribe || tribe.eliminated) return;
+  const hasUnits = G.units.some(u => u.tribeId === tribeId);
+  const hasCities = G.cities.some(c => c.owner === tribeId);
+  if (!hasUnits && !hasCities) {
+    tribe.alive = false;
+    tribe.active = false;
+    tribe.eliminated = true;
+    const idx = G.aliveTribes.indexOf(tribe);
+    if (idx > -1) G.aliveTribes.splice(idx, 1);
+    const msg = tribe.isPlayer ? 'Your kingdom has fallen!' : `${tribe.name} has been eliminated!`;
+    G.eliminationMessages.push(msg);
+    if (tribe.isPlayer) {
+      G.gameOver = true;
+      G.winner = 'AI';
+      showGameOverModal('💀 Defeat', 'Your kingdom has fallen…');
+    }
+    checkWinConditions();
+  }
+}
+function checkWinConditions() {
+  if (G.gameOver) return;
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player || !player.alive) { G.gameOver = true; G.winner = 'AI'; showGameOverModal('💀 Defeat', 'Your kingdom has fallen…'); return; }
+  const aliveOpponents = G.aliveTribes.filter(t => !t.isPlayer);
+  if (aliveOpponents.length === 0) { G.gameOver = true; G.winner = 'Player'; showGameOverModal('🏆 Victory!', 'All opposing kingdoms have been conquered!'); return; }
+  if (G.gameMode === 'sandsoftime' && G.turn >= G.maxTurns) {
+    G.gameOver = true;
+    const playerTiles = getTribeControlledTiles(player.id);
+    let oppTiles = 0;
+    for (const t of aliveOpponents) oppTiles += getTribeControlledTiles(t.id);
+    if (playerTiles > oppTiles) { G.winner = 'Player'; showGameOverModal('🏆 Victory!', 'You control more territory when time ran out!'); }
+    else { G.winner = 'AI'; showGameOverModal('💀 Defeat', 'The enemy controls more territory.'); }
+  }
+}
+function showGameOverModal(title, msg) {
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = `<p>${msg}</p>`;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button class="primary" onclick="closeModal();showScreen('menu-screen');">Main Menu</button>
+                       <button onclick="closeModal();restartGame();">Play Again</button>`;
+  overlay.classList.add('active');
+}
+
+// ─── CITY PRODUCTION ─────────────────────────────────────
+function setCityProject(city, projectType, id) {
+  city.project = { type: projectType, id: id };
+  city.progress = 0;
+}
+function processCityProduction(city) {
+  if (!city.project) return;
+  const tribe = G.tribes.find(t => t.id === city.owner);
+  if (!tribe) return;
+  let productionPerTurn = city.level * 2;
+  if (tribe.wonders && tribe.wonders.includes('great_zimbabwe')) productionPerTurn += 3;
+  city.progress += productionPerTurn;
+  const project = city.project;
+  let cost = 0;
+  if (project.type === 'unit') {
+    const tribeData = TRIBES_DATA.find(t => t.id === tribe.id);
+    if (!tribeData) return;
+    const unitDef = tribeData.units[project.id];
+    if (!unitDef) return;
+    if (unitDef.techRequired && !tribe.techs.includes(unitDef.techRequired)) {
+      city.project = null; city.progress = 0; return;
+    }
+    cost = unitDef.cost;
+  } else if (project.type === 'tech') {
+    if (!isTechAvailable(tribe, project.id)) { city.project = null; city.progress = 0; return; }
+    cost = getTechCost(project.id);
+  } else if (project.type === 'wonder') {
+    const wonder = WONDERS.find(w => w.id === project.id);
+    if (!wonder) return;
+    if (wonder.requires && !tribe.techs.includes(wonder.requires)) { city.project = null; city.progress = 0; return; }
+    cost = getWonderCost(project.id);
+  }
+  if (cost && city.progress >= cost) {
+    if (project.type === 'unit') {
+      const neighbors = hexNeighbors(city.q, city.r);
+      const shuffled = neighbors.sort(() => Math.random() - 0.5);
+      let placed = false;
+      for (const n of shuffled) {
+        if (inMap(n.q, n.r) && !G.map[n.r][n.q].unit && isTilePassable(n.q, n.r, false)) {
+          const unit = spawnUnit(tribe.id, n.q, n.r, project.id);
+          if (unit) { placed = true; break; }
+        }
+      }
+      if (!placed) { city.progress = 0; return; }
+    } else if (project.type === 'tech') {
+      if (!isTechResearched(tribe, project.id)) tribe.techs.push(project.id);
+    } else if (project.type === 'wonder') {
+      if (!isWonderBuilt(tribe, project.id)) tribe.wonders.push(project.id);
+    }
+    city.project = null;
+    city.progress = 0;
+  }
+}
+
+// ─── AI LOGIC ─────────────────────────────────────────────
+function runAI() {
+  if (G.gameOver || G.animating) return;
+  G.aiActive = true;
+  const aiTribes = G.aliveTribes.filter(t => !t.isPlayer);
+  if (aiTribes.length === 0) { G.aiActive = false; return; }
+
+  for (const tribe of aiTribes) {
+    const personality = getAIPersonality(tribe.id);
+    for (const city of tribe.cities) {
+      if (!city.project) {
+        const availUnits = getAvailableUnits(tribe);
+        const types = Object.keys(availUnits);
+        if (types.length > 0) {
+          let preferredTypes = [];
+          if (personality.tactic === 'rush' || personality.tactic === 'mobile' || personality.tactic === 'hit_and_run') {
+            preferredTypes = ['mounted', 'scout', 'foot'];
+          } else if (personality.tactic === 'defensive') {
+            preferredTypes = ['shield', 'ranged', 'foot'];
+          } else if (personality.tactic === 'archer' || personality.tactic === 'trade') {
+            preferredTypes = ['ranged', 'foot', 'shield'];
+          } else {
+            preferredTypes = ['foot', 'mounted', 'ranged'];
+          }
+          let chosen = null;
+          for (const pref of preferredTypes) {
+            if (availUnits[pref]) { chosen = pref; break; }
+          }
+          if (!chosen) chosen = Object.keys(availUnits)[0];
+          if (chosen) setCityProject(city, 'unit', chosen);
+        }
+      }
+      processCityProduction(city);
+      if (Math.random() < 0.03 + personality.expansion * 0.05 && tribe.gold > 100 && city.level < 4) {
+        const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+        if (tribe.gold >= cost) { tribe.gold -= cost; city.level++; }
+      }
+    }
+    for (const harbor of G.harbors) {
+      if (harbor.owner !== tribe.id) continue;
+      if (!harbor.project) {
+        const availUnits = getAvailableUnits(tribe);
+        let chosen = null;
+        if (availUnits.warship) chosen = 'warship';
+        else if (availUnits.galley) chosen = 'galley';
+        else if (availUnits.raft) chosen = 'raft';
+        if (chosen) harbor.project = { type: 'unit', id: chosen };
+      }
+      processHarborProduction(harbor);
+    }
+    if (tribe.techs.includes('sailing')) {
+      const units = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.isNaval && !u.hasMoved);
+      for (const u of units) {
+        if (Math.random() < 0.2 && canBuildHarbor(u)) {
+          buildHarbor(u);
+        }
+      }
+    }
+    if (tribe.techs.includes('sailing') && tribe.gold >= 20) {
+      const units = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.isNaval && !u.hasMoved);
+      for (const u of units) {
+        if (Math.random() < 0.15 && canBuildRaft(u)) {
+          buildRaft(u);
+        }
+      }
+    }
+    const militaryUnits = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved);
+    if (militaryUnits.length === 0) continue;
+
+    let enemyTargets = [];
+    const enemies = G.units.filter(u => u.tribeId !== tribe.id && u.active);
+    for (const e of enemies) {
+      let closestDist = Infinity;
+      let closestUnit = null;
+      for (const u of militaryUnits) {
+        const d = hexDistance({ q: u.q, r: u.r }, { q: e.q, r: e.r });
+        if (d < closestDist) { closestDist = d; closestUnit = u; }
+      }
+      enemyTargets.push({ enemy: e, dist: closestDist, closestUnit: closestUnit });
+    }
+    enemyTargets.sort((a, b) => a.dist - b.dist);
+
+    if (enemyTargets.length > 0 && enemyTargets[0].dist < 8) {
+      const target = enemyTargets[0];
+      const nearby = militaryUnits.filter(u => hexDistance({ q: u.q, r: u.r }, { q: target.enemy.q, r: target.enemy.r }) <= u.move + u.attackRange + 2);
+      for (const u of nearby) {
+        if (u.hasMoved) continue;
+        const dist = hexDistance({ q: u.q, r: u.r }, { q: target.enemy.q, r: target.enemy.r });
+        if (dist <= u.attackRange) {
+          performAttack(u, target.enemy);
+        } else if (dist <= u.move) {
+          const path = findPath(u.q, u.r, target.enemy.q, target.enemy.r, u, tribe.id);
+          if (path && path.length > 1) {
+            const step = path[1];
+            const tile = G.map[step.r]?.[step.q];
+            if (tile && !tile.unit && isTilePassable(step.q, step.r, u.isNaval)) {
+              G.map[u.r][u.q].unit = null;
+              u.q = step.q; u.r = step.r;
+              G.map[u.r][u.q].unit = u;
+              u.hasMoved = true;
+            }
+          }
+        } else {
+          const path = findPath(u.q, u.r, target.enemy.q, target.enemy.r, u, tribe.id);
+          if (path && path.length > 1) {
+            const step = path[Math.min(path.length - 1, u.move)];
+            const tile = G.map[step.r]?.[step.q];
+            if (tile && !tile.unit && isTilePassable(step.q, step.r, u.isNaval)) {
+              G.map[u.r][u.q].unit = null;
+              u.q = step.q; u.r = step.r;
+              G.map[u.r][u.q].unit = u;
+              u.hasMoved = true;
+            }
+          }
+        }
+      }
+      const remaining = militaryUnits.filter(u => !u.hasMoved);
+      for (const u of remaining) {
+        processAIAttack(u, tribe);
+      }
+    } else {
+      for (const u of militaryUnits) {
+        processAIAttack(u, tribe);
+      }
+    }
+  }
+  G.aiActive = false;
+  checkWinConditions();
+  if (!G.gameOver) finishTurn();
+}
+
+function processAIAttack(unit, tribe) {
+  if (unit.hasMoved || !unit.active) return;
+  let targets = [];
+  const enemies = G.units.filter(u => u.tribeId !== tribe.id && u.active);
+  for (const e of enemies) {
+    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
+    targets.push({ type: 'unit', target: e, dist: dist });
+  }
+  const neutralCities = G.cities.filter(c => c.isNeutral);
+  for (const c of neutralCities) {
+    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+    targets.push({ type: 'neutral', target: c, dist: dist });
+  }
+  const enemyCities = G.cities.filter(c => c.owner !== tribe.id && !c.isNeutral);
+  for (const c of enemyCities) {
+    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+    targets.push({ type: 'city', target: c, dist: dist });
+  }
+  targets.sort((a, b) => a.dist - b.dist);
+  if (targets.length > 0 && targets[0].dist <= unit.move + unit.attackRange) {
+    const t = targets[0];
+    if (t.type === 'unit') {
+      const enemy = t.target;
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: enemy.q, r: enemy.r });
+      if (dist <= unit.attackRange) {
+        performAttack(unit, enemy);
+      } else {
+        const path = findPath(unit.q, unit.r, enemy.q, enemy.r, unit, tribe.id);
+        if (path && path.length > 1) {
+          const step = path[1];
+          const tile = G.map[step.r]?.[step.q];
+          if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval)) {
+            G.map[unit.r][unit.q].unit = null;
+            unit.q = step.q; unit.r = step.r;
+            G.map[unit.r][unit.q].unit = unit;
+            unit.hasMoved = true;
+          }
+        }
+      }
+    } else if (t.type === 'neutral' || t.type === 'city') {
+      const city = t.target;
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: city.q, r: city.r });
+      if (dist === 1) {
+        const tile = G.map[city.r]?.[city.q];
+        if (tile && !tile.unit) {
+          if (city.isNeutral) captureNeutralVillage(city, tribe.id);
+          else captureCity(city, tribe.id);
+        }
+      } else {
+        const path = findPath(unit.q, unit.r, city.q, city.r, unit, tribe.id);
+        if (path && path.length > 1) {
+          const step = path[1];
+          const tile = G.map[step.r]?.[step.q];
+          if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval)) {
+            G.map[unit.r][unit.q].unit = null;
+            unit.q = step.q; unit.r = step.r;
+            G.map[unit.r][unit.q].unit = unit;
+            unit.hasMoved = true;
+          }
+        }
+      }
+    }
+  } else if (targets.length > 0) {
+    const t = targets[0];
+    const path = findPath(unit.q, unit.r, t.target.q || t.target.q, t.target.r || t.target.r, unit, tribe.id);
+    if (path && path.length > 1) {
+      const step = path[Math.min(path.length - 1, unit.move)];
+      const tile = G.map[step.r]?.[step.q];
+      if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval)) {
+        G.map[unit.r][unit.q].unit = null;
+        unit.q = step.q; unit.r = step.r;
+        G.map[unit.r][unit.q].unit = unit;
+        unit.hasMoved = true;
+      }
+    }
+  }
+}
+function findExpansionPath(unit, tribe) {
+  let best = null, bestDist = Infinity;
+  for (const city of tribe.cities) {
+    const neighbors = hexNeighbors(city.q, city.r);
+    for (const n of neighbors) {
+      if (!inMap(n.q, n.r)) continue;
+      const tile = G.map[n.r]?.[n.q];
+      if (!tile || tile.unit || tile.owner) continue;
+      if (!isTilePassable(n.q, n.r, unit.isNaval)) continue;
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: n.q, r: n.r });
+      if (dist < bestDist) { bestDist = dist; best = n; }
+    }
+  }
+  if (best) {
+    return findPath(unit.q, unit.r, best.q, best.r, unit, tribe.id);
+  }
+  return null;
+}
+
+// ─── PATHFINDING ─────────────────────────────────────────
+function findPath(startQ, startR, endQ, endR, unit, tribeId) {
+  const queue = [{ q: startQ, r: startR, path: [{ q: startQ, r: startR }] }];
+  const visited = new Set();
+  visited.add(hexKey(startQ, startR));
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (current.q === endQ && current.r === endR) return current.path;
+    const neighbors = hexNeighbors(current.q, current.r);
+    for (const n of neighbors) {
+      const key = hexKey(n.q, n.r);
+      if (visited.has(key)) continue;
+      if (!inMap(n.q, n.r)) continue;
+      const tile = G.map[n.r]?.[n.q];
+      if (!tile) continue;
+      if (tile.unit && tile.unit.tribeId !== tribeId) {
+        if (n.q === endQ && n.r === endR && hexDistance({ q: startQ, r: startR }, { q: endQ, r: endR }) <= unit.attackRange) {
+        } else {
+          continue;
+        }
+      }
+      if (!isTilePassable(n.q, n.r, unit.isNaval)) continue;
+      const cost = getUnitMoveCost(unit, n.q, n.r);
+      if (current.path.length + cost > unit.move + 1) continue;
+      visited.add(key);
+      const newPath = [...current.path, { q: n.q, r: n.r }];
+      queue.push({ q: n.q, r: n.r, path: newPath });
+    }
+  }
+  return null;
+}
+
+// ─── TURN MANAGEMENT ─────────────────────────────────────
+function endTurn() {
+  if (G.gameOver || G.animating || G.turnPhase === 'ai') return;
+  G.turnPhase = 'ai';
+  
+  // Clear boosted stats at end of turn
+  for (const u of G.units) {
+    clearBoostedStats(u);
+  }
+  
+  for (const u of G.units) { 
+    u.hasMoved = false; 
+    u.hasAttacked = false;
+    u.hasHealed = false;
+    u.hasUsedAbility = false;
+  }
+  for (const city of G.cities) processCityProduction(city);
+  for (const harbor of G.harbors) processHarborProduction(harbor);
+  const player = G.tribes.find(t => t.isPlayer);
+  if (player) {
+    let income = getTribeYield(player.id);
+    if (player.wonders && player.wonders.includes('pyramids')) income += 5;
+    if (player.techs && player.techs.includes('trade')) income += 2 * player.cities.length;
+    player.gold += income;
+    G.playerGold = player.gold;
+    let researchIncome = player.cities.length + 2;
+    if (player.wonders && player.wonders.includes('timbuktu')) researchIncome += 4;
+    if (player.techs && player.techs.includes('philosophy')) researchIncome = Math.floor(researchIncome * 1.2);
+    player.researchPoints += researchIncome;
+    // Medicine tech: heal all units a small amount
+    if (player.techs.includes('medicine')) {
+      for (const u of player.units) {
+        u.hp = Math.min(u.maxHp, u.hp + 3);
+      }
+    }
+  }
+  for (const t of G.aliveTribes) {
+    if (!t.isPlayer) {
+      t.gold += getTribeYield(t.id);
+      if (t.wonders && t.wonders.includes('pyramids')) t.gold += 5;
+      if (t.techs && t.techs.includes('trade')) t.gold += 2 * t.cities.length;
+      let researchIncome = t.cities.length + 1;
+      if (t.wonders && t.wonders.includes('timbuktu')) researchIncome += 4;
+      if (t.techs && t.techs.includes('philosophy')) researchIncome = Math.floor(researchIncome * 1.2);
+      t.researchPoints += researchIncome;
+      if (t.techs.includes('medicine')) {
+        for (const u of t.units) {
+          u.hp = Math.min(u.maxHp, u.hp + 3);
+        }
+      }
+    }
+  }
+  G.turn++;
+  updateVisibility();
+  updateUI();
+  G.animating = true;
+  setTimeout(() => {
+    G.animating = false;
+    runAI();
+    if (!G.gameOver) { G.turnPhase = 'player'; updateVisibility(); updateUI(); render(); }
+  }, 350);
+}
+function finishTurn() { G.turnPhase = 'player'; updateVisibility(); updateUI(); render(); }
+
+// ─── MOVEMENT & ATTACK HELPERS ──────────────────────────
+function tryMoveUnit() {
+  if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return false;
+  const hex = G.selectedHex;
+  if (!hex) return false;
+  const unit = G.selectedUnit;
+  if (unit.hasMoved) return false;
+  const tile = G.map[hex.r]?.[hex.q];
+  if (!tile || tile.unit) return false;
+  if (!isTilePassable(hex.q, hex.r, unit.isNaval)) return false;
+  const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
+  if (dist > unit.move) return false;
+  const path = findPath(unit.q, unit.r, hex.q, hex.r, unit, unit.tribeId);
+  if (!path || path.length > unit.move + 1) return false;
+  if (tile.city) {
+    if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
+    else if (tile.city.owner !== unit.tribeId) {
+      if (!tile.unit) { captureCity(tile.city, unit.tribeId); }
+    }
+  }
+  G.map[unit.r][unit.q].unit = null;
+  unit.q = hex.q; unit.r = hex.r;
+  G.map[unit.r][unit.q].unit = unit;
+  unit.hasMoved = true;
+  updateVisibility();
+  G.selectedUnit = unit;
+  updateUI(); render(); updateActionPopup();
+  return true;
+}
+function tryAttackUnit() {
+  if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return;
+  const hex = G.selectedHex;
+  if (!hex) return;
+  const unit = G.selectedUnit;
+  if (unit.hasAttacked) return;
+  const target = getUnitAt(hex.q, hex.r);
+  if (!target || target.tribeId === unit.tribeId) return;
+  const dist = hexDistance({ q: unit.q, r: unit.r }, { q: target.q, r: target.r });
+  if (dist > unit.attackRange) return;
+  performAttack(unit, target);
+  if (unit.hp <= 0) G.selectedUnit = null;
+  updateVisibility();
+  updateUI(); render(); updateActionPopup(); checkWinConditions();
+}
+
+function tryHealUnit() {
+  if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return;
+  const unit = G.selectedUnit;
+  if (unit.hasMoved || unit.hasAttacked || unit.hasHealed) return;
+  const healed = healUnit(unit);
+  if (healed) {
+    updateVisibility();
+    updateUI(); render(); updateActionPopup();
+  }
+}
+
+function tryInvigorate() {
+  if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return;
+  const unit = G.selectedUnit;
+  if (!unit.isGeneral) return;
+  if (unit.hasMoved || unit.hasAttacked || unit.hasUsedAbility) return;
+  const result = invigorateTroops(unit);
+  if (result) {
+    updateVisibility();
+    updateUI(); render(); updateActionPopup();
+    const msg = `✨ Invigorated! ${result.healedCount} units healed, ${result.boostedCount} units boosted!`;
+    G.eliminationMessages.push(msg);
+    setTimeout(() => { 
+      G.eliminationMessages = G.eliminationMessages.filter(m => m !== msg);
+      render(); 
+    }, 2000);
+  }
+}
+
+// ─── HARBOR MANAGEMENT UI ──────────────────────────────
+function manageHarbor() {
+  if (G.gameOver || G.turnPhase !== 'player' || !G.selectedHarbor) return;
+  const harbor = G.selectedHarbor;
+  const player = getTribe(G.playerTribeId);
+  if (!player || harbor.owner !== player.id) return;
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').textContent = '⛵ Manage Harbor';
+  let html = `<div style="margin-bottom:8px;font-size:0.9rem;color:#b8957a;">
+    Production: ${harbor.production} / ${harbor.project ? (TRIBES_DATA.find(t=>t.id===player.id).units[harbor.project.id].cost || 0) : '—'}
+    ${harbor.project ? ' - Building: ' + harbor.project.id : ''}
+  </div>`;
+  const availUnits = getAvailableUnits(player);
+  const navalTypes = Object.keys(availUnits).filter(t => availUnits[t].isNaval);
+  if (navalTypes.length > 0) {
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">`;
+    for (const type of navalTypes) {
+      const def = availUnits[type];
+      html += `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                onclick="setHarborProjectAndClose('${type}','unit')">${def.name} (${def.cost} prod)</button>`;
+    }
+    html += `</div>`;
+  } else {
+    html += `<p style="color:#6b5a4a;">Research Sailing and Navigation to build ships.</p>`;
+  }
+  document.getElementById('modal-body').innerHTML = html;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button onclick="closeModal()">Close</button>`;
+  overlay.classList.add('active');
+  window._harbor = harbor;
+}
+function setHarborProjectAndClose(id, type) {
+  const harbor = window._harbor;
+  if (!harbor) return;
+  harbor.project = { type, id };
+  harbor.production = 0;
+  closeModal();
+  updateUI();
+  render();
+}
+
+// ─── CITY PRODUCTION UI ──────────────────────────────────
+function openCityProduction() {
+  if (G.gameOver || G.turnPhase !== 'player') return;
+  if (!G.selectedCity) return;
+  const city = G.selectedCity;
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player || city.owner !== player.id) return;
+
+  const overlay = document.getElementById('modal-overlay');
+  const levelNames = ['Village', 'Town', 'City', 'Capital'];
+  document.getElementById('modal-title').textContent = '🏗️ Manage ' + levelNames[Math.min(city.level - 1, 3)] + ': ' + city.name;
+
+  let html = `<div style="margin-bottom:8px;font-size:0.9rem;color:#b8957a;">
+    Production: ${city.progress} / ${city.project ? (city.project.type === 'unit' ? TRIBES_DATA.find(t=>t.id===player.id).units[city.project.id].cost : city.project.type === 'tech' ? getTechCost(city.project.id) : getWonderCost(city.project.id)) : '—'}
+    ${city.project ? ' - Building: ' + city.project.id : ''}
+  </div>`;
+
+  html += `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+    <button class="gui-action-btn primary" onclick="showProductionTab('units')">Units</button>
+    <button class="gui-action-btn primary" onclick="showProductionTab('techs')">Research</button>
+    <button class="gui-action-btn primary" onclick="showProductionTab('wonders')">Wonders</button>
+  </div>`;
+
+  html += `<div id="production-tab-content" style="max-height:300px;overflow-y:auto;">`;
+  html += `<p style="color:#6b5a4a;">Select a tab above.</p>`;
+  html += `</div>`;
+
+  const upgradeCost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+  const reducedCost = player.techs.includes('architecture') ? Math.floor(upgradeCost * 0.8) : upgradeCost;
+  if (city.level < 4) {
+    html += `<div style="margin-top:12px;text-align:center;">
+      <button class="gui-action-btn primary" onclick="upgradeCity(window._prodCity)">⬆ Upgrade to ${levelNames[Math.min(city.level, 3)]} (${reducedCost} gold)</button>
+    </div>`;
+  } else {
+    html += `<div style="margin-top:12px;text-align:center;color:#6b5a4a;">Maximum level reached.</div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML = html;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button onclick="closeModal()">Close</button>`;
+  overlay.classList.add('active');
+
+  window._prodCity = city;
+  window._prodPlayer = player;
+}
+function showProductionTab(tab) {
+  const city = window._prodCity;
+  const player = window._prodPlayer;
+  if (!city || !player) return;
+  const container = document.getElementById('production-tab-content');
+  let html = '';
+
+  if (tab === 'units') {
+    const availUnits = getAvailableUnits(player);
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
+    for (const [type, def] of Object.entries(availUnits)) {
+      if (type === 'general' || def.isNaval) continue;
+      html += `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                onclick="setCityProjectAndClose('${type}','unit')">${def.name} (${def.cost} prod)</button>`;
+    }
+    html += `</div>`;
+  } else if (tab === 'techs') {
+    const availTechs = getAvailableTechs(player);
+    if (availTechs.length === 0) {
+      html = `<p style="color:#6b5a4a;">All technologies researched!</p>`;
+    } else {
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
+      for (const tech of availTechs) {
+        html += `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                  onclick="setCityProjectAndClose('${tech.id}','tech')">${tech.name} (${tech.cost} prod)<br><span style="font-size:0.6rem;color:#6b5a4a;">${tech.desc}</span></button>`;
+      }
+      html += `</div>`;
+    }
+  } else if (tab === 'wonders') {
+    const availWonders = getAvailableWonders(player);
+    if (availWonders.length === 0) {
+      html = `<p style="color:#6b5a4a;">All wonders built!</p>`;
+    } else {
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
+      for (const w of availWonders) {
+        html += `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                  onclick="setCityProjectAndClose('${w.id}','wonder')">${w.name} (${w.cost} prod)<br><span style="font-size:0.6rem;color:#6b5a4a;">${w.desc}</span></button>`;
+      }
+      html += `</div>`;
+    }
+  }
+  container.innerHTML = html;
+}
+function setCityProjectAndClose(id, type) {
+  const city = window._prodCity;
+  if (!city) return;
+  setCityProject(city, type, id);
+  closeModal();
+  updateUI();
+  render();
+}
+function upgradeCity(city) {
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player || city.owner !== player.id) return;
+  let cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+  if (player.techs.includes('architecture')) cost = Math.floor(cost * 0.8);
+  if (player.gold < cost) { alert('Not enough gold!'); return; }
+  if (city.level >= 4) { alert('City is already max level!'); return; }
+  player.gold -= cost;
+  city.level++;
+  updateUI();
+  render();
+  closeModal();
+  openCityProduction();
+}
+
+// ─── POPUP ACTION MENU ──────────────────────────────────
+const popup = document.getElementById('action-popup');
+
+function showActionPopup(x, y) {
+  const rect = canvas.getBoundingClientRect();
+  const popupRect = popup.getBoundingClientRect();
+  let left = x - popupRect.width / 2;
+  let top = y - popupRect.height - 10;
+  if (left < 10) left = 10;
+  if (left + popupRect.width > rect.width - 10) left = rect.width - popupRect.width - 10;
+  if (top < 10) top = 10;
+  if (top + popupRect.height > rect.height - 10) top = rect.height - popupRect.height - 10;
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  popup.style.display = 'flex';
+}
+function hideActionPopup() {
+  popup.style.display = 'none';
+}
+function updateActionPopup() {
+  const unit = G.selectedUnit;
+  const player = G.tribes.find(t => t.isPlayer);
+  
+  // If no unit selected but we have a city selected, show city actions
+  if (!unit && G.selectedCity) {
+    const city = G.selectedCity;
+    const hasCity = city && city.owner === player.id;
+    // Show Manage City and Upgrade City
+    const manageBtn = popup.querySelector('[data-action="manage-city"]');
+    const upgradeBtn = popup.querySelector('[data-action="upgrade-city"]');
+    manageBtn.style.display = 'block';
+    upgradeBtn.style.display = 'block';
+    if (hasCity) {
+      const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+      const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
+      upgradeBtn.disabled = city.level >= 4 || player.gold < reduced;
+    }
+    // Hide other buttons when no unit
+    popup.querySelectorAll('button').forEach(b => {
+      if (b.dataset.action !== 'manage-city' && b.dataset.action !== 'upgrade-city') {
+        b.style.display = 'none';
+      }
+    });
+    return;
+  }
+  
+  if (!unit || !player || unit.tribeId !== player.id) {
+    hideActionPopup();
+    return;
+  }
+  
+  // Show all buttons first (reset)
+  popup.querySelectorAll('button').forEach(b => {
+    b.style.display = 'block';
+  });
+  
+  const moveBtn = popup.querySelector('[data-action="move"]');
+  const attackBtn = popup.querySelector('[data-action="attack"]');
+  const skipBtn = popup.querySelector('[data-action="skip"]');
+  const healBtn = popup.querySelector('[data-action="heal"]');
+  const invigorateBtn = popup.querySelector('[data-action="invigorate"]');
+  const buildHarborBtn = popup.querySelector('[data-action="build-harbor"]');
+  const buildRaftBtn = popup.querySelector('[data-action="build-raft"]');
+  const manageCityBtn = popup.querySelector('[data-action="manage-city"]');
+  const upgradeCityBtn = popup.querySelector('[data-action="upgrade-city"]');
+
+  const canAct = !unit.hasMoved && !unit.hasAttacked && !unit.hasHealed && !unit.hasUsedAbility;
+  
+  moveBtn.disabled = unit.hasMoved || G.turnPhase !== 'player';
+  attackBtn.disabled = unit.hasAttacked || G.turnPhase !== 'player' || !canAct;
+  skipBtn.disabled = unit.hasMoved || G.turnPhase !== 'player';
+  
+  // Heal: available if unit hasn't acted and needs healing
+  healBtn.disabled = unit.hasMoved || unit.hasAttacked || unit.hasHealed || unit.hasUsedAbility || 
+                     unit.hp >= unit.maxHp || G.turnPhase !== 'player';
+  healBtn.style.display = 'block';
+  
+  // Invigorate: only for generals
+  if (unit.isGeneral) {
+    invigorateBtn.style.display = 'block';
+    invigorateBtn.disabled = unit.hasMoved || unit.hasAttacked || unit.hasHealed || unit.hasUsedAbility || 
+                             G.turnPhase !== 'player';
+  } else {
+    invigorateBtn.style.display = 'none';
+  }
+
+  buildHarborBtn.disabled = !canBuildHarbor(unit);
+  buildRaftBtn.disabled = !canBuildRaft(unit);
+
+  const tile = G.map[unit.r]?.[unit.q];
+  const city = tile && tile.city ? tile.city : null;
+  const hasCity = city && city.owner === player.id;
+  
+  // Manage City should be available even if unit has moved
+  if (hasCity) {
+    manageCityBtn.style.display = 'block';
+    manageCityBtn.disabled = false;
+    const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+    const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
+    upgradeCityBtn.style.display = 'block';
+    upgradeCityBtn.disabled = city.level >= 4 || player.gold < reduced;
+    // Pre-select city for management
+    G.selectedCity = city;
+  } else {
+    manageCityBtn.style.display = 'none';
+    upgradeCityBtn.style.display = 'none';
+  }
+
+  if (unit && !unit.isNaval) {
+    buildHarborBtn.style.display = 'block';
+    buildRaftBtn.style.display = 'block';
+  } else {
+    buildHarborBtn.style.display = 'none';
+    buildRaftBtn.style.display = 'none';
+  }
+}
+
+popup.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const action = btn.dataset.action;
+    if (action === 'move') {
+      if (G.selectedHex) {
+        tryMoveUnit();
+      }
+    } else if (action === 'attack') {
+      if (G.selectedHex) {
+        tryAttackUnit();
+      }
+    } else if (action === 'skip') {
+      if (G.selectedUnit) {
+        G.selectedUnit.hasMoved = true;
+        G.selectedUnit = null;
+        updateUI(); render(); hideActionPopup();
+      }
+    } else if (action === 'heal') {
+      tryHealUnit();
+    } else if (action === 'invigorate') {
+      tryInvigorate();
+    } else if (action === 'build-harbor') {
+      if (G.selectedUnit) {
+        if (buildHarbor(G.selectedUnit)) {
+          updateVisibility();
+          updateUI(); render(); hideActionPopup();
+        }
+      }
+    } else if (action === 'build-raft') {
+      if (G.selectedUnit) {
+        if (buildRaft(G.selectedUnit)) {
+          updateVisibility();
+          updateUI(); render(); hideActionPopup();
+        }
+      }
+    } else if (action === 'manage-city') {
+      if (G.selectedCity) {
+        openCityProduction();
+      } else if (G.selectedHarbor) {
+        manageHarbor();
+      } else if (G.selectedUnit) {
+        const tile = G.map[G.selectedUnit.r]?.[G.selectedUnit.q];
+        if (tile && tile.city && tile.city.owner === G.selectedUnit.tribeId) {
+          G.selectedCity = tile.city;
+          openCityProduction();
+        }
+      }
+    } else if (action === 'upgrade-city') {
+      if (G.selectedCity) {
+        upgradeCity(G.selectedCity);
+      } else if (G.selectedUnit) {
+        const tile = G.map[G.selectedUnit.r]?.[G.selectedUnit.q];
+        if (tile && tile.city && tile.city.owner === G.selectedUnit.tribeId) {
+          G.selectedCity = tile.city;
+          upgradeCity(G.selectedCity);
+        }
+      }
+    }
+  });
+});
+
+// ─── RENDER ──────────────────────────────────────────────────
+function render() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width; canvas.height = rect.height;
+  const w = canvas.width, h = canvas.height;
+
+  const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w*0.75);
+  grad.addColorStop(0, '#1B2A6B');
+  grad.addColorStop(1, '#0a0f2a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  const size = G.hexSize;
+  if (!camera.centered) centerCamera();
+
+  ctx.save();
+  ctx.translate(camera.x, camera.y);
+  ctx.scale(camera.zoom, camera.zoom);
+
+  const player = G.tribes.find(t => t.isPlayer);
+  
+  // Compute influence map for territory colours (per tile)
+  const influenceMap = computeInfluenceMap();
+
+  let reachableTiles = [];
+  let attackableTiles = [];
+  if (G.selectedUnit && G.selectedUnit.tribeId === player.id && !G.selectedUnit.hasMoved) {
+    const unit = G.selectedUnit;
+    const queue = [{ q: unit.q, r: unit.r, dist: 0 }];
+    const visited = new Set();
+    visited.add(hexKey(unit.q, unit.r));
+    while (queue.length > 0) {
+      const cur = queue.shift();
+      if (cur.dist > 0) {
+        const tile = G.map[cur.r]?.[cur.q];
+        if (tile && !tile.unit && isTilePassable(cur.q, cur.r, unit.isNaval)) {
+          reachableTiles.push({ q: cur.q, r: cur.r });
+        }
+      }
+      if (cur.dist >= unit.move) continue;
+      const neighbors = hexNeighbors(cur.q, cur.r);
+      for (const n of neighbors) {
+        if (!inMap(n.q, n.r)) continue;
+        const key = hexKey(n.q, n.r);
+        if (visited.has(key)) continue;
+        const tile = G.map[n.r]?.[n.q];
+        if (!tile) continue;
+        if (tile.unit && tile.unit.tribeId !== unit.tribeId) continue;
+        if (!isTilePassable(n.q, n.r, unit.isNaval)) continue;
+        const cost = getUnitMoveCost(unit, n.q, n.r);
+        if (cur.dist + cost > unit.move) continue;
+        visited.add(key);
+        queue.push({ q: n.q, r: n.r, dist: cur.dist + cost });
+      }
+    }
+    for (const enemy of G.units) {
+      if (enemy.tribeId === unit.tribeId) continue;
+      if (!enemy.active) continue;
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: enemy.q, r: enemy.r });
+      if (dist <= unit.attackRange && dist > 0) {
+        attackableTiles.push({ q: enemy.q, r: enemy.r });
+      }
+    }
+  }
+
+  for (let r = 0; r < G.mapHeight; r++) {
+    for (let q = 0; q < G.mapWidth; q++) {
+      const tile = G.map[r]?.[q];
+      if (!tile) continue;
+      const pos = hexToPixel(q, r, size);
+      const cx = pos.x, cy = pos.y;
+
+      const isVisible = tile.visible;
+      const isExplored = tile.explored;
+
+      const pts = hexPolygonShortened(cx, cy, size * 0.98);
+      const hexPath = new Path2D();
+      hexPath.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) hexPath.lineTo(pts[i].x, pts[i].y);
+      hexPath.closePath();
+
+      if (!isExplored) {
+        ctx.fillStyle = '#0a0f1a';
+        ctx.fill(hexPath);
+        ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+        ctx.lineWidth = 1.0 / camera.zoom;
+        ctx.stroke(hexPath);
+        continue;
+      }
+
+      // ─── Draw influence overlay (if any) ───
+      const key = hexKey(q, r);
+      const influenceColor = influenceMap[key];
+      // Only draw influence if the tile is visible (so player sees explored enemy territory)
+      // Actually, we want to show influence on explored tiles, not only visible.
+      // But we should hide enemy territory if not visible. For now, we'll draw influence if explored.
+      // However, to be fair, we should not reveal enemy territory beyond what is visible.
+      // Let's only draw influence if the tile is visible (or if it's owned by the player).
+      // But the player should see their own influence even if not visible? Their cities are always visible to them.
+      // We'll draw influence if the tile is visible, or if the tile is owned by the player (so they see their own territory always)
+      const tileOwner = tile.owner;
+      const isPlayerOwned = tileOwner === player.id;
+      if (influenceColor && (isVisible || isPlayerOwned)) {
+        // Draw semi-transparent fill
+        ctx.save();
+        ctx.clip(hexPath);
+        ctx.fillStyle = influenceColor + '55'; // 0.33 alpha (about 33%)
+        ctx.fillRect(pts[0].x, pts[0].y, pts[2].x - pts[0].x, pts[3].y - pts[0].y);
+        ctx.restore();
+      }
+
+      const hasCity = tile.city !== null && tile.city !== undefined;
+      const city = tile.city;
+      const hasHarbor = tile.harbor !== null && tile.harbor !== undefined;
+      const harbor = tile.harbor;
+
+      // ─── Terrain background ───
+      // If we have influence overlay, we still need terrain drawn underneath, so draw terrain first
+      // We'll draw terrain always, then overlay influence on top.
+      // Actually, we draw terrain below influence, so we need to draw terrain before the influence overlay.
+      // So we should reorder: draw terrain, then influence overlay, then city/unit.
+      // But we already drew influence above, but terrain is not yet drawn. So we need to draw terrain first.
+      // Let's restructure: draw terrain, then influence, then city/unit.
+      // We'll move influence after terrain.
+      // We'll keep the influence code but move it after terrain.
+
+      // For now, we'll just reorder: we'll draw terrain here, then later we'll draw influence (but we've already drawn it above).
+      // Let's just remove the influence drawing here and move it to after terrain.
+      // To avoid breaking, we'll keep the influence drawing at the end of the hex loop.
+      // But we need terrain first.
+      // We'll store the influence color and draw it after terrain.
+
+      // ─── Draw terrain ───
+      if (isVisible && !hasCity && !hasHarbor) {
+        let terrainKey = 'hex_plains';
+        if (tile.terrain === 'forest') terrainKey = 'hex_forest';
+        else if (tile.terrain === 'mountain') terrainKey = 'hex_mountain';
+        else if (tile.terrain === 'water') terrainKey = 'hex_water';
+        else if (tile.terrain === 'hill') terrainKey = 'hex_hill';
+        const img = images[terrainKey];
+        if (img && img.complete && img.naturalWidth > 0) {
+          ctx.save();
+          ctx.clip(hexPath);
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          for (const p of pts) {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+          }
+          ctx.drawImage(img, minX, minY, maxX - minX, maxY - minY);
+          ctx.restore();
+        } else {
+          let color = '#2a1a10';
+          if (isVisible) {
+            switch (tile.terrain) {
+              case 'plains': color = '#4a6a3a'; break;
+              case 'forest': color = '#2d5a2a'; break;
+              case 'mountain': color = '#6a5a4a'; break;
+              case 'water': color = '#1a3a5a'; break;
+              case 'hill': color = '#5a6a4a'; break;
+            }
+          } else {
+            color = '#1a2a1a';
+          }
+          ctx.fillStyle = color;
+          ctx.fill(hexPath);
+        }
+        if (tile.isRiver) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * 0.3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(64,164,223,0.25)';
+          ctx.fill();
+          ctx.restore();
+        }
+      } else if (isVisible && (hasCity || hasHarbor)) {
+        let bgColor = '#3a2a1a';
+        if (hasCity && city && !city.isNeutral && city.owner) {
+          const tribe = G.tribes.find(t => t.id === city.owner);
+          if (tribe) bgColor = tribe.color;
+        } else if (hasHarbor && harbor.owner) {
+          const tribe = G.tribes.find(t => t.id === harbor.owner);
+          if (tribe) bgColor = tribe.secondary || tribe.color;
+        }
+        ctx.fillStyle = bgColor;
+        ctx.fill(hexPath);
+        if (tile.isRiver) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * 0.3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(64,164,223,0.2)';
+          ctx.fill();
+          ctx.restore();
+        }
+      } else {
+        let color = '#1a2a1a';
+        ctx.fillStyle = color;
+        ctx.fill(hexPath);
+      }
+
+      // ─── Now draw influence overlay (if any) ───
+      // But we already drew it earlier. We'll remove the earlier influence code and draw it here.
+      // We'll keep the earlier influence code but comment it out, and draw here.
+      // We'll compute influenceColor again.
+      // Actually, we already have influenceMap computed, so we can just use it.
+      // We'll draw it now.
+      if (influenceColor && (isVisible || isPlayerOwned)) {
+        ctx.save();
+        ctx.globalAlpha = 0.33;
+        ctx.fillStyle = influenceColor;
+        ctx.fill(hexPath);
+        ctx.restore();
+      }
+
+      // ─── Border ───
+      let borderColor = '#A65A2A';
+      let borderWidth = 1.0 / camera.zoom;
+      if (isVisible && tile.owner) {
+        const tribe = G.tribes.find(t => t.id === tile.owner);
+        if (tribe) {
+          borderColor = tribe.color;
+          borderWidth = 3.5 / camera.zoom;
+        }
+      }
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = borderWidth;
+      ctx.stroke(hexPath);
+
+      // ─── Reachable/attackable highlights ───
+      if (isVisible) {
+        const isReachable = reachableTiles.some(t => t.q === q && t.r === r);
+        const isAttackable = attackableTiles.some(t => t.q === q && t.r === r);
+        if (isReachable || isAttackable) {
+          ctx.save();
+          ctx.clip(hexPath);
+          ctx.fillStyle = isAttackable ? 'rgba(255,0,0,0.3)' : 'rgba(0,255,0,0.25)';
+          ctx.fillRect(pts[0].x, pts[0].y, pts[2].x - pts[0].x, pts[3].y - pts[0].y);
+          ctx.restore();
+          ctx.strokeStyle = isAttackable ? '#ff0000' : '#00ff00';
+          ctx.lineWidth = 2.0 / camera.zoom;
+          ctx.stroke(hexPath);
+        }
+      }
+
+      // ─── City influence ring ───
+      if (isVisible && hasCity) {
+        const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
+        if (radius > 0) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * (0.85 + radius * 0.3), 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+          ctx.lineWidth = 1.5 / camera.zoom;
+          ctx.setLineDash([3 / camera.zoom, 5 / camera.zoom]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      // ─── Draw elements on visible tiles ───
+      if (isVisible) {
+        // ─── Resource icon ───
+        if (tile.resource && !hasCity && !hasHarbor) {
+          const resKey = RESOURCE_MAP[tile.resource];
+          const resImg = resKey ? images[resKey] : null;
+          if (resImg && resImg.complete && resImg.naturalWidth > 0) {
+            const rSize = size * 0.4;
+            ctx.drawImage(resImg, cx - rSize/2, cy + size*0.2 - rSize/2, rSize, rSize);
+          } else {
+            ctx.save();
+            ctx.font = `${size * 0.35}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.shadowColor = 'rgba(0,0,0,0.7)';
+            ctx.shadowBlur = 4;
+            ctx.fillStyle = '#f0e6d3';
+            ctx.fillText(tile.resource, cx, cy + size * 0.42);
+            ctx.restore();
+          }
+        }
+
+        // ─── City ───
+        if (hasCity) {
+          let settlementKey = 'settlement_village';
+          if (city.level === 2) settlementKey = 'settlement_town';
+          else if (city.level === 3) settlementKey = 'settlement_city';
+          else if (city.level >= 4) settlementKey = 'settlement_capital';
+          const sImg = images[settlementKey];
+          const cs = size * 1.3;
+          if (sImg && sImg.complete && sImg.naturalWidth > 0) {
+            ctx.drawImage(sImg, cx - cs/2, cy - cs/2 - size*0.05, cs, cs);
+          } else {
+            ctx.font = `${size * 0.8}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const icon = city.isNeutral ? '🏚️' : city.level === 1 ? '🏘️' : city.level === 2 ? '🏙️' : city.level >= 3 ? '🏛️' : '🏙️';
+            ctx.fillStyle = '#f0e6d3';
+            ctx.fillText(icon, cx, cy - size * 0.05);
+          }
+          // City name label
+          if (city.name) {
+            ctx.save();
+            ctx.font = `${size * 0.2}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillStyle = 'rgba(240,230,211,0.6)';
+            ctx.fillText(city.name, cx, cy + size * 0.55);
+            ctx.restore();
+          }
+          if (!city.isNeutral && city.owner) {
+            const tribe = G.tribes.find(t => t.id === city.owner);
+            if (tribe) {
+              const iconSize = size * 0.3;
+              const ix = cx - iconSize/2;
+              const iy = cy + size * 0.6 - iconSize/2;
+              const iconKey = `tribe_${tribe.id}`;
+              const iconImg = images[iconKey];
+              if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(ix + iconSize/2, iy + iconSize/2, iconSize/2 + 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fill();
+                ctx.drawImage(iconImg, ix, iy, iconSize, iconSize);
+                ctx.restore();
+              } else {
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = `${iconSize * 0.9}px sans-serif`;
+                ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                ctx.shadowBlur = 6;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(tribe.icon, ix + iconSize/2, iy + iconSize/2);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+                ctx.lineWidth = 2.5;
+                ctx.strokeText(tribe.icon, ix + iconSize/2, iy + iconSize/2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(tribe.icon, ix + iconSize/2, iy + iconSize/2);
+                ctx.restore();
+              }
+            }
+          }
+          if (city.project) {
+            let cost = 0;
+            if (city.project.type === 'unit') {
+              const tribeData = TRIBES_DATA.find(t => t.id === city.owner);
+              if (tribeData) {
+                const unitDef = tribeData.units[city.project.id];
+                if (unitDef) cost = unitDef.cost;
+              }
+            } else if (city.project.type === 'tech') cost = getTechCost(city.project.id);
+            else if (city.project.type === 'wonder') cost = getWonderCost(city.project.id);
+            if (cost > 0) {
+              const pct = Math.min(1, city.progress / cost);
+              ctx.beginPath();
+              ctx.arc(cx, cy + size * 0.4, size * 0.2, -Math.PI/2, -Math.PI/2 + pct * 2 * Math.PI);
+              ctx.strokeStyle = '#ffd700';
+              ctx.lineWidth = 3.0 / camera.zoom;
+              ctx.stroke();
+            }
+          }
+          ctx.beginPath();
+          ctx.arc(cx, cy + size * 0.4, size * 0.2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,215,0,0.12)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+          ctx.lineWidth = 1.5 / camera.zoom;
+          ctx.stroke();
+        }
+
+        // ─── Harbor ───
+        if (hasHarbor) {
+          const hSize = size * 0.5;
+          ctx.save();
+          ctx.font = `${hSize}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 15 / camera.zoom;
+          ctx.fillStyle = '#f0e6d3';
+          ctx.fillText('⚓', cx, cy - size * 0.05);
+          ctx.shadowBlur = 0;
+          ctx.restore();
+          if (harbor.project) {
+            const tribeData = TRIBES_DATA.find(t => t.id === harbor.owner);
+            let cost = 0;
+            if (tribeData) {
+              const unitDef = tribeData.units[harbor.project.id];
+              if (unitDef) cost = unitDef.cost;
+            }
+            if (cost > 0) {
+              const pct = Math.min(1, harbor.production / cost);
+              ctx.beginPath();
+              ctx.arc(cx, cy + size * 0.4, size * 0.18, -Math.PI/2, -Math.PI/2 + pct * 2 * Math.PI);
+              ctx.strokeStyle = '#00bcd4';
+              ctx.lineWidth = 2.5 / camera.zoom;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // ─── Unit ───
+        if (tile.unit) {
+          const unit = tile.unit;
+          const tribe = G.tribes.find(t => t.id === unit.tribeId);
+          const unitKey = tribe ? `${tribe.id}_${unit.type}` : 'unit_foot';
+          const img = images[unitKey];
+          const us = size * 0.7;
+
+          // Coloured circle (tribe primary, 50% more transparent = alpha 0.35)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx, cy - size * 0.05, us * 0.6, 0, Math.PI * 2);
+          const tribeColor = tribe ? tribe.color : '#ffffff';
+          ctx.fillStyle = tribeColor + '59';
+          ctx.fill();
+          ctx.restore();
+          
+          // Boosted indicator glow
+          if (unit.boosted) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy - size * 0.05, us * 0.75, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(155,89,182,0.6)';
+            ctx.lineWidth = 3 / camera.zoom;
+            ctx.setLineDash([3 / camera.zoom, 4 / camera.zoom]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+          }
+
+          // Unit sprite
+          if (unit.isNaval) {
+            ctx.save();
+            ctx.shadowColor = 'rgba(0,200,255,0.6)';
+            ctx.shadowBlur = 30 / camera.zoom;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+          } else {
+            ctx.save();
+            ctx.shadowColor = 'rgba(255,220,100,0.7)';
+            ctx.shadowBlur = 45 / camera.zoom;
+          }
+
+          if (img && img.complete && img.naturalWidth > 0) {
+            ctx.drawImage(img, cx - us/2, cy - us/2 - size*0.05, us, us);
+          } else {
+            const tData = TRIBES_DATA.find(t => t.id === unit.tribeId);
+            const icon = tData ? tData.icon : '⚔️';
+            ctx.font = `${size * 0.7}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#f0e6d3';
+            ctx.fillText(icon, cx, cy - size * 0.05);
+          }
+          ctx.restore();
+
+          // HP bar
+          const hpPct = unit.hp / unit.maxHp;
+          const barW = size * 0.5, barH = 5 / camera.zoom;
+          const bx = cx - barW/2, by = cy + size * 0.42;
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          ctx.fillRect(bx, by, barW, barH);
+          ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : hpPct > 0.25 ? '#ff9800' : '#e53935';
+          ctx.fillRect(bx, by, barW * hpPct, barH);
+
+          if (G.selectedUnit && G.selectedUnit.id === unit.id) {
+            ctx.beginPath();
+            ctx.arc(cx, cy, size * 0.6, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 2.5 / camera.zoom;
+            ctx.setLineDash([4 / camera.zoom, 6 / camera.zoom]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+
+        // Selection highlights
+        if (G.selectedHex && G.selectedHex.q === q && G.selectedHex.r === r) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * 0.45, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(255,215,0,0.2)';
+          ctx.lineWidth = 2 / camera.zoom;
+          ctx.stroke();
+        }
+
+        if (G.selectedCity && G.selectedCity.q === q && G.selectedCity.r === r) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0,255,200,0.4)';
+          ctx.lineWidth = 2 / camera.zoom;
+          ctx.stroke();
+        }
+        if (G.selectedHarbor && G.selectedHarbor.q === q && G.selectedHarbor.r === r) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0,200,255,0.5)';
+          ctx.lineWidth = 2 / camera.zoom;
+          ctx.stroke();
+        }
+      } else {
+        // Explored but not visible: placeholders
+        if (tile.city) {
+          ctx.font = `${size * 0.4}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(100,80,60,0.4)';
+          ctx.fillText('🏚️', cx, cy);
+        }
+        if (tile.unit) {
+          ctx.font = `${size * 0.4}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(100,80,60,0.4)';
+          ctx.fillText('⚔️', cx, cy);
+        }
+      }
+    }
+  }
+  ctx.restore();
+
+  if (G.eliminationMessages.length > 0) {
+    const msg = G.eliminationMessages[G.eliminationMessages.length - 1];
+    ctx.fillStyle = 'rgba(255,200,100,0.9)';
+    ctx.font = '18px Afacad, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    ctx.fillText(msg, w/2, 60);
+  }
+
+  if (G.gameOver) {
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '52px MedievalSharp, serif';
+    ctx.fillStyle = G.winner === 'Player' ? '#d4a373' : '#b54a34';
+    ctx.fillText(G.winner === 'Player' ? '🏆 VICTORY 🏆' : '💀 DEFEAT 💀', w/2, h/2);
+  }
+}
+
+// ─── UI UPDATE ────────────────────────────────────────────
+function updateUI() {
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player) return;
+  const tribeNameSpan = document.getElementById('gui-tribe-name');
+  if (tribeNameSpan) {
+    const iconKey = `tribe_${player.id}`;
+    const iconImg = images[iconKey];
+    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+      tribeNameSpan.innerHTML = `<img src="${iconImg.src}" style="width:24px;height:24px;border-radius:4px;vertical-align:middle;margin-right:4px;" /> ${player.name}`;
+    } else {
+      tribeNameSpan.innerHTML = `<span class="tribe-icon">${player.icon}</span> ${player.name}`;
+    }
+  }
+
+  document.getElementById('gui-turn').textContent = `Turn ${G.turn}`;
+  document.getElementById('gui-gold').textContent = Math.floor(player.gold);
+  document.getElementById('gui-cities').textContent = player.cities.length;
+  document.getElementById('gui-units').textContent = player.units.length;
+  document.getElementById('gui-research').textContent = Math.floor(player.researchPoints);
+  document.getElementById('gui-influence').textContent = getTribeControlledTiles(player.id);
+
+  const unit = G.selectedUnit;
+  const city = G.selectedCity;
+  const harbor = G.selectedHarbor;
+
+  if (unit) {
+    const atkVal = unit.atk + (unit.boostedAtk || 0);
+    const defVal = unit.def + (unit.boostedDef || 0);
+    document.getElementById('unit-name-display').textContent = unit.name + (unit.boosted ? ' ⚡' : '');
+    document.getElementById('unit-atk').textContent = atkVal;
+    document.getElementById('unit-def').textContent = defVal;
+    document.getElementById('unit-mov').textContent = unit.hasMoved ? 0 : unit.move;
+    document.getElementById('unit-hp').textContent = `${unit.hp}/${unit.maxHp}`;
+  } else if (city) {
+    const levelNames = ['Village', 'Town', 'City', 'Capital'];
+    document.getElementById('unit-name-display').textContent = city.name + ' (' + levelNames[Math.min(city.level - 1, 3)] + ')';
+    document.getElementById('unit-atk').textContent = '—';
+    document.getElementById('unit-def').textContent = '—';
+    document.getElementById('unit-mov').textContent = '—';
+    document.getElementById('unit-hp').textContent = '—';
+  } else if (harbor) {
+    document.getElementById('unit-name-display').textContent = '⛵ Harbor';
+    document.getElementById('unit-atk').textContent = '—';
+    document.getElementById('unit-def').textContent = '—';
+    document.getElementById('unit-mov').textContent = '—';
+    document.getElementById('unit-hp').textContent = '—';
+  } else {
+    document.getElementById('unit-name-display').textContent = 'No selection';
+    document.getElementById('unit-atk').textContent = '—';
+    document.getElementById('unit-def').textContent = '—';
+    document.getElementById('unit-mov').textContent = '—';
+    document.getElementById('unit-hp').textContent = '—';
+  }
+  document.getElementById('btn-end-turn').disabled = G.turnPhase !== 'player' || G.gameOver;
+  updateActionPopup();
+}
+
+// ─── CANVAS INTERACTION ──────────────────────────────────
+let isDragging = false;
+let dragStartX = 0, dragStartY = 0;
+let camStartX = 0, camStartY = 0;
+let mouseDownPos = { x: 0, y: 0 };
+let isClick = false;
+let lastTouchDist = 0;
+
+canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+  mouseDownPos.x = sx;
+  mouseDownPos.y = sy;
+  camStartX = camera.x;
+  camStartY = camera.y;
+  isClick = true;
+  isDragging = false;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (e.buttons === 0) { isDragging = false; return; }
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const dx = sx - mouseDownPos.x;
+  const dy = sy - mouseDownPos.y;
+  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+    isClick = false;
+    isDragging = true;
+    camera.x = camStartX + dx;
+    camera.y = camStartY + dy;
+    render();
+  }
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  if (isClick) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+    handleClick(sx, sy);
+  }
+  isDragging = false;
+});
+
+canvas.addEventListener('mouseleave', () => { isDragging = false; });
+
+// ─── handleClick – fixed movement priority ──────────────
+function handleClick(sx, sy) {
+  if (G.gameOver || G.turnPhase !== 'player') return;
+  const hex = getHexFromScreen(sx, sy);
+  if (!inMap(hex.q, hex.r)) return;
+  G.selectedHex = hex;
+  const tile = G.map[hex.r]?.[hex.q];
+  const player = G.tribes.find(t => t.isPlayer);
+
+  // ─── Priority 1: If a unit is selected, try to move or attack ───
+  if (G.selectedUnit && G.selectedUnit.tribeId === player.id) {
+    const unit = G.selectedUnit;
+    // Attack if clicking an enemy within range
+    if (tile && tile.unit && tile.visible && tile.unit.tribeId !== player.id) {
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
+      if (dist <= unit.attackRange && !unit.hasAttacked) {
+        performAttack(unit, tile.unit);
+        if (unit.hp <= 0) G.selectedUnit = null;
+        updateVisibility();
+        updateUI(); render(); checkWinConditions();
+        hideActionPopup();
+        return;
+      }
+    }
+    // Move if tile is passable and within range (including cities)
+    if (!unit.hasMoved && tile && tile.visible && !tile.unit && isTilePassable(hex.q, hex.r, unit.isNaval)) {
+      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
+      if (dist <= unit.move) {
+        const path = findPath(unit.q, unit.r, hex.q, hex.r, unit, unit.tribeId);
+        if (path && path.length <= unit.move + 1) {
+          // If moving onto a city, capture if neutral or enemy (no enemy unit present)
+          if (tile.city) {
+            if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
+            else if (tile.city.owner !== unit.tribeId) captureCity(tile.city, unit.tribeId);
+          }
+          G.map[unit.r][unit.q].unit = null;
+          unit.q = hex.q; unit.r = hex.r;
+          G.map[unit.r][unit.q].unit = unit;
+          unit.hasMoved = true;
+          updateVisibility();
+          G.selectedUnit = null; // Deselect after move (optional)
+          hideActionPopup();
+          updateUI(); render();
+          return;
+        }
+      }
+    }
+    // If we have a selected unit but couldn't move/attack, fall through to selection
+  }
+
+  // ─── Priority 2: Select own unit (if any) ───
+  if (tile && tile.unit && tile.visible) {
+    const unit = tile.unit;
+    if (unit.tribeId === player.id) {
+      G.selectedUnit = unit;
+      G.selectedCity = null;
+      G.selectedHarbor = null;
+      // Pre-select city if on same tile
+      if (tile.city && tile.city.owner === player.id) {
+        G.selectedCity = tile.city;
+      }
+      showActionPopup(sx, sy);
+      updateUI(); render();
+      return;
+    }
+  }
+
+  // ─── Priority 3: City management ───
+  if (tile && tile.city && tile.visible) {
+    const city = tile.city;
+    if (city.owner === player.id) {
+      G.selectedCity = city;
+      G.selectedUnit = null;
+      G.selectedHarbor = null;
+      openCityProduction();
+      return;
+    }
+  }
+
+  // ─── Priority 4: Harbor management ───
+  if (tile && tile.harbor && tile.visible) {
+    const harbor = tile.harbor;
+    if (harbor.owner === player.id) {
+      G.selectedHarbor = harbor;
+      G.selectedUnit = null;
+      G.selectedCity = null;
+      manageHarbor();
+      return;
+    }
+  }
+
+  // ─── Deselect if nothing matches ───
+  G.selectedUnit = null;
+  G.selectedCity = null;
+  G.selectedHarbor = null;
+  hideActionPopup();
+  updateUI(); render();
+}
+
+// ─── TOUCH EVENTS ──────────────────────────────────────
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const touches = e.touches;
+  if (touches.length === 1) {
+    const t = touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const sx = (t.clientX - rect.left) * (canvas.width / rect.width);
+    const sy = (t.clientY - rect.top) * (canvas.height / rect.height);
+    mouseDownPos.x = sx;
+    mouseDownPos.y = sy;
+    camStartX = camera.x;
+    camStartY = camera.y;
+    isClick = true;
+    isDragging = false;
+  } else if (touches.length === 2) {
+    const t1 = touches[0], t2 = touches[1];
+    const rect = canvas.getBoundingClientRect();
+    const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
+    const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
+    const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
+    const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
+    const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
+    lastTouchDist = dist;
+    isDragging = false;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  const touches = e.touches;
+  if (touches.length === 1 && isDragging) {
+    const t = touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const sx = (t.clientX - rect.left) * (canvas.width / rect.width);
+    const sy = (t.clientY - rect.top) * (canvas.height / rect.height);
+    const dx = sx - mouseDownPos.x;
+    const dy = sy - mouseDownPos.y;
+    camera.x = camStartX + dx;
+    camera.y = camStartY + dy;
+    render();
+  } else if (touches.length === 2) {
+    const t1 = touches[0], t2 = touches[1];
+    const rect = canvas.getBoundingClientRect();
+    const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
+    const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
+    const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
+    const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
+    const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
+    if (lastTouchDist > 0) {
+      const scale = dist / lastTouchDist;
+      const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom * scale));
+      if (newZoom !== camera.zoom) {
+        const cx = (sx1 + sx2) / 2, cy = (sy1 + sy2) / 2;
+        const worldBefore = screenToWorld(cx, cy);
+        camera.zoom = newZoom;
+        const worldAfter = screenToWorld(cx, cy);
+        camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
+        camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
+        camera.centered = true;
+        render();
+      }
+    }
+    lastTouchDist = dist;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  if (e.touches.length === 0) {
+    if (isClick) {
+      const rect = canvas.getBoundingClientRect();
+      const sx = (mouseDownPos.x) * (canvas.width / rect.width);
+      const sy = (mouseDownPos.y) * (canvas.height / rect.height);
+      handleClick(sx, sy);
+    }
+    isDragging = false;
+    lastTouchDist = 0;
+  }
+}, { passive: false });
+
+// ─── MOUSE WHEEL ZOOM ──────────────────────────────
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom + delta));
+
+  if (newZoom === camera.zoom) return;
+
+  const worldBefore = screenToWorld(sx, sy);
+  camera.zoom = newZoom;
+  const worldAfter = screenToWorld(sx, sy);
+
+  camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
+  camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
+  camera.centered = true;
+
+  render();
+}, { passive: false });
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  G.screen = id;
+  if (id === 'game-screen') { setTimeout(() => { render(); updateUI(); }, 50); }
+}
+
+function showHowToPlay() {
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').textContent = '📖 How to Play';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="gameplay-section">
+      <p><strong>Welcome to Oba – Rise of Kingdoms!</strong></p>
+      <p>A turn-based 4X strategy game set in ancient Africa. Lead your tribe to victory!</p>
+      <br>
+      <p><strong>🔹 Getting Started</strong><br>
+      Choose a tribe and game mode, then begin your campaign. Each tribe has unique units and bonuses.</p>
+      <br>
+      <p><strong>🔹 Turn Basics</strong><br>
+      Move units, attack enemies, manage cities, and research technologies. Click <strong>End Turn</strong> when done.</p>
+      <br>
+      <p><strong>🔹 Selecting & Moving</strong><br>
+      Click a unit to select it – a popup menu appears. Click any reachable tile to move there.</p>
+      <br>
+      <p><strong>🔹 Cities & Production</strong><br>
+      Click your city to open management. Build units, research techs, or construct wonders.</p>
+      <br>
+      <p><strong>🔹 Tech Tree</strong><br>
+      Click <strong>📜 Tech</strong> to view all technologies. Click an available tech to research it in a city.</p>
+      <br>
+      <p><strong>🔹 Naval & Harbors</strong><br>
+      Research <strong>Sailing</strong> to build Harbors and Rafts. Harbors produce Galleys and Warships.</p>
+      <br>
+      <p><strong>🔹 Healing & Invigorate</strong><br>
+      Units can use <strong>First Aid</strong> to heal themselves (costs their turn). Generals can <strong>Invigorate</strong> troops within 3 hexes – healing injured units and boosting full-health units for 1 turn.</p>
+      <br>
+      <p><strong>🔹 Resources</strong><br>
+      Resources (🪙🌾🪵🪨🐟) appear on specific tiles. They boost yields but are not on every tile.</p>
+      <br>
+      <p><strong>🔹 Fog of War</strong><br>
+      Explored areas stay dimly visible even after your units move away – plan your strategy accordingly!</p>
+      <br>
+      <p><strong>🔹 Terrain</strong><br>
+      Mountains are passable but cost 3 movement points. Forests and hills cost 2.</p>
+      <br>
+      <p><strong>🔹 Territory Control</strong><br>
+      Each city projects influence over nearby hexes – the map colours these tiles to show which tribe controls which area.</p>
+      <br>
+      <p><strong>🔹 Winning</strong><br>
+      Defeat all enemies (Conquest) or control the most territory when time runs out (Sands of Time).</p>
+    </div>
+  `;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button class="primary" onclick="closeModal()">Got it!</button>`;
+  overlay.classList.add('active');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+
+function showInGameMenu() {
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-title').textContent = '☰ Menu';
+  document.getElementById('modal-body').innerHTML = `<p>Return to main menu or continue your campaign.</p>`;
+  const actions = document.getElementById('modal-actions');
+  actions.innerHTML = `<button onclick="closeModal()">Resume</button>
+                       <button class="primary" onclick="closeModal();showScreen('menu-screen');">Main Menu</button>
+                       <button class="danger" onclick="closeModal();restartGame();">Restart</button>`;
+  overlay.classList.add('active');
+}
+
+function restartGame() {
+  G.units = []; G.cities = []; G.harbors = [];
+  G.selectedUnit = null; G.selectedHex = null; G.selectedCity = null; G.selectedHarbor = null;
+  G.gameOver = false; G.winner = null; G.turn = 0;
+  G.unitIdCounter = 0; G.cityIdCounter = 0; G.harborIdCounter = 0;
+  G.aiActive = false; G.turnPhase = 'player'; G.playerGold = 60;
+  G.eliminationMessages = [];
+  resetSettlementNames();
+  const activeTribe = document.querySelector('.ng-tribe-item.active');
+  const tribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+  const opps = G.opponents.length > 0 ? G.opponents : [];
+  generateMap(); initTribes(tribeId, opps);
+  updateVisibility();
+  camera.zoom = 1.0;
+  centerCameraOnPlayerCity();
+  updateUI(); render(); showScreen('game-screen');
+}
+
+// ─── SETUP ──────────────────────────────────────────────
+function setupNewGame() {
+  const modeRadio = document.querySelector('input[name="mode"]:checked');
+  G.gameMode = modeRadio ? modeRadio.value : 'conquest';
+  if (G.gameMode === 'custom') {
+    G.maxTurns = parseInt(document.getElementById('custom-turns').value) || 50;
+    const oppCount = parseInt(document.getElementById('custom-opponents').value) || 5;
+    G.difficulty = document.getElementById('custom-difficulty').value || 'normal';
+    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    const shuffled = avail.sort(() => Math.random() - 0.5);
+    G.opponents = shuffled.slice(0, Math.min(oppCount, shuffled.length)).map(t => t.id);
+  } else if (G.gameMode === 'oba') {
+    G.maxTurns = 999; G.difficulty = 'hard';
+    G.opponents = TRIBES_DATA.filter(t => t.id !== G.playerTribeId).map(t => t.id);
+  } else if (G.gameMode === 'sandsoftime') {
+    G.maxTurns = 40; G.difficulty = 'normal';
+    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    const shuffled = avail.sort(() => Math.random() - 0.5);
+    G.opponents = shuffled.slice(0, 5).map(t => t.id);
+  } else {
+    G.maxTurns = 999; G.difficulty = 'normal';
+    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    const shuffled = avail.sort(() => Math.random() - 0.5);
+    G.opponents = shuffled.slice(0, 5).map(t => t.id);
+  }
+  const activeTribe = document.querySelector('.ng-tribe-item.active');
+  G.playerTribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+  G.turn = 0; G.units = []; G.cities = []; G.harbors = [];
+  G.unitIdCounter = 0; G.cityIdCounter = 0; G.harborIdCounter = 0;
+  G.gameOver = false; G.winner = null; G.turnPhase = 'player'; G.playerGold = 60;
+  G.eliminationMessages = [];
+  resetSettlementNames();
+  generateMap(); initTribes(G.playerTribeId, G.opponents);
+  updateVisibility();
+  camera.zoom = 1.0;
+  centerCameraOnPlayerCity();
+  updateUI(); render(); showScreen('game-screen');
+}
+
+function populateTribeGrid() {
+  const grid = document.getElementById('tribe-grid');
+  grid.innerHTML = '';
+  TRIBES_DATA.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'ng-tribe-item' + (i === 0 ? ' active' : '');
+    div.dataset.tribe = t.id;
+    const iconKey = `tribe_${t.id}`;
+    const iconImg = images[iconKey];
+    let iconHtml = '';
+    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+      iconHtml = `<img src="${iconImg.src}" style="width:36px;height:36px;display:block;margin:0 auto;border-radius:4px;" />`;
+    } else {
+      iconHtml = `<span class="tribe-icon">${t.icon}</span>`;
+    }
+    div.innerHTML = iconHtml + `<span class="tribe-name">${t.name}</span>`;
+    div.addEventListener('click', () => {
+      document.querySelectorAll('.ng-tribe-item').forEach(el => el.classList.remove('active'));
+      div.classList.add('active');
+      updateCampaignSummary();
+    });
+    grid.appendChild(div);
+  });
+}
+
+function updateCampaignSummary() {
+  const active = document.querySelector('.ng-tribe-item.active');
+  const tribeId = active ? active.dataset.tribe : 'zulu';
+  const tribe = TRIBES_DATA.find(t => t.id === tribeId);
+  const modeRadio = document.querySelector('input[name="mode"]:checked');
+  const mode = modeRadio ? modeRadio.value : 'conquest';
+  const modeNames = { conquest: 'Conquest', sandsoftime: 'Sands of Time', oba: 'Oba', custom: 'Custom' };
+  const oppCount = G.opponents.length || 5;
+  document.getElementById('sum-tribe').textContent = tribe ? `${tribe.icon} ${tribe.name}` : '—';
+  document.getElementById('sum-mode').textContent = modeNames[mode] || mode;
+  document.getElementById('sum-opps').textContent = oppCount;
+  document.getElementById('sum-diff').textContent = G.difficulty || 'Normal';
+  document.getElementById('sum-turns').textContent = G.gameMode === 'sandsoftime' ? '40' :
+    G.gameMode === 'custom' ? document.getElementById('custom-turns').value || '50' : '∞';
+}
+function updateOpponentList() {
+  const container = document.getElementById('opponent-list');
+  container.innerHTML = '';
+  const selected = G.opponents.length > 0 ? G.opponents :
+    TRIBES_DATA.filter(t => t.id !== G.playerTribeId).slice(0, 5).map(t => t.id);
+  G.opponents = selected;
+  for (const id of selected) {
+    const t = TRIBES_DATA.find(t => t.id === id);
+    if (t) {
+      const span = document.createElement('span');
+      span.className = 'opp-tag';
+      span.textContent = `${t.icon} ${t.name}`;
+      container.appendChild(span);
+    }
+  }
+  if (selected.length === 0) { container.textContent = 'No opponents selected.'; container.style.color = '#6b4f3a'; }
+  updateCampaignSummary();
+}
+
+// ─── MAIN INIT ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const textLogo = document.getElementById('menu-text-logo');
+  if (textLogo) textLogo.style.display = 'block';
+
+  showScreen('menu-screen');
+
+  loadImages(() => {
+    showScreen('menu-screen');
+
+    populateTribeGrid();
+    G.playerTribeId = 'zulu';
+    G.opponents = TRIBES_DATA.filter(t => t.id !== 'zulu').slice(0, 5).map(t => t.id);
+    updateOpponentList();
+
+    document.querySelectorAll('#mode-grid .ng-option').forEach(el => {
+      const radio = el.querySelector('input[type="radio"]');
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('#mode-grid .ng-option').forEach(opt => opt.classList.remove('selected'));
+        if (radio.checked) el.classList.add('selected');
+        const customOpts = document.getElementById('custom-options');
+        customOpts.style.display = radio.value === 'custom' ? 'block' : 'none';
+        if (radio.value === 'sandsoftime') G.maxTurns = 40;
+        else if (radio.value === 'oba') { G.maxTurns = 999; G.difficulty = 'hard'; }
+        else if (radio.value === 'conquest') { G.maxTurns = 999; G.difficulty = 'normal'; }
+        updateCampaignSummary();
+      });
+    });
+
+    document.getElementById('add-ai-btn').addEventListener('click', () => {
+      const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId && !G.opponents.includes(t.id));
+      if (avail.length === 0) return;
+      const pick = avail[Math.floor(Math.random() * avail.length)];
+      G.opponents.push(pick.id);
+      updateOpponentList();
+    });
+
+    document.getElementById('remove-ai-btn').addEventListener('click', () => {
+      if (G.opponents.length <= 1) return;
+      G.opponents.pop();
+      updateOpponentList();
+    });
+
+    document.getElementById('start-game-btn').addEventListener('click', setupNewGame);
+    updateCampaignSummary();
+
+    window.addEventListener('resize', () => {
+      if (G.screen === 'game-screen') {
+        camera.centered = false;
+        centerCameraOnPlayerCity();
+        render();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (G.screen === 'game-screen') {
+        if (e.key === 'e' || e.key === 'E') endTurn();
+        if (e.key === 'm' || e.key === 'M') { if (G.selectedUnit && !G.selectedUnit.hasMoved) tryMoveUnit(); }
+        if (e.key === 'a' || e.key === 'A') { if (G.selectedUnit && !G.selectedUnit.hasAttacked) tryAttackUnit(); }
+        if (e.key === 'h' || e.key === 'H') { tryHealUnit(); }
+        if (e.key === 'i' || e.key === 'I') { tryInvigorate(); }
+        if (e.key === ' ') { e.preventDefault(); if (G.selectedUnit) { G.selectedUnit.hasMoved = true; G.selectedUnit = null; hideActionPopup(); updateUI(); render(); } }
+        if (e.key === 'Escape') showInGameMenu();
+        if (e.key === 'b' || e.key === 'B') {
+          if (G.selectedCity) openCityProduction();
+          else if (G.selectedHarbor) manageHarbor();
+        }
+        if (e.key === 't' || e.key === 'T') showTechTree();
+      }
+    });
+
+    console.log('Oba v4.5 – Territory influence now shown with coloured overlays.');
+  });
+});
+</script>
+</body>
+</html>
