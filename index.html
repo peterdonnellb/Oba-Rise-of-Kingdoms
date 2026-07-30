@@ -43,7 +43,7 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       z-index: 10;
       transition: opacity 0.4s ease;
       overflow-y: auto;
@@ -54,6 +54,7 @@
     #menu-screen {
       background: var(--near-black);
       justify-content: center;
+      padding: 20px 10px;
       position: relative;
     }
     #menu-screen::before {
@@ -71,73 +72,63 @@
     }
     #menu-screen > * { position: relative; z-index: 1; }
 
-    /* ─── NEW GAME MENU with background ─── */
-    #newgame-screen {
-      background: var(--near-black);
-      position: relative;
-    }
-    #newgame-screen::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
+    .menu-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
-      height: 100%;
-      background-image: url('menu_background.png');
-      background-size: cover;
-      background-position: center;
-      opacity: 0.4;
-      z-index: 0;
+      max-width: 600px;
     }
-    #newgame-screen > * { position: relative; z-index: 1; }
 
     #menu-logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.5rem;
       width: 100%;
-      max-width: 750px;
-      padding: 0 20px;
+      max-width: 600px;
+      max-height: 20vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      flex-shrink: 0;
     }
     #menu-logo-container img {
       width: 100%;
-      max-height: 270px;
+      height: auto;
+      max-height: 20vh;
       object-fit: contain;
-      filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.25));
     }
     #menu-text-logo {
       font-family: 'MedievalSharp', cursive;
-      font-size: 4.5rem;
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
       color: var(--antique-gold);
       text-shadow: 0 0 60px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0,0,0,0.9);
-      letter-spacing: 8px;
+      letter-spacing: 4px;
       line-height: 1.1;
       text-align: center;
     }
     #menu-text-logo::before,
     #menu-text-logo::after {
       content: '⚔';
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       opacity: 0.3;
-      margin: 0 8px;
+      margin: 0 6px;
       color: var(--amethyst-purple);
     }
-    #menu-screen .menu-subtitle {
-      font-size: 1.1rem;
-      color: var(--warm-gold);
+    .menu-subtitle {
+      font-size: 1.3rem;
+      color: var(--vivid-gold);
       letter-spacing: 8px;
       text-transform: uppercase;
-      margin-bottom: 2.8rem;
-      opacity: 0.7;
+      margin-bottom: 2rem;
+      opacity: 0.85;
       font-weight: 300;
       text-align: center;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
     }
     .menu-btn {
       font-family: 'Afacad', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      padding: 14px 40px;
+      padding: 14px 36px;
       margin: 6px 0;
       border: 2px solid var(--antique-gold);
       border-radius: 6px;
@@ -147,16 +138,17 @@
       transition: all 0.25s ease;
       min-width: 220px;
       text-align: center;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       -webkit-tap-highlight-color: transparent;
+      width: 100%;
     }
     .menu-btn:active { transform: scale(0.96); }
     .menu-btn.primary {
       border-color: var(--vivid-gold);
       background: rgba(212, 175, 55, 0.15);
-      font-size: 1.4rem;
-      padding: 16px 50px;
+      font-size: 1.2rem;
+      padding: 16px 44px;
       color: var(--vivid-gold);
     }
     .menu-btn.primary:hover { background: rgba(212, 175, 55, 0.25); }
@@ -167,6 +159,7 @@
     }
     .menu-btn.secondary:hover { background: rgba(74, 53, 40, 0.35); }
     .menu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
     .menu-decoration {
       position: absolute;
       width: 400px;
@@ -179,33 +172,52 @@
     .menu-decoration.br { bottom: -120px; right: -120px; }
     .menu-decoration.tr { top: -120px; right: -120px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%); }
 
-    /* ─── NEW GAME MENU ─── */
+    /* ─── NEW GAME WIZARD ─── */
     #newgame-screen {
+      background: var(--near-black);
+      position: relative;
       padding: 16px 12px;
-      justify-content: flex-start;
-      padding-top: 10px;
-      height: 100vh;
       overflow-y: auto;
+      justify-content: flex-start;
     }
-    .ng-header {
+    #newgame-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('menu_background.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+      z-index: 0;
+    }
+    #newgame-screen > * { position: relative; z-index: 1; }
+
+    .ng-step {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      gap: 16px;
+      padding: 10px 0;
+    }
+    .ng-step.active { display: flex; }
+
+    .ng-step-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      max-width: 600px;
-      padding: 0 8px 12px 8px;
-      flex-shrink: 0;
+      padding: 0 4px 8px 4px;
+      border-bottom: 1px solid rgba(201, 162, 39, 0.2);
     }
-    .ng-header h2 {
-      font-family: 'MedievalSharp', cursive;
-      font-size: 1.8rem;
-      color: var(--antique-gold);
-      letter-spacing: 2px;
-      margin: 0 auto;
-    }
-    .ng-header .back-btn {
+    .ng-step-header .back-btn {
       font-size: 1.2rem;
-      padding: 4px 16px;
+      padding: 6px 16px;
       border: none;
       background: rgba(20,18,24,0.5);
       color: #b8957a;
@@ -215,119 +227,83 @@
       font-family: inherit;
       -webkit-tap-highlight-color: transparent;
     }
-    .ng-header .back-btn:active { background: rgba(74,53,40,0.3); }
-
-    .ng-container {
-      width: 100%;
-      max-width: 600px;
-      flex: 1 1 auto;
-      overflow-y: auto;
-      padding-bottom: 20px;
-    }
-    .ng-card {
-      background: rgba(27, 42, 107, 0.35);
-      border: 1px solid rgba(201, 162, 39, 0.2);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    }
-    .ng-card h3 {
-      font-size: 0.9rem;
-      color: var(--coastal-gold);
+    .ng-step-header .back-btn:active { background: rgba(74,53,40,0.3); }
+    .ng-step-header h2 {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1.6rem;
+      color: var(--antique-gold);
       letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      border-bottom: 1px solid rgba(201, 162, 39, 0.15);
-      padding-bottom: 6px;
-      font-weight: 600;
+      margin: 0;
+      flex: 1;
+      text-align: center;
     }
-    .ng-option-grid {
+    .ng-step-header .placeholder { width: 60px; }
+
+    .ng-mode-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 12px;
+      width: 100%;
+      padding: 4px 0;
     }
-    .ng-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(20,18,24,0.3);
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .ng-option:active { background: rgba(212,175,55,0.1); }
-    .ng-option.selected {
-      border-color: var(--coastal-gold);
-      background: rgba(212,175,55,0.08);
-    }
-    .ng-option input[type="radio"] {
-      accent-color: var(--coastal-gold);
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .ng-option label {
-      cursor: pointer;
-      font-size: 0.9rem;
+    .ng-mode-btn {
+      padding: 20px 12px;
+      background: rgba(27, 42, 107, 0.35);
+      border: 2px solid rgba(201, 162, 39, 0.2);
+      border-radius: 14px;
       color: var(--cream-muted);
-      flex: 1;
-      font-weight: 400;
-    }
-    .ng-option .ng-desc {
-      font-size: 0.65rem;
-      color: #6b5a4a;
-      text-align: right;
-    }
-    #custom-options {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(42,26,16,0.3);
-      display: none;
-    }
-    #custom-options .ng-option label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 0.85rem;
-    }
-    #custom-options .ng-option input,
-    #custom-options .ng-option select {
-      background: #1a0e08;
-      border: 1px solid #3a281e;
-      color: var(--cream);
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
       font-family: inherit;
-      width: 60px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-height: 80px;
+      justify-content: center;
     }
-    #custom-options .ng-option select { width: auto; }
+    .ng-mode-btn:active { transform: scale(0.96); }
+    .ng-mode-btn.selected {
+      border-color: var(--vivid-gold);
+      background: rgba(255, 215, 0, 0.08);
+      color: var(--vivid-gold);
+    }
+    .ng-mode-btn .mode-desc {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: #6b5a4a;
+    }
+    .ng-mode-btn.selected .mode-desc { color: #b8957a; }
 
     .ng-tribe-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-height: 50vh;
+      overflow-y: auto;
+      padding: 4px 0;
     }
     .ng-tribe-item {
-      padding: 6px 2px;
-      border-radius: 10px;
+      padding: 10px 4px;
+      border-radius: 12px;
       border: 2px solid transparent;
       background: rgba(20,18,24,0.4);
       cursor: pointer;
       transition: 0.15s;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       text-align: center;
       color: #b8a898;
       font-weight: 400;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 2px;
+      -webkit-tap-highlight-color: transparent;
     }
     .ng-tribe-item:active { background: rgba(212,175,55,0.15); }
     .ng-tribe-item.active {
@@ -337,48 +313,53 @@
       box-shadow: 0 0 20px rgba(212,175,55,0.05);
     }
     .ng-tribe-item .tribe-icon {
-      font-size: 1.8rem;
+      font-size: 2.4rem;
       display: block;
       line-height: 1.2;
     }
-    .ng-tribe-item .tribe-name { font-size: 0.6rem; margin-top: 2px; }
+    .ng-tribe-item .tribe-name { font-size: 0.7rem; font-weight: 600; }
+    .ng-tribe-item .tribe-desc { font-size: 0.55rem; color: #6b5a4a; }
 
     .ng-opponent-area {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
+      width: 100%;
+      padding: 4px 0;
     }
     #opponent-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
+      gap: 6px;
       flex: 1;
     }
     #opponent-list .opp-tag {
       background: rgba(30,18,12,0.6);
-      padding: 2px 12px;
-      border-radius: 14px;
+      padding: 4px 14px;
+      border-radius: 20px;
       border: 1px solid #3a281e;
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       color: var(--cream-muted);
     }
     .ng-actions-row {
       display: flex;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 8px;
+      margin-top: 4px;
+      width: 100%;
     }
     .ng-actions-row button {
-      font-size: 0.75rem;
-      padding: 4px 14px;
+      font-size: 0.9rem;
+      padding: 8px 18px;
       border: 1px solid #4a3528;
       background: rgba(20,12,8,0.5);
       color: var(--cream-muted);
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       transition: 0.2s;
       font-family: inherit;
       -webkit-tap-highlight-color: transparent;
+      flex: 1;
     }
     .ng-actions-row button:active { background: rgba(74,53,40,0.3); }
     .ng-actions-row button.danger {
@@ -386,17 +367,59 @@
       color: #b85a4a;
     }
 
+    .ng-custom-options {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 0;
+      border-top: 1px solid rgba(42,26,16,0.3);
+      margin-top: 8px;
+    }
+    .ng-custom-options.show { display: flex; }
+    .ng-custom-options .ng-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 10px;
+      background: rgba(20,18,24,0.3);
+      border-radius: 8px;
+      flex-wrap: wrap;
+    }
+    .ng-custom-options .ng-option label {
+      font-size: 0.9rem;
+      color: var(--cream-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .ng-custom-options .ng-option input,
+    .ng-custom-options .ng-option select {
+      background: #1a0e08;
+      border: 1px solid #3a281e;
+      color: var(--cream);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      width: 70px;
+    }
+    .ng-custom-options .ng-option select { width: auto; }
+
     .ng-summary {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4px 16px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--cream-muted);
+      width: 100%;
+      padding: 8px 0;
     }
     .ng-summary .sum-row {
       display: flex;
       justify-content: space-between;
-      padding: 2px 0;
+      padding: 4px 0;
       border-bottom: 1px solid rgba(42,26,16,0.2);
     }
     .ng-summary .sum-row .label { color: #6b5a4a; }
@@ -404,8 +427,8 @@
 
     .ng-start-btn {
       width: 100%;
-      padding: 14px;
-      font-size: 1.2rem;
+      padding: 16px;
+      font-size: 1.4rem;
       font-weight: 700;
       border: 2px solid var(--vivid-gold);
       border-radius: 12px;
@@ -419,7 +442,6 @@
       -webkit-tap-highlight-color: transparent;
     }
     .ng-start-btn:active { background: rgba(255,215,0,0.2); transform: scale(0.98); }
-    .ng-start-btn:hover { background: rgba(255,215,0,0.15); }
 
     /* ─── GAME SCREEN ─── */
     #game-screen {
@@ -457,8 +479,8 @@
     .gui-top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 6px 12px;
+      align-items: flex-start;
+      padding: 6px 8px;
       background: linear-gradient(180deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
       flex-wrap: wrap;
       gap: 4px;
@@ -466,11 +488,11 @@
     .gui-top-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
     }
     .gui-top-left .tribe-name {
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: var(--warm-gold);
       font-weight: 700;
       letter-spacing: 0.5px;
@@ -478,50 +500,50 @@
       align-items: center;
       gap: 4px;
     }
-    .gui-top-left .tribe-name .tribe-icon img { width: 24px; height: 24px; border-radius: 4px; }
+    .gui-top-left .tribe-name .tribe-icon img { width: 22px; height: 22px; border-radius: 4px; }
     .gui-top-left .turn-counter {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--coastal-gold);
       font-weight: 600;
       background: rgba(0,0,0,0.3);
-      padding: 1px 10px;
+      padding: 1px 8px;
       border-radius: 12px;
       border: 1px solid rgba(201, 162, 39, 0.2);
     }
     .gui-top-right {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
     }
     .gui-resource {
       display: flex;
       align-items: center;
-      gap: 3px;
-      font-size: 0.8rem;
+      gap: 2px;
+      font-size: 0.7rem;
       color: var(--cream-muted);
       background: rgba(20, 18, 24, 0.6);
-      padding: 1px 8px;
+      padding: 1px 6px;
       border-radius: 10px;
       border: 1px solid rgba(201, 162, 39, 0.15);
       backdrop-filter: blur(2px);
     }
-    .gui-resource .icon { font-size: 0.9rem; }
+    .gui-resource .icon { font-size: 0.8rem; }
     .gui-resource .val {
       font-weight: 700;
       color: var(--cream);
-      min-width: 18px;
+      min-width: 16px;
       text-align: center;
     }
     .gui-resource.gold .val { color: var(--vivid-gold); }
     .gui-menu-btn {
-      padding: 3px 12px;
+      padding: 2px 10px;
       border: 1px solid #4a3528;
       background: rgba(20,18,24,0.6);
       color: #b8957a;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       transition: 0.2s;
       letter-spacing: 0.5px;
       font-family: inherit;
@@ -539,7 +561,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 4px 10px;
+      padding: 4px 8px;
       background: linear-gradient(0deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
       display: flex;
       justify-content: space-between;
@@ -550,26 +572,26 @@
     .gui-unit-info {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 3px 10px;
+      gap: 4px;
+      padding: 2px 8px;
       background: rgba(20,18,24,0.7);
       border-radius: 6px;
       border: 1px solid rgba(166, 90, 42, 0.3);
-      min-height: 30px;
-      flex: 1 1 140px;
+      min-height: 26px;
+      flex: 1 1 120px;
       flex-wrap: wrap;
     }
     .gui-unit-info .unit-name {
       font-weight: 700;
       color: var(--terracotta);
-      font-size: 0.8rem;
-      min-width: 50px;
+      font-size: 0.7rem;
+      min-width: 40px;
     }
     .gui-unit-info .unit-stats {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: #b8957a;
       display: flex;
-      gap: 4px;
+      gap: 3px;
       flex-wrap: wrap;
     }
     .gui-unit-info .unit-stats span {
@@ -587,11 +609,11 @@
       flex-wrap: wrap;
     }
     .gui-action-btn {
-      padding: 3px 10px;
+      padding: 4px 12px;
       border: 1px solid #3a281e;
       background: rgba(20,18,24,0.6);
       color: var(--cream-muted);
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.7rem;
       transition: 0.2s;
@@ -599,6 +621,7 @@
       font-family: inherit;
       font-weight: 500;
       -webkit-tap-highlight-color: transparent;
+      min-height: 32px;
     }
     .gui-action-btn:active:not(:disabled) { background: rgba(74,53,40,0.3); }
     .gui-action-btn:disabled { opacity: 0.25; cursor: not-allowed; }
@@ -635,7 +658,7 @@
     /* ─── POPUP ACTION MENU ─── */
     #action-popup {
       position: absolute;
-      background: rgba(20, 18, 24, 0.92);
+      background: rgba(20, 18, 24, 0.95);
       backdrop-filter: blur(8px);
       border: 2px solid var(--coastal-gold);
       border-radius: 10px;
@@ -643,7 +666,7 @@
       display: none;
       flex-direction: column;
       gap: 3px;
-      min-width: 110px;
+      min-width: 120px;
       z-index: 50;
       pointer-events: auto;
       box-shadow: 0 8px 30px rgba(0,0,0,0.8);
@@ -654,8 +677,8 @@
       border: 1px solid rgba(201, 162, 39, 0.15);
       border-radius: 4px;
       color: var(--cream);
-      padding: 4px 10px;
-      font-size: 0.75rem;
+      padding: 6px 12px;
+      font-size: 0.8rem;
       font-family: 'Afacad', sans-serif;
       cursor: pointer;
       transition: 0.15s;
@@ -664,6 +687,7 @@
       font-weight: 500;
       letter-spacing: 0.3px;
       -webkit-tap-highlight-color: transparent;
+      min-height: 36px;
     }
     #action-popup button:hover:not(:disabled) {
       background: rgba(201, 162, 39, 0.2);
@@ -697,7 +721,7 @@
     #action-popup button.invigorate-btn:hover:not(:disabled) { background: rgba(155, 89, 182, 0.15); }
     #action-popup .action-icon {
       margin-right: 4px;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
 
     /* ─── MODAL ─── */
@@ -745,7 +769,6 @@
       padding: 10px;
       background: rgba(20, 18, 24, 0.4);
       border-radius: 8px;
-      border-left: 3px solid var(--antique-gold);
     }
     .modal-box .gameplay-section strong {
       color: var(--warm-gold);
@@ -758,17 +781,18 @@
       flex-wrap: wrap;
     }
     .modal-box .modal-actions button {
-      padding: 6px 20px;
+      padding: 8px 24px;
       border: 1px solid var(--vivid-gold);
       background: rgba(255, 215, 0, 0.08);
       color: var(--vivid-gold);
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 0.9rem;
       transition: 0.2s;
       letter-spacing: 1px;
       font-family: inherit;
       -webkit-tap-highlight-color: transparent;
+      min-height: 44px;
     }
     .modal-box .modal-actions button:active { background: rgba(255, 215, 0, 0.18); }
     .modal-box .modal-actions button.primary {
@@ -843,31 +867,72 @@
     ::-webkit-scrollbar-track { background: #1a0e08; }
     ::-webkit-scrollbar-thumb { background: var(--coastal-gold); border-radius: 2px; }
 
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 820px) {
       #menu-text-logo { font-size: 3.6rem; letter-spacing: 4px; }
       #menu-text-logo::before, #menu-text-logo::after { font-size: 2rem; margin: 0 6px; }
-      #menu-screen .menu-subtitle { font-size: 0.8rem; letter-spacing: 6px; margin-bottom: 2rem; }
+      .menu-subtitle { font-size: 1rem; letter-spacing: 6px; margin-bottom: 1.5rem; }
       .menu-btn { font-size: 1rem; padding: 12px 28px; min-width: 180px; }
       .menu-btn.primary { font-size: 1.1rem; padding: 14px 36px; }
-      .ng-tribe-grid { grid-template-columns: repeat(4, 1fr); }
-      .ng-option-grid { grid-template-columns: 1fr 1fr; }
+      .ng-tribe-grid { grid-template-columns: repeat(3, 1fr); }
+      .ng-mode-grid { grid-template-columns: 1fr 1fr; }
       .ng-summary { grid-template-columns: 1fr 1fr; }
-      #menu-logo-container { max-width: 500px; }
-      #menu-logo-container img { max-height: 180px; }
+      #menu-logo-container { max-height: 18vh; }
       .tech-node { min-width: 60px; padding: 4px 6px; font-size: 0.6rem; }
     }
     @media (max-width: 480px) {
       #menu-text-logo { font-size: 2.4rem; letter-spacing: 2px; }
       #menu-text-logo::before, #menu-text-logo::after { font-size: 1.2rem; margin: 0 4px; }
-      .ng-tribe-grid { grid-template-columns: repeat(3, 1fr); }
-      .ng-option-grid { grid-template-columns: 1fr; }
+      .ng-tribe-grid { grid-template-columns: repeat(2, 1fr); }
+      .ng-mode-grid { grid-template-columns: 1fr 1fr; }
       .ng-summary { grid-template-columns: 1fr; }
-      .ng-header h2 { font-size: 1.4rem; }
-      .ng-card { padding: 12px; }
-      #menu-logo-container { max-width: 350px; }
-      #menu-logo-container img { max-height: 120px; }
+      .ng-step-header h2 { font-size: 1.4rem; }
+      #menu-logo-container { max-height: 15vh; }
       .tech-node { min-width: 50px; padding: 3px 4px; font-size: 0.55rem; }
+      .gui-top { padding: 4px 6px; }
+      .gui-resource { font-size: 0.6rem; padding: 1px 4px; }
+      .gui-menu-btn { font-size: 0.55rem; padding: 2px 6px; }
+      .gui-unit-info .unit-name { font-size: 0.6rem; }
+      .gui-unit-info .unit-stats { font-size: 0.5rem; }
+      .gui-action-btn { font-size: 0.6rem; padding: 3px 8px; min-height: 28px; }
+      #action-popup button { font-size: 0.7rem; padding: 4px 10px; min-height: 32px; }
     }
+
+    /* ─── MAIN MENU BUTTONS ─── */
+    .menu-btn {
+      font-family: 'Afacad', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 14px 40px;
+      margin: 6px 0;
+      border: 2px solid var(--antique-gold);
+      border-radius: 6px;
+      background: rgba(75, 22, 122, 0.3);
+      color: var(--cream);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      min-width: 220px;
+      text-align: center;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-btn:active { transform: scale(0.96); }
+    .menu-btn.primary {
+      border-color: var(--vivid-gold);
+      background: rgba(212, 175, 55, 0.15);
+      font-size: 1.4rem;
+      padding: 16px 50px;
+      color: var(--vivid-gold);
+    }
+    .menu-btn.primary:hover { background: rgba(212, 175, 55, 0.25); }
+    .menu-btn.secondary {
+      border-color: #4a3528;
+      background: rgba(74, 53, 40, 0.15);
+      color: #b8957a;
+    }
+    .menu-btn.secondary:hover { background: rgba(74, 53, 40, 0.35); }
+    .menu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -879,83 +944,96 @@
   <div class="menu-decoration tl"></div>
   <div class="menu-decoration br"></div>
   <div class="menu-decoration tr"></div>
-  <div id="menu-logo-container">
-    <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none;" />
-    <div id="menu-text-logo" class="menu-title" style="display: block;">OBA</div>
+  <div class="menu-content">
+    <div id="menu-logo-container">
+      <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none;" />
+      <div id="menu-text-logo" class="menu-title" style="display: block;">OBA</div>
+    </div>
+    <div class="menu-subtitle">— Rise of Kingdoms —</div>
+    <button class="menu-btn primary" onclick="showNewGameWizard()">⚔ New Game</button>
+    <button class="menu-btn secondary" id="load-game-btn" onclick="loadGame()" disabled>📂 Load Game</button>
+    <button class="menu-btn secondary" disabled>🌐 Multiplayer</button>
+    <button class="menu-btn secondary" onclick="showHowToPlay()">📖 How to Play</button>
   </div>
-  <div class="menu-subtitle">— Rise of Kingdoms —</div>
-  <button class="menu-btn primary" onclick="showScreen('newgame-screen')">⚔ New Game</button>
-  <button class="menu-btn secondary" disabled>📂 Load Game</button>
-  <button class="menu-btn secondary" disabled>🌐 Multiplayer</button>
-  <button class="menu-btn secondary" onclick="showHowToPlay()">📖 How to Play</button>
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════ -->
-<!-- NEW GAME MENU -->
+<!-- NEW GAME WIZARD -->
 <!-- ════════════════════════════════════════════════════════════════ -->
 <div id="newgame-screen" class="screen">
-  <div class="ng-header">
-    <button class="back-btn" onclick="showScreen('menu-screen')">←</button>
-    <h2>New Campaign</h2>
-    <div style="width:40px;"></div>
+  <!-- Step 1: Mode -->
+  <div id="step-mode" class="ng-step active">
+    <div class="ng-step-header">
+      <button class="back-btn" onclick="showScreen('menu-screen')">←</button>
+      <h2>Choose Mode</h2>
+      <div class="placeholder"></div>
+    </div>
+    <div class="ng-mode-grid">
+      <button class="ng-mode-btn selected" data-mode="conquest" onclick="selectMode(this)">
+        ⚔ Conquest
+        <span class="mode-desc">Defeat all enemies</span>
+      </button>
+      <button class="ng-mode-btn" data-mode="sandsoftime" onclick="selectMode(this)">
+        ⏳ Sands of Time
+        <span class="mode-desc">Control most hexes</span>
+      </button>
+      <button class="ng-mode-btn" data-mode="oba" onclick="selectMode(this)">
+        👑 Oba
+        <span class="mode-desc">Conquest · Aggressive AI</span>
+      </button>
+      <button class="ng-mode-btn" data-mode="custom" onclick="selectMode(this)">
+        ⚙️ Custom
+        <span class="mode-desc">Configure your game</span>
+      </button>
+    </div>
+    <button class="ng-start-btn" onclick="goToStep('step-tribe')">Next →</button>
   </div>
-  <div class="ng-container">
-    <div class="ng-card">
-      <h3>Game Mode</h3>
-      <div class="ng-option-grid" id="mode-grid">
-        <div class="ng-option selected" data-mode="conquest">
-          <input type="radio" name="mode" value="conquest" checked id="mode-conquest" />
-          <label for="mode-conquest">Conquest</label>
-          <span class="ng-desc">Defeat all</span>
-        </div>
-        <div class="ng-option" data-mode="sandsoftime">
-          <input type="radio" name="mode" value="sandsoftime" id="mode-sandsoftime" />
-          <label for="mode-sandsoftime">Sands of Time</label>
-          <span class="ng-desc">Control most hexes</span>
-        </div>
-        <div class="ng-option" data-mode="oba">
-          <input type="radio" name="mode" value="oba" id="mode-oba" />
-          <label for="mode-oba">Oba</label>
-          <span class="ng-desc">Conquest · Aggressive AI</span>
-        </div>
-        <div class="ng-option" data-mode="custom">
-          <input type="radio" name="mode" value="custom" id="mode-custom" />
-          <label for="mode-custom">Custom</label>
-          <span class="ng-desc">Configure</span>
-        </div>
+
+  <!-- Step 2: Tribe -->
+  <div id="step-tribe" class="ng-step">
+    <div class="ng-step-header">
+      <button class="back-btn" onclick="goToStep('step-mode')">←</button>
+      <h2>Choose Your Tribe</h2>
+      <div class="placeholder"></div>
+    </div>
+    <div class="ng-tribe-grid" id="tribe-grid"></div>
+    <button class="ng-start-btn" onclick="goToStep('step-opponents')">Next →</button>
+  </div>
+
+  <!-- Step 3: Opponents & Options -->
+  <div id="step-opponents" class="ng-step">
+    <div class="ng-step-header">
+      <button class="back-btn" onclick="goToStep('step-tribe')">←</button>
+      <h2>Setup Opponents</h2>
+      <div class="placeholder"></div>
+    </div>
+    <div class="ng-opponent-area">
+      <div id="opponent-list"></div>
+    </div>
+    <div class="ng-actions-row">
+      <button id="add-ai-btn">+ Add AI</button>
+      <button id="remove-ai-btn" class="danger">− Remove</button>
+    </div>
+
+    <!-- Custom options (hidden by default) -->
+    <div id="custom-options" class="ng-custom-options">
+      <div class="ng-option">
+        <label>Turns: <input type="number" id="custom-turns" value="50" min="10" max="200" /></label>
       </div>
-      <div id="custom-options">
-        <div class="ng-option"><label>Turns: <input type="number" id="custom-turns" value="50" min="10" max="200" /></label></div>
-        <div class="ng-option"><label>Opponents: <input type="number" id="custom-opponents" value="5" min="1" max="11" /></label></div>
-        <div class="ng-option"><label>Difficulty: <select id="custom-difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label></div>
+      <div class="ng-option">
+        <label>Opponents: <input type="number" id="custom-opponents" value="5" min="1" max="11" /></label>
+      </div>
+      <div class="ng-option">
+        <label>Difficulty: <select id="custom-difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
       </div>
     </div>
 
-    <div class="ng-card">
-      <h3>Your Tribe</h3>
-      <div class="ng-tribe-grid" id="tribe-grid"></div>
-    </div>
-
-    <div class="ng-card">
-      <h3>Opponents</h3>
-      <div class="ng-opponent-area">
-        <div id="opponent-list"></div>
-      </div>
-      <div class="ng-actions-row">
-        <button id="add-ai-btn">+ Add AI</button>
-        <button id="remove-ai-btn" class="danger">− Remove</button>
-      </div>
-    </div>
-
-    <div class="ng-card">
-      <h3>Campaign Summary</h3>
-      <div class="ng-summary" id="campaign-summary">
-        <div class="sum-row"><span class="label">Tribe</span><span class="value" id="sum-tribe">—</span></div>
-        <div class="sum-row"><span class="label">Mode</span><span class="value" id="sum-mode">Conquest</span></div>
-        <div class="sum-row"><span class="label">Opponents</span><span class="value" id="sum-opps">5</span></div>
-        <div class="sum-row"><span class="label">Difficulty</span><span class="value" id="sum-diff">Normal</span></div>
-        <div class="sum-row"><span class="label">Turn Limit</span><span class="value" id="sum-turns">∞</span></div>
-      </div>
+    <div class="ng-summary" id="campaign-summary">
+      <div class="sum-row"><span class="label">Tribe</span><span class="value" id="sum-tribe">—</span></div>
+      <div class="sum-row"><span class="label">Mode</span><span class="value" id="sum-mode">Conquest</span></div>
+      <div class="sum-row"><span class="label">Opponents</span><span class="value" id="sum-opps">5</span></div>
+      <div class="sum-row"><span class="label">Difficulty</span><span class="value" id="sum-diff">Normal</span></div>
+      <div class="sum-row"><span class="label">Turn Limit</span><span class="value" id="sum-turns">∞</span></div>
     </div>
 
     <button class="ng-start-btn" id="start-game-btn">⚔ Begin Campaign ⚔</button>
@@ -981,7 +1059,7 @@
           <div class="gui-resource"><span class="icon">🔬</span><span class="val" id="gui-research">0</span></div>
           <div class="gui-resource"><span class="icon">🌍</span><span class="val" id="gui-influence">0</span></div>
           <button class="gui-menu-btn tech-btn" onclick="showTechTree()">📜 Tech</button>
-          <button class="gui-menu-btn" onclick="showInGameMenu()">☰ Menu</button>
+          <button class="gui-menu-btn" onclick="showInGameMenu()">☰</button>
         </div>
       </div>
 
@@ -996,8 +1074,8 @@
           </span>
         </div>
         <div class="gui-actions">
-          <button class="gui-action-btn" id="btn-progress" onclick="showProgressModal()">📊 Progress</button>
-          <button class="gui-action-btn end-turn" id="btn-end-turn" onclick="endTurn()">⏭ End Turn</button>
+          <button class="gui-action-btn" id="btn-progress" onclick="showProgressModal()">📊</button>
+          <button class="gui-action-btn end-turn" id="btn-end-turn" onclick="endTurn()">⏭</button>
         </div>
       </div>
 
@@ -1416,7 +1494,7 @@ function getWonderCost(wonderId) { const w = WONDERS.find(w => w.id === wonderId
 function isTechResearched(tribe, techId) { return tribe.techs.includes(techId); }
 function isWonderBuilt(tribe, wonderId) { return tribe.wonders.includes(wonderId); }
 
-// ─── TECH TREE VIEW (updated with city assignment) ──────
+// ─── TECH TREE VIEW ──────────────────────────────────────────
 function showTechTree() {
   const player = G.tribes.find(t => t.isPlayer);
   if (!player) return;
@@ -1575,6 +1653,7 @@ function assignTechToCityConfirm(techId, cityId) {
   render();
   alert(`Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
   showTechTree(); // refresh
+  saveGame();
 }
 
 // ─── GAME STATE ──────────────────────────────────────────────
@@ -1616,6 +1695,82 @@ let G = {
 const camera = { x: 0, y: 0, zoom: 1.0, minZoom: 0.3, maxZoom: 3.0, centered: false };
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
+// ─── MESSAGE AUTO-DISMISS ────────────────────────────────────
+let messageTimeout = null;
+
+function dismissMessage() {
+  if (messageTimeout) clearTimeout(messageTimeout);
+  G.eliminationMessages = [];
+  render();
+}
+
+function queueMessage(msg) {
+  G.eliminationMessages.push(msg);
+  if (messageTimeout) clearTimeout(messageTimeout);
+  messageTimeout = setTimeout(dismissMessage, 4000);
+  render();
+}
+
+// ─── SAVE / LOAD ──────────────────────────────────────────────
+const SAVE_KEY = 'oba_save';
+
+function saveGame() {
+  try {
+    const data = {
+      G: G,
+      camera: camera,
+      usedSettlementNames: usedSettlementNames,
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('Save failed:', e);
+  }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.G) return false;
+    // Restore G
+    Object.assign(G, data.G);
+    // Restore camera
+    Object.assign(camera, data.camera);
+    // Restore settlement names
+    usedSettlementNames = data.usedSettlementNames || [];
+    // Rebuild map reference pointers (cities, harbors, units)
+    for (let r = 0; r < G.mapHeight; r++) {
+      for (let q = 0; q < G.mapWidth; q++) {
+        const tile = G.map[r][q];
+        const city = G.cities.find(c => c.q === q && c.r === r);
+        tile.city = city || null;
+        const unit = G.units.find(u => u.q === q && u.r === r);
+        tile.unit = unit || null;
+        const harbor = G.harbors.find(h => h.q === q && h.r === r);
+        tile.harbor = harbor || null;
+      }
+    }
+    for (const tribe of G.tribes) {
+      tribe.cities = G.cities.filter(c => c.owner === tribe.id);
+      tribe.units = G.units.filter(u => u.tribeId === tribe.id);
+    }
+    G.aliveTribes = G.tribes.filter(t => t.alive);
+    updateVisibility();
+    updateUI();
+    render();
+    showScreen('game-screen');
+    return true;
+  } catch (e) {
+    console.warn('Load failed:', e);
+    return false;
+  }
+}
+
+function checkSaveExists() {
+  return localStorage.getItem(SAVE_KEY) !== null;
+}
 
 // ─── HEX UTILITIES ───────────────────────────────────────────
 function hexCornerShortened(cx, cy, size, i) {
@@ -2275,14 +2430,14 @@ function upgradeUnit(unit, level) {
     unit.maxHp += 5;
     unit.hp = unit.maxHp;
     unit.veteranLevel = 1;
-    G.eliminationMessages.push(`💪 ${unit.name} is now a Veteran!`);
+    queueMessage(`💪 ${unit.name} is now a Veteran!`);
   } else if (level === 2 && unit.veteranLevel < 2) {
     unit.atk += 1;
     unit.def += 1;
     unit.maxHp += 5;
     unit.hp = unit.maxHp;
     unit.veteranLevel = 2;
-    G.eliminationMessages.push(`🏆 ${unit.name} is now Legendary!`);
+    queueMessage(`🏆 ${unit.name} is now Legendary!`);
   }
   updateUI();
   render();
@@ -2340,6 +2495,7 @@ function buyUnitWithGold(city, unitType) {
   if (!placed) { alert('No space to place unit!'); return false; }
   player.gold -= goldCost;
   updateUI(); render();
+  saveGame();
   return true;
 }
 
@@ -2354,6 +2510,7 @@ function buildLibrary(city) {
   player.gold -= cost;
   city.hasLibrary = true;
   updateUI(); render();
+  saveGame();
   return true;
 }
 
@@ -2368,6 +2525,7 @@ function buildUniversity(city) {
   player.gold -= cost;
   city.hasUniversity = true;
   updateUI(); render();
+  saveGame();
   return true;
 }
 
@@ -2422,6 +2580,7 @@ function buildHarbor(unit) {
       tile.harbor = harbor;
       unit.hasMoved = true;
       updateVisibility();
+      saveGame();
       return true;
     }
   }
@@ -2459,6 +2618,7 @@ function buildRaft(unit) {
         tribe.gold -= 20;
         unit.hasMoved = true;
         updateVisibility();
+        saveGame();
         return true;
       }
     }
@@ -2491,6 +2651,7 @@ function processHarborProduction(harbor) {
         harbor.project = null;
         harbor.production = 0;
         updateVisibility();
+        saveGame();
       }
     }
   }
@@ -2524,6 +2685,7 @@ function captureNeutralVillage(city, newOwnerId) {
     }
   }
   if (oldOwner) checkTribeEliminated(oldOwner);
+  saveGame();
 }
 function captureCity(city, newOwnerId) {
   const oldOwnerId = city.owner;
@@ -2552,6 +2714,7 @@ function captureCity(city, newOwnerId) {
     }
   }
   checkTribeEliminated(oldOwnerId);
+  saveGame();
 }
 
 // ─── COMBAT (deterministic) ──────────────────────────────
@@ -2591,6 +2754,7 @@ function performAttack(attacker, defender) {
         const idx = G.units.indexOf(attacker); if (idx > -1) G.units.splice(idx, 1);
         checkTribeEliminated(attacker.tribeId);
     }
+    saveGame();
     return { killed, damage: damageToDefender, defDamage: damageToAttacker };
 }
 
@@ -2606,13 +2770,14 @@ function checkTribeEliminated(tribeId) {
     const idx = G.aliveTribes.indexOf(tribe);
     if (idx > -1) G.aliveTribes.splice(idx, 1);
     const msg = tribe.isPlayer ? 'Your kingdom has fallen!' : `${tribe.name} has been eliminated!`;
-    G.eliminationMessages.push(msg);
+    queueMessage(msg);
     if (tribe.isPlayer) {
       G.gameOver = true;
       G.winner = 'AI';
       showGameOverModal('💀 Defeat', 'Your kingdom has fallen…');
     }
     checkWinConditions();
+    saveGame();
   }
 }
 function checkWinConditions() {
@@ -2629,6 +2794,7 @@ function checkWinConditions() {
     if (playerTiles > oppTiles) { G.winner = 'Player'; showGameOverModal('🏆 Victory!', 'You control more territory when time ran out!'); }
     else { G.winner = 'AI'; showGameOverModal('💀 Defeat', 'The enemy controls more territory.'); }
   }
+  saveGame();
 }
 function showGameOverModal(title, msg) {
   const overlay = document.getElementById('modal-overlay');
@@ -2679,6 +2845,7 @@ function applyStockpileToProject(city) {
         } else {
           city.progress = cost;
         }
+        saveGame();
       }
     };
   } else if (city.project.type === 'tech') {
@@ -2698,6 +2865,7 @@ function applyStockpileToProject(city) {
             c.progress = 0;
           }
         }
+        saveGame();
       }
     };
   } else if (city.project.type === 'wonder') {
@@ -2712,6 +2880,7 @@ function applyStockpileToProject(city) {
         if (!isWonderBuilt(tribe, city.project.id)) tribe.wonders.push(city.project.id);
         city.project = null;
         city.progress = 0;
+        saveGame();
       }
     };
   }
@@ -3069,9 +3238,10 @@ function endTurn() {
     G.animating = false;
     runAI();
     if (!G.gameOver) { G.turnPhase = 'player'; updateVisibility(); updateUI(); render(); }
+    saveGame(); // save after AI turn
   }, 350);
 }
-function finishTurn() { G.turnPhase = 'player'; updateVisibility(); updateUI(); render(); }
+function finishTurn() { G.turnPhase = 'player'; updateVisibility(); updateUI(); render(); saveGame(); }
 
 // ─── MOVEMENT & ATTACK HELPERS ──────────────────────────
 function tryMoveUnit() {
@@ -3100,6 +3270,7 @@ function tryMoveUnit() {
   updateVisibility();
   G.selectedUnit = unit;
   updateUI(); render(); updateActionPopup();
+  saveGame();
   return true;
 }
 function tryAttackUnit() {
@@ -3116,6 +3287,7 @@ function tryAttackUnit() {
   if (unit.hp <= 0) G.selectedUnit = null;
   updateVisibility();
   updateUI(); render(); updateActionPopup(); checkWinConditions();
+  saveGame();
 }
 
 function tryHealUnit() {
@@ -3126,6 +3298,7 @@ function tryHealUnit() {
   if (healed) {
     updateVisibility();
     updateUI(); render(); updateActionPopup();
+    saveGame();
   }
 }
 
@@ -3139,11 +3312,8 @@ function tryInvigorate() {
     updateVisibility();
     updateUI(); render(); updateActionPopup();
     const msg = `✨ Invigorated! ${result.healedCount} units healed, ${result.boostedCount} units boosted!`;
-    G.eliminationMessages.push(msg);
-    setTimeout(() => { 
-      G.eliminationMessages = G.eliminationMessages.filter(m => m !== msg);
-      render(); 
-    }, 2000);
+    queueMessage(msg);
+    saveGame();
   }
 }
 
@@ -3186,6 +3356,7 @@ function setHarborProjectAndClose(id, type) {
   closeModal();
   updateUI();
   render();
+  saveGame();
 }
 
 // ─── CITY PRODUCTION UI ──────────────────────────────────
@@ -3330,6 +3501,7 @@ function setCityProjectAndClose(id, type) {
   closeModal();
   updateUI();
   render();
+  saveGame();
 }
 function upgradeCity(city) {
   const player = G.tribes.find(t => t.isPlayer);
@@ -3344,6 +3516,7 @@ function upgradeCity(city) {
   render();
   closeModal();
   openCityProduction();
+  saveGame();
 }
 
 // ─── PROGRESS MODAL (RANKINGS) ────────────────────────────
@@ -3515,6 +3688,7 @@ popup.querySelectorAll('button').forEach(btn => {
         G.selectedUnit.hasMoved = true;
         G.selectedUnit = null;
         updateUI(); render(); hideActionPopup();
+        saveGame();
       }
     } else if (action === 'heal') {
       tryHealUnit();
@@ -3728,7 +3902,7 @@ function render() {
         ctx.fill(hexPath);
       }
 
-      // ─── Influence border (instead of overlay) ───
+      // ─── Influence border ───
       const key = hexKey(q, r);
       const influenceColor = influenceMap[key];
       if (influenceColor && (isVisible || tile.owner === player.id)) {
@@ -3739,7 +3913,7 @@ function render() {
         ctx.restore();
       }
 
-      // ─── Border (thin owner border) ───
+      // ─── Border ───
       let borderColor = '#d0c4b8';
       let borderWidth = 1.0 / camera.zoom;
       if (isVisible && tile.owner) {
@@ -4191,6 +4365,108 @@ let camStartX = 0, camStartY = 0;
 let mouseDownPos = { x: 0, y: 0 };
 let isClick = false;
 let lastTouchDist = 0;
+let touchStartPos = { x: 0, y: 0 };
+
+// Improved unit selection: click on a unit pixel instead of hex grid
+function handleClick(sx, sy) {
+  if (G.gameOver || G.turnPhase !== 'player') return;
+  const rect = canvas.getBoundingClientRect();
+  // sx, sy are in canvas coordinates (already scaled)
+  // Use them directly.
+
+  // Check if clicked on a unit (proximity-based)
+  const player = G.tribes.find(t => t.isPlayer);
+  if (!player) return;
+
+  // Convert screen coordinates to world coordinates using camera
+  const world = screenToWorld(sx, sy);
+
+  // Check if we clicked on a unit belonging to the player
+  let clickedUnit = null;
+  let minDist = 40; // threshold in world units (pixels)
+  for (const unit of G.units) {
+    if (!unit.active) continue;
+    if (unit.tribeId !== player.id) continue;
+    // Get pixel position of unit
+    const pos = hexToPixel(unit.q, unit.r, G.hexSize);
+    const dx = pos.x - world.x;
+    const dy = pos.y - world.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < minDist) {
+      minDist = dist;
+      clickedUnit = unit;
+    }
+  }
+
+  if (clickedUnit) {
+    G.selectedUnit = clickedUnit;
+    G.selectedCity = null;
+    G.selectedHarbor = null;
+    // Check if unit is on a city
+    const tile = G.map[clickedUnit.r]?.[clickedUnit.q];
+    if (tile && tile.city && tile.city.owner === player.id) {
+      G.selectedCity = tile.city;
+    }
+    showActionPopup(sx, sy);
+    updateUI(); render();
+    return;
+  }
+
+  // If no unit, try to select a city or harbor via hex grid
+  const hex = getHexFromScreen(sx, sy);
+  if (!inMap(hex.q, hex.r)) return;
+  G.selectedHex = hex;
+  const tile = G.map[hex.r]?.[hex.q];
+
+  if (tile && tile.city && tile.visible) {
+    const city = tile.city;
+    if (city.owner === player.id) {
+      G.selectedCity = city;
+      G.selectedUnit = null;
+      G.selectedHarbor = null;
+      openCityProduction();
+      return;
+    }
+  }
+
+  if (tile && tile.harbor && tile.visible) {
+    const harbor = tile.harbor;
+    if (harbor.owner === player.id) {
+      G.selectedHarbor = harbor;
+      G.selectedUnit = null;
+      G.selectedCity = null;
+      manageHarbor();
+      return;
+    }
+  }
+
+  // If clicked on an enemy unit, initiate attack if we have a selected unit
+  if (G.selectedUnit && tile && tile.unit && tile.unit.tribeId !== player.id) {
+    const dist = hexDistance({ q: G.selectedUnit.q, r: G.selectedUnit.r }, { q: hex.q, r: hex.r });
+    if (dist <= G.selectedUnit.attackRange && !G.selectedUnit.hasAttacked) {
+      tryAttackUnit();
+      return;
+    }
+  }
+
+  // If clicked on a reachable tile and we have a selected unit, try to move
+  if (G.selectedUnit && tile && !tile.unit && isTilePassable(hex.q, hex.r, G.selectedUnit.isNaval)) {
+    const dist = hexDistance({ q: G.selectedUnit.q, r: G.selectedUnit.r }, { q: hex.q, r: hex.r });
+    if (dist <= G.selectedUnit.move && !G.selectedUnit.hasMoved) {
+      // Set the hex before moving
+      G.selectedHex = hex;
+      tryMoveUnit();
+      return;
+    }
+  }
+
+  // Deselect
+  G.selectedUnit = null;
+  G.selectedCity = null;
+  G.selectedHarbor = null;
+  hideActionPopup();
+  updateUI(); render();
+}
 
 canvas.addEventListener('mousedown', (e) => {
   const rect = canvas.getBoundingClientRect();
@@ -4232,95 +4508,7 @@ canvas.addEventListener('mouseup', (e) => {
 
 canvas.addEventListener('mouseleave', () => { isDragging = false; });
 
-function handleClick(sx, sy) {
-  if (G.gameOver || G.turnPhase !== 'player') return;
-  const hex = getHexFromScreen(sx, sy);
-  if (!inMap(hex.q, hex.r)) return;
-  G.selectedHex = hex;
-  const tile = G.map[hex.r]?.[hex.q];
-  const player = G.tribes.find(t => t.isPlayer);
-
-  if (G.selectedUnit && G.selectedUnit.tribeId === player.id) {
-    const unit = G.selectedUnit;
-    if (tile && tile.unit && tile.visible && tile.unit.tribeId !== player.id) {
-      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
-      if (dist <= unit.attackRange && !unit.hasAttacked) {
-        performAttack(unit, tile.unit);
-        if (unit.hp <= 0) G.selectedUnit = null;
-        updateVisibility();
-        updateUI(); render(); checkWinConditions();
-        hideActionPopup();
-        return;
-      }
-    }
-    if (!unit.hasMoved && tile && tile.visible && !tile.unit && isTilePassable(hex.q, hex.r, unit.isNaval)) {
-      const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
-      if (dist <= unit.move) {
-        const path = findPath(unit.q, unit.r, hex.q, hex.r, unit, unit.tribeId);
-        if (path && path.length <= unit.move + 1) {
-          if (tile.city) {
-            if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
-            else if (tile.city.owner !== unit.tribeId) captureCity(tile.city, unit.tribeId);
-          }
-          G.map[unit.r][unit.q].unit = null;
-          unit.q = hex.q; unit.r = hex.r;
-          G.map[unit.r][unit.q].unit = unit;
-          unit.hasMoved = true;
-          updateVisibility();
-          G.selectedUnit = null;
-          hideActionPopup();
-          updateUI(); render();
-          return;
-        }
-      }
-    }
-  }
-
-  if (tile && tile.unit && tile.visible) {
-    const unit = tile.unit;
-    if (unit.tribeId === player.id) {
-      G.selectedUnit = unit;
-      G.selectedCity = null;
-      G.selectedHarbor = null;
-      if (tile.city && tile.city.owner === player.id) {
-        G.selectedCity = tile.city;
-      }
-      showActionPopup(sx, sy);
-      updateUI(); render();
-      return;
-    }
-  }
-
-  if (tile && tile.city && tile.visible) {
-    const city = tile.city;
-    if (city.owner === player.id) {
-      G.selectedCity = city;
-      G.selectedUnit = null;
-      G.selectedHarbor = null;
-      openCityProduction();
-      return;
-    }
-  }
-
-  if (tile && tile.harbor && tile.visible) {
-    const harbor = tile.harbor;
-    if (harbor.owner === player.id) {
-      G.selectedHarbor = harbor;
-      G.selectedUnit = null;
-      G.selectedCity = null;
-      manageHarbor();
-      return;
-    }
-  }
-
-  G.selectedUnit = null;
-  G.selectedCity = null;
-  G.selectedHarbor = null;
-  hideActionPopup();
-  updateUI(); render();
-}
-
-// ─── TOUCH EVENTS ──────────────────────────────────────
+// Touch events - fixed panning
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
   const touches = e.touches;
@@ -4331,6 +4519,8 @@ canvas.addEventListener('touchstart', (e) => {
     const sy = (t.clientY - rect.top) * (canvas.height / rect.height);
     mouseDownPos.x = sx;
     mouseDownPos.y = sy;
+    touchStartPos.x = sx;
+    touchStartPos.y = sy;
     camStartX = camera.x;
     camStartY = camera.y;
     isClick = true;
@@ -4351,16 +4541,22 @@ canvas.addEventListener('touchstart', (e) => {
 canvas.addEventListener('touchmove', (e) => {
   e.preventDefault();
   const touches = e.touches;
-  if (touches.length === 1 && isDragging) {
+  if (touches.length === 1) {
     const t = touches[0];
     const rect = canvas.getBoundingClientRect();
     const sx = (t.clientX - rect.left) * (canvas.width / rect.width);
     const sy = (t.clientY - rect.top) * (canvas.height / rect.height);
     const dx = sx - mouseDownPos.x;
     const dy = sy - mouseDownPos.y;
-    camera.x = camStartX + dx;
-    camera.y = camStartY + dy;
-    render();
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+      isClick = false;
+      isDragging = true;
+    }
+    if (isDragging) {
+      camera.x = camStartX + dx;
+      camera.y = camStartY + dy;
+      render();
+    }
   } else if (touches.length === 2) {
     const t1 = touches[0], t2 = touches[1];
     const rect = canvas.getBoundingClientRect();
@@ -4430,6 +4626,84 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   G.screen = id;
   if (id === 'game-screen') { setTimeout(() => { render(); updateUI(); }, 50); }
+}
+
+function showNewGameWizard() {
+  // Reset to first step
+  goToStep('step-mode');
+  showScreen('newgame-screen');
+}
+
+function goToStep(stepId) {
+  document.querySelectorAll('.ng-step').forEach(el => el.classList.remove('active'));
+  document.getElementById(stepId).classList.add('active');
+  // Update summary if in final step
+  if (stepId === 'step-opponents') {
+    updateCampaignSummary();
+  }
+}
+
+// ─── MODE SELECTION ─────────────────────────────────────────
+let selectedMode = 'conquest';
+
+function selectMode(btn) {
+  document.querySelectorAll('.ng-mode-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMode = btn.dataset.mode;
+  // Show/hide custom options
+  const customOpts = document.getElementById('custom-options');
+  customOpts.classList.toggle('show', selectedMode === 'custom');
+  // Update summary when we go to final step later
+}
+
+// ─── CAMPAIGN SUMMARY UPDATE ──────────────────────────────
+function updateCampaignSummary() {
+  const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+  const tribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+  const tribe = TRIBES_DATA.find(t => t.id === tribeId);
+  const modeNames = { conquest: 'Conquest', sandsoftime: 'Sands of Time', oba: 'Oba', custom: 'Custom' };
+  const oppCount = G.opponents.length || 5;
+  document.getElementById('sum-tribe').textContent = tribe ? `${tribe.icon} ${tribe.name}` : '—';
+  document.getElementById('sum-mode').textContent = modeNames[selectedMode] || selectedMode;
+  document.getElementById('sum-opps').textContent = oppCount;
+  document.getElementById('sum-diff').textContent = G.difficulty || 'Normal';
+  document.getElementById('sum-turns').textContent = selectedMode === 'sandsoftime' ? '40' :
+    selectedMode === 'custom' ? document.getElementById('custom-turns').value || '50' : '∞';
+}
+
+// ─── OPPONENT LIST ─────────────────────────────────────────
+function updateOpponentList() {
+  const container = document.getElementById('opponent-list');
+  container.innerHTML = '';
+  // Default opponents based on mode
+  let selected = G.opponents;
+  if (!selected || selected.length === 0) {
+    // Generate default list based on selected tribe and mode
+    const playerTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = playerTribe ? playerTribe.dataset.tribe : 'zulu';
+    const avail = TRIBES_DATA.filter(t => t.id !== playerId);
+    const shuffled = avail.sort(() => Math.random() - 0.5);
+    if (selectedMode === 'oba') {
+      selected = avail.map(t => t.id);
+    } else if (selectedMode === 'sandsoftime' || selectedMode === 'conquest') {
+      selected = shuffled.slice(0, 5).map(t => t.id);
+    } else if (selectedMode === 'custom') {
+      const count = parseInt(document.getElementById('custom-opponents').value) || 5;
+      selected = shuffled.slice(0, Math.min(count, shuffled.length)).map(t => t.id);
+    }
+    G.opponents = selected;
+  }
+  for (const id of selected) {
+    const t = TRIBES_DATA.find(t => t.id === id);
+    if (t) {
+      const span = document.createElement('span');
+      span.className = 'opp-tag';
+      span.textContent = `${t.icon} ${t.name}`;
+      container.appendChild(span);
+    }
+  }
+  if (selected.length === 0) { container.textContent = 'No opponents selected.'; container.style.color = '#6b4f3a'; }
+  updateCampaignSummary();
 }
 
 function showHowToPlay() {
@@ -4509,7 +4783,7 @@ function restartGame() {
   G.aiActive = false; G.turnPhase = 'player'; G.playerGold = 80;
   G.eliminationMessages = [];
   resetSettlementNames();
-  const activeTribe = document.querySelector('.ng-tribe-item.active');
+  const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
   const tribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
   const opps = G.opponents.length > 0 ? G.opponents : [];
   generateMap(); initTribes(tribeId, opps);
@@ -4517,35 +4791,47 @@ function restartGame() {
   camera.zoom = 1.0;
   centerCameraOnPlayerCity();
   updateUI(); render(); showScreen('game-screen');
+  saveGame();
 }
 
 // ─── SETUP ──────────────────────────────────────────────
 function setupNewGame() {
-  const modeRadio = document.querySelector('input[name="mode"]:checked');
-  G.gameMode = modeRadio ? modeRadio.value : 'conquest';
-  if (G.gameMode === 'custom') {
+  // Gather all settings
+  G.gameMode = selectedMode;
+  if (selectedMode === 'custom') {
     G.maxTurns = parseInt(document.getElementById('custom-turns').value) || 50;
     const oppCount = parseInt(document.getElementById('custom-opponents').value) || 5;
     G.difficulty = document.getElementById('custom-difficulty').value || 'normal';
-    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    // Build opponent list
+    const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+    const avail = TRIBES_DATA.filter(t => t.id !== playerId);
     const shuffled = avail.sort(() => Math.random() - 0.5);
     G.opponents = shuffled.slice(0, Math.min(oppCount, shuffled.length)).map(t => t.id);
-  } else if (G.gameMode === 'oba') {
+  } else if (selectedMode === 'oba') {
     G.maxTurns = 999; G.difficulty = 'hard';
-    G.opponents = TRIBES_DATA.filter(t => t.id !== G.playerTribeId).map(t => t.id);
-  } else if (G.gameMode === 'sandsoftime') {
+    const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+    G.opponents = TRIBES_DATA.filter(t => t.id !== playerId).map(t => t.id);
+  } else if (selectedMode === 'sandsoftime') {
     G.maxTurns = 40; G.difficulty = 'normal';
-    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+    const avail = TRIBES_DATA.filter(t => t.id !== playerId);
     const shuffled = avail.sort(() => Math.random() - 0.5);
     G.opponents = shuffled.slice(0, 5).map(t => t.id);
-  } else {
+  } else { // conquest
     G.maxTurns = 999; G.difficulty = 'normal';
-    const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId);
+    const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+    const avail = TRIBES_DATA.filter(t => t.id !== playerId);
     const shuffled = avail.sort(() => Math.random() - 0.5);
     G.opponents = shuffled.slice(0, 5).map(t => t.id);
   }
-  const activeTribe = document.querySelector('.ng-tribe-item.active');
+  // Player tribe
+  const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
   G.playerTribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+
   G.turn = 0; G.units = []; G.cities = []; G.harbors = [];
   G.unitIdCounter = 0; G.cityIdCounter = 0; G.harborIdCounter = 0;
   G.gameOver = false; G.winner = null; G.turnPhase = 'player'; G.playerGold = 80;
@@ -4556,6 +4842,7 @@ function setupNewGame() {
   camera.zoom = 1.0;
   centerCameraOnPlayerCity();
   updateUI(); render(); showScreen('game-screen');
+  saveGame();
 }
 
 function populateTribeGrid() {
@@ -4573,48 +4860,15 @@ function populateTribeGrid() {
     } else {
       iconHtml = `<span class="tribe-icon">${t.icon}</span>`;
     }
-    div.innerHTML = iconHtml + `<span class="tribe-name">${t.name}</span>`;
+    div.innerHTML = iconHtml + `<span class="tribe-name">${t.name}</span><span class="tribe-desc">${t.desc}</span>`;
     div.addEventListener('click', () => {
-      document.querySelectorAll('.ng-tribe-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('#step-tribe .ng-tribe-item').forEach(el => el.classList.remove('active'));
       div.classList.add('active');
-      updateCampaignSummary();
+      // Update opponent list if needed
+      updateOpponentList();
     });
     grid.appendChild(div);
   });
-}
-
-function updateCampaignSummary() {
-  const active = document.querySelector('.ng-tribe-item.active');
-  const tribeId = active ? active.dataset.tribe : 'zulu';
-  const tribe = TRIBES_DATA.find(t => t.id === tribeId);
-  const modeRadio = document.querySelector('input[name="mode"]:checked');
-  const mode = modeRadio ? modeRadio.value : 'conquest';
-  const modeNames = { conquest: 'Conquest', sandsoftime: 'Sands of Time', oba: 'Oba', custom: 'Custom' };
-  const oppCount = G.opponents.length || 5;
-  document.getElementById('sum-tribe').textContent = tribe ? `${tribe.icon} ${tribe.name}` : '—';
-  document.getElementById('sum-mode').textContent = modeNames[mode] || mode;
-  document.getElementById('sum-opps').textContent = oppCount;
-  document.getElementById('sum-diff').textContent = G.difficulty || 'Normal';
-  document.getElementById('sum-turns').textContent = G.gameMode === 'sandsoftime' ? '40' :
-    G.gameMode === 'custom' ? document.getElementById('custom-turns').value || '50' : '∞';
-}
-function updateOpponentList() {
-  const container = document.getElementById('opponent-list');
-  container.innerHTML = '';
-  const selected = G.opponents.length > 0 ? G.opponents :
-    TRIBES_DATA.filter(t => t.id !== G.playerTribeId).slice(0, 5).map(t => t.id);
-  G.opponents = selected;
-  for (const id of selected) {
-    const t = TRIBES_DATA.find(t => t.id === id);
-    if (t) {
-      const span = document.createElement('span');
-      span.className = 'opp-tag';
-      span.textContent = `${t.icon} ${t.name}`;
-      container.appendChild(span);
-    }
-  }
-  if (selected.length === 0) { container.textContent = 'No opponents selected.'; container.style.color = '#6b4f3a'; }
-  updateCampaignSummary();
 }
 
 // ─── MAIN INIT ──────────────────────────────────────────
@@ -4622,32 +4876,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const textLogo = document.getElementById('menu-text-logo');
   if (textLogo) textLogo.style.display = 'block';
 
+  // Enable Load Game if save exists
+  const loadBtn = document.getElementById('load-game-btn');
+  if (checkSaveExists()) {
+    loadBtn.disabled = false;
+    loadBtn.classList.remove('secondary');
+    loadBtn.classList.add('primary');
+  }
+
   showScreen('menu-screen');
 
   loadImages(() => {
     showScreen('menu-screen');
-
     populateTribeGrid();
-    G.playerTribeId = 'zulu';
-    G.opponents = TRIBES_DATA.filter(t => t.id !== 'zulu').slice(0, 5).map(t => t.id);
+    // Init opponents for summary
+    const playerTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+    const playerId = playerTribe ? playerTribe.dataset.tribe : 'zulu';
+    const avail = TRIBES_DATA.filter(t => t.id !== playerId);
+    const shuffled = avail.sort(() => Math.random() - 0.5);
+    G.opponents = shuffled.slice(0, 5).map(t => t.id);
     updateOpponentList();
 
-    document.querySelectorAll('#mode-grid .ng-option').forEach(el => {
-      const radio = el.querySelector('input[type="radio"]');
-      radio.addEventListener('change', () => {
-        document.querySelectorAll('#mode-grid .ng-option').forEach(opt => opt.classList.remove('selected'));
-        if (radio.checked) el.classList.add('selected');
-        const customOpts = document.getElementById('custom-options');
-        customOpts.style.display = radio.value === 'custom' ? 'block' : 'none';
-        if (radio.value === 'sandsoftime') G.maxTurns = 40;
-        else if (radio.value === 'oba') { G.maxTurns = 999; G.difficulty = 'hard'; }
-        else if (radio.value === 'conquest') { G.maxTurns = 999; G.difficulty = 'normal'; }
-        updateCampaignSummary();
+    // Handle mode selection events
+    document.querySelectorAll('.ng-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectMode(btn);
+        // Update opponent list when mode changes (custom may change count)
+        updateOpponentList();
       });
     });
 
+    // Add AI / Remove AI buttons for opponents
     document.getElementById('add-ai-btn').addEventListener('click', () => {
-      const avail = TRIBES_DATA.filter(t => t.id !== G.playerTribeId && !G.opponents.includes(t.id));
+      const playerTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+      const playerId = playerTribe ? playerTribe.dataset.tribe : 'zulu';
+      const avail = TRIBES_DATA.filter(t => t.id !== playerId && !G.opponents.includes(t.id));
       if (avail.length === 0) return;
       const pick = avail[Math.floor(Math.random() * avail.length)];
       G.opponents.push(pick.id);
@@ -4661,7 +4924,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('start-game-btn').addEventListener('click', setupNewGame);
-    updateCampaignSummary();
+
+    // Custom options changes
+    document.getElementById('custom-opponents').addEventListener('input', () => {
+      if (selectedMode === 'custom') {
+        const count = parseInt(document.getElementById('custom-opponents').value) || 5;
+        const playerTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+        const playerId = playerTribe ? playerTribe.dataset.tribe : 'zulu';
+        const avail = TRIBES_DATA.filter(t => t.id !== playerId);
+        const shuffled = avail.sort(() => Math.random() - 0.5);
+        G.opponents = shuffled.slice(0, Math.min(count, shuffled.length)).map(t => t.id);
+        updateOpponentList();
+      }
+    });
+
+    document.getElementById('custom-turns').addEventListener('input', updateCampaignSummary);
+    document.getElementById('custom-difficulty').addEventListener('change', updateCampaignSummary);
 
     window.addEventListener('resize', () => {
       if (G.screen === 'game-screen') {
@@ -4678,7 +4956,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'a' || e.key === 'A') { if (G.selectedUnit && !G.selectedUnit.hasAttacked) tryAttackUnit(); }
         if (e.key === 'h' || e.key === 'H') { tryHealUnit(); }
         if (e.key === 'i' || e.key === 'I') { tryInvigorate(); }
-        if (e.key === ' ') { e.preventDefault(); if (G.selectedUnit) { G.selectedUnit.hasMoved = true; G.selectedUnit = null; hideActionPopup(); updateUI(); render(); } }
+        if (e.key === ' ') { e.preventDefault(); if (G.selectedUnit) { G.selectedUnit.hasMoved = true; G.selectedUnit = null; hideActionPopup(); updateUI(); render(); saveGame(); } }
         if (e.key === 'Escape') showInGameMenu();
         if (e.key === 'b' || e.key === 'B') {
           if (G.selectedCity) openCityProduction();
@@ -4689,7 +4967,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    console.log('Oba v6.1 – Metropolis, dynamic highlights, images for library/university, progress rankings, and tech assignment per city.');
+    console.log('Oba v7.4 – Logo width fixed, subtitle enhanced, movement glitch resolved.');
   });
 });
 </script>
