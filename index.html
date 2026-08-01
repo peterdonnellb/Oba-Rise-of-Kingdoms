@@ -31,12 +31,14 @@
             font-family: 'Afacad', sans-serif;
             background: var(--near-black);
             color: var(--cream);
-            overflow: hidden;
+            overflow-y: auto;
+            /* allow scroll when needed */
             height: 100vh;
             width: 100vw;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
+            touch-action: pan-y;
+            /* allow vertical scroll */;
         }
         body.modal-open {
             overflow: hidden;
@@ -54,6 +56,8 @@
             z-index: 10;
             transition: opacity 0.4s ease;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background: var(--near-black);
         }
         .screen.active {
             display: flex;
@@ -63,12 +67,16 @@
         #menu-screen {
             background: var(--near-black);
             justify-content: flex-start;
-            padding-top: 20px;
+            padding-top: 10px;
+            padding-bottom: 40px;
             position: relative;
+            min-height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         #menu-screen::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -78,6 +86,7 @@
             background-position: center;
             opacity: 0.5;
             z-index: 0;
+            pointer-events: none;
         }
         #menu-screen>* {
             position: relative;
@@ -90,17 +99,18 @@
             align-items: center;
             width: 100%;
             max-width: 792px;
+            padding: 0 16px 30px 16px;
+            flex: 1;
         }
 
         #menu-logo-container {
             width: 100%;
             max-width: 435px;
-            /* reduced by 50% from 871px */
-            margin-top: 20px;
+            margin-top: 12px;
+            margin-bottom: 2px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 0.5rem;
             flex-shrink: 0;
         }
         #menu-logo-container img {
@@ -110,7 +120,7 @@
         }
         #menu-text-logo {
             font-family: 'MedievalSharp', cursive;
-            font-size: clamp(2.6rem, 9vw, 5rem);
+            font-size: clamp(2.8rem, 10vw, 5rem);
             color: var(--antique-gold);
             text-shadow: 0 0 60px rgba(212, 175, 55, 0.2), 0 4px 12px rgba(0, 0, 0, 0.9);
             letter-spacing: 4px;
@@ -126,34 +136,37 @@
             color: var(--amethyst-purple);
         }
         .menu-subtitle {
-            font-size: 1.3rem;
+            font-size: clamp(1rem, 3vw, 1.3rem);
             color: var(--vivid-gold);
-            letter-spacing: 8px;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            margin-bottom: 2rem;
+            margin-bottom: 1.8rem;
             opacity: 0.85;
             font-weight: 300;
             text-align: center;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            flex-shrink: 0;
         }
         .menu-btn {
             font-family: 'Afacad', sans-serif;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 3vw, 1.25rem);
             font-weight: 600;
-            padding: 14px 36px;
-            margin: 6px 0;
+            padding: 14px 28px;
+            margin: 5px 0;
             border: 2px solid var(--antique-gold);
-            border-radius: 6px;
+            border-radius: 8px;
             background: rgba(75, 22, 122, 0.3);
             color: var(--cream);
             cursor: pointer;
             transition: all 0.25s ease;
-            min-width: 220px;
+            min-width: 200px;
             text-align: center;
             letter-spacing: 2px;
             text-transform: uppercase;
             -webkit-tap-highlight-color: transparent;
             width: 100%;
+            max-width: 320px;
+            touch-action: manipulation;
         }
         .menu-btn:active {
             transform: scale(0.96);
@@ -161,8 +174,8 @@
         .menu-btn.primary {
             border-color: var(--vivid-gold);
             background: rgba(212, 175, 55, 0.15);
-            font-size: 1.2rem;
-            padding: 16px 44px;
+            font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+            padding: 16px 32px;
             color: var(--vivid-gold);
         }
         .menu-btn.primary:hover {
@@ -182,7 +195,7 @@
         }
 
         .menu-decoration {
-            position: absolute;
+            position: fixed;
             width: 400px;
             height: 400px;
             border-radius: 50%;
@@ -209,13 +222,14 @@
         #newgame-screen {
             background: var(--near-black);
             position: relative;
-            padding: 16px 12px;
+            padding: 16px 12px 40px 12px;
             overflow-y: auto;
             justify-content: flex-start;
+            -webkit-overflow-scrolling: touch;
         }
         #newgame-screen::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -225,6 +239,7 @@
             background-position: center;
             opacity: 0.3;
             z-index: 0;
+            pointer-events: none;
         }
         #newgame-screen>* {
             position: relative;
@@ -238,8 +253,8 @@
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            gap: 16px;
-            padding: 10px 0;
+            gap: 14px;
+            padding: 6px 0 20px 0;
         }
         .ng-step.active {
             display: flex;
@@ -250,7 +265,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 0 4px 8px 4px;
+            padding: 0 4px 10px 4px;
             border-bottom: 1px solid rgba(201, 162, 39, 0.2);
         }
         .ng-step-header .back-btn {
@@ -264,13 +279,15 @@
             transition: 0.2s;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 44px;
         }
         .ng-step-header .back-btn:active {
             background: rgba(74, 53, 40, 0.3);
         }
         .ng-step-header h2 {
             font-family: 'MedievalSharp', cursive;
-            font-size: 1.6rem;
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
             color: var(--antique-gold);
             letter-spacing: 2px;
             margin: 0;
@@ -284,18 +301,18 @@
         .ng-mode-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             padding: 4px 0;
         }
         .ng-mode-btn {
-            padding: 20px 12px;
+            padding: 16px 10px;
             background: rgba(27, 42, 107, 0.35);
             border: 2px solid rgba(201, 162, 39, 0.2);
             border-radius: 14px;
             color: var(--cream-muted);
             font-family: inherit;
-            font-size: 1.1rem;
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -307,6 +324,7 @@
             gap: 4px;
             min-height: 80px;
             justify-content: center;
+            touch-action: manipulation;
         }
         .ng-mode-btn:active {
             transform: scale(0.96);
@@ -333,6 +351,7 @@
             max-height: 50vh;
             overflow-y: auto;
             padding: 4px 0;
+            -webkit-overflow-scrolling: touch;
         }
         .ng-tribe-item {
             padding: 10px 4px;
@@ -350,6 +369,8 @@
             align-items: center;
             gap: 2px;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 70px;
         }
         .ng-tribe-item:active {
             background: rgba(212, 175, 55, 0.15);
@@ -361,7 +382,7 @@
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.05);
         }
         .ng-tribe-item .tribe-icon {
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             display: block;
             line-height: 1.2;
         }
@@ -390,10 +411,10 @@
         }
         #opponent-list .opp-tag {
             background: rgba(30, 18, 12, 0.6);
-            padding: 4px 14px;
+            padding: 6px 14px;
             border-radius: 20px;
             border: 1px solid #3a281e;
-            font-size: 0.8rem;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
             color: var(--cream-muted);
         }
         .ng-actions-row {
@@ -403,8 +424,8 @@
             width: 100%;
         }
         .ng-actions-row button {
-            font-size: 0.9rem;
-            padding: 8px 18px;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
+            padding: 10px 16px;
             border: 1px solid #4a3528;
             background: rgba(20, 12, 8, 0.5);
             color: var(--cream-muted);
@@ -414,6 +435,8 @@
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
             flex: 1;
+            touch-action: manipulation;
+            min-height: 44px;
         }
         .ng-actions-row button:active {
             background: rgba(74, 53, 40, 0.3);
@@ -439,13 +462,13 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 6px 10px;
+            padding: 8px 12px;
             background: rgba(20, 18, 24, 0.3);
             border-radius: 8px;
             flex-wrap: wrap;
         }
         .ng-custom-options .ng-option label {
-            font-size: 0.9rem;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
             color: var(--cream-muted);
             display: flex;
             align-items: center;
@@ -457,11 +480,12 @@
             background: #1a0e08;
             border: 1px solid #3a281e;
             color: var(--cream);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-size: 0.9rem;
             font-family: inherit;
             width: 70px;
+            min-height: 38px;
         }
         .ng-custom-options .ng-option select {
             width: auto;
@@ -471,7 +495,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4px 16px;
-            font-size: 0.9rem;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
             color: var(--cream-muted);
             width: 100%;
             padding: 8px 0;
@@ -493,7 +517,7 @@
         .ng-start-btn {
             width: 100%;
             padding: 16px;
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 3.5vw, 1.4rem);
             font-weight: 700;
             border: 2px solid var(--vivid-gold);
             border-radius: 12px;
@@ -505,6 +529,8 @@
             text-transform: uppercase;
             margin-top: 8px;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 56px;
         }
         .ng-start-btn:active {
             background: rgba(255, 215, 0, 0.2);
@@ -516,6 +542,7 @@
             background: var(--near-black);
             padding: 0;
             justify-content: flex-start;
+            overflow: hidden;
         }
         #game-canvas-wrapper {
             width: 100%;
@@ -567,7 +594,7 @@
             white-space: nowrap;
         }
         .gui-top-left .tribe-name {
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
             color: var(--warm-gold);
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -581,7 +608,7 @@
             border-radius: 4px;
         }
         .gui-top-left .turn-counter {
-            font-size: 0.9rem;
+            font-size: clamp(0.75rem, 2vw, 0.95rem);
             color: var(--coastal-gold);
             font-weight: 600;
             background: rgba(0, 0, 0, 0.3);
@@ -592,14 +619,14 @@
         .gui-top-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             flex-wrap: nowrap;
         }
         .gui-resource {
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 1.8vw, 0.9rem);
             color: var(--cream-muted);
             background: rgba(20, 18, 24, 0.6);
             padding: 2px 8px;
@@ -609,7 +636,7 @@
             white-space: nowrap;
         }
         .gui-resource .icon {
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
         }
         .gui-resource .val {
             font-weight: 700;
@@ -622,13 +649,13 @@
         }
 
         .gui-top-btn {
-            padding: 4px 12px;
+            padding: 4px 10px;
             border: 1px solid #4a3528;
             background: rgba(20, 18, 24, 0.6);
             color: #b8957a;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: clamp(0.65rem, 1.6vw, 0.85rem);
             transition: 0.2s;
             letter-spacing: 0.5px;
             font-family: inherit;
@@ -636,6 +663,7 @@
             min-height: 32px;
             font-weight: 600;
             white-space: nowrap;
+            touch-action: manipulation;
         }
         .gui-top-btn:active {
             background: rgba(74, 53, 40, 0.4);
@@ -650,7 +678,6 @@
         .gui-top-btn.menu-btn {
             border-color: #4a3528;
             color: #b8957a;
-            /* same size as tech-btn */
         }
 
         /* ─── BOTTOM BAR ─── */
@@ -659,45 +686,45 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 8px 10px;
-            background: linear-gradient(0deg, rgba(27, 42, 107, 0.9) 0%, transparent 100%);
+            padding: 8px 10px 12px 10px;
+            background: linear-gradient(0deg, rgba(27, 42, 107, 0.92) 0%, transparent 100%);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            min-height: 56px;
+            min-height: 64px;
         }
         .gui-unit-info {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 12px;
-            background: rgba(20, 18, 24, 0.8);
-            border-radius: 8px;
+            padding: 6px 14px;
+            background: rgba(20, 18, 24, 0.85);
+            border-radius: 10px;
             border: 1px solid rgba(166, 90, 42, 0.3);
-            min-height: 40px;
-            flex: 1 1 140px;
+            min-height: 46px;
+            flex: 1 1 160px;
             flex-wrap: wrap;
             backdrop-filter: blur(4px);
         }
         .gui-unit-info .unit-name {
             font-weight: 700;
             color: var(--terracotta);
-            font-size: 0.9rem;
+            font-size: clamp(0.85rem, 2.4vw, 1.05rem);
             min-width: 50px;
         }
         .gui-unit-info .unit-stats {
-            font-size: 0.8rem;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
             color: #b8957a;
             display: flex;
-            gap: 6px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         .gui-unit-info .unit-stats span {
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 3px;
         }
         .gui-unit-info .unit-stats .stat-val {
             color: var(--cream);
@@ -711,21 +738,22 @@
             align-items: center;
         }
         .gui-action-btn {
-            padding: 8px 16px;
+            padding: 8px 14px;
             border: 1px solid #3a281e;
             background: rgba(20, 18, 24, 0.7);
             color: var(--cream-muted);
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 2.2vw, 0.95rem);
             transition: 0.2s;
             letter-spacing: 0.3px;
             font-family: inherit;
             font-weight: 600;
             -webkit-tap-highlight-color: transparent;
-            min-height: 40px;
+            min-height: 44px;
             min-width: 48px;
             backdrop-filter: blur(2px);
+            touch-action: manipulation;
         }
         .gui-action-btn:active:not(:disabled) {
             background: rgba(74, 53, 40, 0.4);
@@ -752,8 +780,9 @@
             background: rgba(255, 215, 0, 0.08);
             color: var(--vivid-gold);
             font-weight: 700;
-            padding: 8px 20px;
+            padding: 8px 18px;
             min-width: 64px;
+            font-size: clamp(0.85rem, 2.4vw, 1rem);
         }
         .gui-action-btn.end-turn:active:not(:disabled) {
             background: rgba(255, 215, 0, 0.18);
@@ -775,58 +804,84 @@
             background: rgba(155, 89, 182, 0.2);
         }
 
-        /* ─── POPUP ACTION MENU ─── */
+        /* ─── POPUP ACTION MENU — GAME-STYLE ─── */
         #action-popup {
             position: absolute;
-            background: rgba(20, 18, 24, 0.96);
-            backdrop-filter: blur(8px);
+            background: rgba(12, 10, 16, 0.96);
+            backdrop-filter: blur(16px);
             border: 2px solid var(--coastal-gold);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 8px 6px;
             display: none;
             flex-direction: column;
             gap: 4px;
-            min-width: 140px;
+            min-width: 160px;
             z-index: 50;
             pointer-events: auto;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
-            transition: opacity 0.15s ease;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 215, 0, 0.1);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        #action-popup.show {
+            opacity: 1;
+            transform: scale(1);
         }
         #action-popup button {
-            background: rgba(27, 42, 107, 0.3);
-            border: 1px solid rgba(201, 162, 39, 0.15);
-            border-radius: 6px;
+            background: rgba(27, 42, 107, 0.25);
+            border: 1px solid rgba(201, 162, 39, 0.10);
+            border-radius: 8px;
             color: var(--cream);
-            padding: 10px 14px;
-            font-size: 0.9rem;
+            padding: 12px 16px;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
             font-family: 'Afacad', sans-serif;
             cursor: pointer;
             transition: 0.15s;
             text-align: left;
             white-space: nowrap;
             font-weight: 500;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.5px;
             -webkit-tap-highlight-color: transparent;
-            min-height: 44px;
+            min-height: 48px;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
         }
         #action-popup button:hover:not(:disabled) {
-            background: rgba(201, 162, 39, 0.2);
-            border-color: var(--coastal-gold);
+            background: rgba(201, 162, 39, 0.15);
+            border-color: rgba(201, 162, 39, 0.3);
         }
         #action-popup button:active:not(:disabled) {
             transform: scale(0.96);
+            background: rgba(201, 162, 39, 0.2);
         }
         #action-popup button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
+        #action-popup button .action-icon {
+            font-size: 1.2rem;
+            min-width: 28px;
+            text-align: center;
+        }
+        #action-popup button .action-label {
+            flex: 1;
+        }
+        #action-popup button .action-shortcut {
+            font-size: 0.6rem;
+            color: #6b5a4a;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
         #action-popup button.primary {
             border-color: var(--vivid-gold);
             color: var(--vivid-gold);
-            background: rgba(255, 215, 0, 0.08);
+            background: rgba(255, 215, 0, 0.06);
         }
         #action-popup button.primary:hover:not(:disabled) {
-            background: rgba(255, 215, 0, 0.18);
+            background: rgba(255, 215, 0, 0.15);
         }
         #action-popup button.danger {
             border-color: #6a2a1a;
@@ -849,17 +904,34 @@
         #action-popup button.invigorate-btn:hover:not(:disabled) {
             background: rgba(155, 89, 182, 0.15);
         }
-        #action-popup .action-icon {
-            margin-right: 6px;
-            font-size: 1rem;
-        }
         #action-popup button.mine-btn {
             border-color: #f1c40f;
             color: #f1c40f;
         }
+        #action-popup button.mine-btn:hover:not(:disabled) {
+            background: rgba(241, 196, 15, 0.12);
+        }
         #action-popup button.quarry-btn {
             border-color: #95a5a6;
             color: #95a5a6;
+        }
+        #action-popup button.quarry-btn:hover:not(:disabled) {
+            background: rgba(149, 165, 166, 0.12);
+        }
+        #action-popup .popup-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.15), transparent);
+            margin: 2px 8px;
+        }
+        #action-popup .popup-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6b5a4a;
+            padding: 4px 12px 2px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(42, 26, 16, 0.3);
+            margin-bottom: 2px;
         }
 
         /* ─── MODAL ─── */
@@ -869,12 +941,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 100;
+            padding: 16px;
         }
         .modal-overlay.active {
             display: flex;
@@ -882,17 +955,18 @@
         .modal-box {
             background: radial-gradient(ellipse at 50% 40%, var(--regal-plum) 0%, var(--near-black) 100%);
             border: 2px solid var(--antique-gold);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 24px 20px;
             max-width: 620px;
-            width: 92%;
+            width: 100%;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9);
+            -webkit-overflow-scrolling: touch;
         }
         .modal-box h2 {
             font-family: 'MedievalSharp', cursive;
-            font-size: 1.6rem;
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
             color: var(--antique-gold);
             margin-bottom: 6px;
             text-align: center;
@@ -901,14 +975,14 @@
         .modal-box p {
             color: var(--cream-muted);
             line-height: 1.5;
-            font-size: 0.9rem;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
             text-align: left;
         }
         .modal-box .gameplay-section {
             margin-top: 10px;
-            padding: 10px;
+            padding: 12px;
             background: rgba(20, 18, 24, 0.4);
-            border-radius: 8px;
+            border-radius: 10px;
         }
         .modal-box .gameplay-section strong {
             color: var(--warm-gold);
@@ -921,24 +995,29 @@
             flex-wrap: wrap;
         }
         .modal-box .modal-actions button {
-            padding: 8px 24px;
+            padding: 10px 24px;
             border: 1px solid var(--vivid-gold);
             background: rgba(255, 215, 0, 0.08);
             color: var(--vivid-gold);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: clamp(0.85rem, 2.2vw, 0.95rem);
             transition: 0.2s;
             letter-spacing: 1px;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
-            min-height: 44px;
+            min-height: 48px;
+            touch-action: manipulation;
         }
         .modal-box .modal-actions button:active {
             background: rgba(255, 215, 0, 0.18);
         }
         .modal-box .modal-actions button.primary {
             background: rgba(255, 215, 0, 0.15);
+        }
+        .modal-box .modal-actions button.danger {
+            border-color: #6a2a1a;
+            color: #b85a4a;
         }
 
         /* ─── TECH TREE VISUAL ─── */
@@ -948,6 +1027,7 @@
             gap: 4px;
             padding: 6px 0;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .tech-row {
             display: flex;
@@ -965,6 +1045,7 @@
             text-align: center;
             font-size: 0.7rem;
             transition: 0.2s;
+            cursor: default;
         }
         .tech-node.researched {
             border-color: var(--vivid-gold);
@@ -1090,29 +1171,38 @@
                 min-height: 28px;
             }
             .gui-unit-info .unit-name {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .gui-unit-info .unit-stats {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
             }
             .gui-action-btn {
                 font-size: 0.8rem;
                 padding: 6px 12px;
-                min-height: 36px;
+                min-height: 40px;
             }
             .gui-action-btn.end-turn {
                 padding: 6px 16px;
                 min-width: 56px;
+                font-size: 0.85rem;
+            }
+            #action-popup {
+                min-width: 140px;
+            }
+            #action-popup button {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                min-height: 44px;
             }
         }
         @media (max-width: 480px) {
             #menu-text-logo {
-                font-size: 2.4rem;
+                font-size: 2.6rem;
                 letter-spacing: 2px;
             }
             #menu-text-logo::before,
             #menu-text-logo::after {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
                 margin: 0 4px;
             }
             .ng-tribe-grid {
@@ -1125,7 +1215,7 @@
                 grid-template-columns: 1fr;
             }
             .ng-step-header h2 {
-                font-size: 1.4rem;
+                font-size: 1.3rem;
             }
             .tech-node {
                 min-width: 50px;
@@ -1137,98 +1227,131 @@
                 min-height: 34px;
             }
             .gui-top-left .tribe-name {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
             }
             .gui-top-left .turn-counter {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 1px 4px;
             }
             .gui-resource {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 1px 4px;
             }
             .gui-top-btn {
-                font-size: 0.65rem;
+                font-size: 0.7rem;
                 padding: 3px 8px;
-                min-height: 24px;
+                min-height: 26px;
             }
             .gui-unit-info .unit-name {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
                 min-width: 36px;
             }
             .gui-unit-info .unit-stats {
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 gap: 4px;
             }
             .gui-action-btn {
-                font-size: 0.7rem;
+                font-size: 0.75rem;
                 padding: 5px 10px;
-                min-height: 32px;
+                min-height: 38px;
                 min-width: 40px;
             }
             .gui-action-btn.end-turn {
                 padding: 5px 12px;
                 min-width: 48px;
+                font-size: 0.8rem;
             }
             #action-popup button {
                 font-size: 0.8rem;
-                padding: 8px 12px;
-                min-height: 40px;
+                padding: 10px 12px;
+                min-height: 44px;
+            }
+            #action-popup {
+                min-width: 130px;
+                padding: 6px 4px;
             }
             .gui-bottom {
-                padding: 6px 8px;
-                min-height: 48px;
+                padding: 6px 8px 10px 8px;
+                min-height: 56px;
             }
             .gui-unit-info {
+                padding: 4px 10px;
+                min-height: 40px;
+            }
+            #action-popup button .action-icon {
+                font-size: 1rem;
+                min-width: 24px;
+            }
+            #action-popup button .action-shortcut {
+                display: none;
+            }
+            .menu-btn {
+                font-size: 0.9rem;
+                padding: 12px 20px;
+                min-width: 160px;
+                max-width: 280px;
+            }
+            .menu-btn.primary {
+                font-size: 1rem;
+                padding: 14px 28px;
+            }
+            .menu-subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 4px;
+                margin-bottom: 1.2rem;
+            }
+            #menu-logo-container {
+                max-width: 300px;
+                margin-top: 8px;
+            }
+        }
+        @media (max-width: 380px) {
+            #menu-text-logo {
+                font-size: 2.2rem;
+            }
+            #menu-text-logo::before,
+            #menu-text-logo::after {
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .gui-top-left .tribe-name {
+                font-size: 0.65rem;
+            }
+            .gui-resource {
+                font-size: 0.6rem;
+                padding: 1px 3px;
+            }
+            .gui-top-btn {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+                min-height: 22px;
+            }
+            .gui-unit-info .unit-stats {
+                font-size: 0.55rem;
+                gap: 2px;
+            }
+            .gui-action-btn {
+                font-size: 0.65rem;
                 padding: 4px 8px;
                 min-height: 34px;
+                min-width: 34px;
+            }
+            .gui-action-btn.end-turn {
+                padding: 4px 10px;
+                min-width: 40px;
+                font-size: 0.7rem;
+            }
+            #action-popup {
+                min-width: 110px;
+            }
+            #action-popup button {
+                font-size: 0.7rem;
+                padding: 8px 10px;
+                min-height: 38px;
             }
         }
 
-        .menu-btn {
-            font-family: 'Afacad', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            padding: 14px 40px;
-            margin: 6px 0;
-            border: 2px solid var(--antique-gold);
-            border-radius: 6px;
-            background: rgba(75, 22, 122, 0.3);
-            color: var(--cream);
-            cursor: pointer;
-            transition: all 0.25s ease;
-            min-width: 220px;
-            text-align: center;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .menu-btn:active {
-            transform: scale(0.96);
-        }
-        .menu-btn.primary {
-            border-color: var(--vivid-gold);
-            background: rgba(212, 175, 55, 0.15);
-            font-size: 1.4rem;
-            padding: 16px 50px;
-            color: var(--vivid-gold);
-        }
-        .menu-btn.primary:hover {
-            background: rgba(212, 175, 55, 0.25);
-        }
-        .menu-btn.secondary {
-            border-color: #4a3528;
-            background: rgba(74, 53, 40, 0.15);
-            color: #b8957a;
-        }
-        .menu-btn.secondary:hover {
-            background: rgba(74, 53, 40, 0.35);
-        }
-        .menu-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
+        /* ─── AI TURN OVERLAY ─── */
         #ai-turn-overlay {
             position: fixed;
             top: 0;
@@ -1249,22 +1372,23 @@
         #ai-turn-box {
             background: radial-gradient(ellipse at 50% 40%, var(--regal-plum) 0%, var(--near-black) 100%);
             border: 2px solid var(--antique-gold);
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 24px 32px;
             text-align: center;
             box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9);
             pointer-events: none;
+            max-width: 90%;
         }
         #ai-turn-box h2 {
             font-family: 'MedievalSharp', cursive;
-            font-size: 1.8rem;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
             color: var(--antique-gold);
             margin-bottom: 4px;
             letter-spacing: 2px;
         }
         #ai-turn-box p {
             color: var(--cream-muted);
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2.8vw, 1.2rem);
         }
         #ai-turn-icon {
             font-size: 2.5rem;
@@ -1286,7 +1410,7 @@
         <div class="menu-content">
             <div id="menu-logo-container">
                 <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none; width:100%; height:auto;" />
-                <div id="menu-text-logo" class="menu-title" style="display: block;">OBA</div>
+                <div id="menu-text-logo" style="display: block;">OBA</div>
             </div>
             <div class="menu-subtitle">— Rise of Kingdoms —</div>
             <button class="menu-btn primary" onclick="showNewGameWizard()">⚔ New Game</button>
@@ -1419,17 +1543,22 @@
 
                 <!-- ─── POPUP ACTION MENU ─── -->
                 <div id="action-popup">
-                    <button data-action="move"><span class="action-icon">🚶</span> Move</button>
-                    <button data-action="attack"><span class="action-icon">⚔️</span> Attack</button>
-                    <button data-action="skip"><span class="action-icon">⏭</span> Skip</button>
-                    <button data-action="heal" class="heal-btn"><span class="action-icon">💚</span> First Aid</button>
-                    <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span> Invigorate</button>
-                    <button data-action="build-harbor"><span class="action-icon">⛵</span> Build Harbor</button>
-                    <button data-action="build-raft"><span class="action-icon">🪵</span> Build Raft</button>
-                    <button data-action="manage-city"><span class="action-icon">🏗️</span> Manage City</button>
-                    <button data-action="upgrade-city"><span class="action-icon">⬆</span> Upgrade City</button>
-                    <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span> Build Mine</button>
-                    <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span> Build Quarry</button>
+                    <div class="popup-title">— Actions —</div>
+                    <button data-action="move"><span class="action-icon">🚶</span><span class="action-label">Move</span><span class="action-shortcut">M</span></button>
+                    <button data-action="attack"><span class="action-icon">⚔️</span><span class="action-label">Attack</span><span class="action-shortcut">A</span></button>
+                    <button data-action="skip"><span class="action-icon">⏭</span><span class="action-label">Skip</span><span class="action-shortcut">SPACE</span></button>
+                    <div class="popup-divider"></div>
+                    <button data-action="heal" class="heal-btn"><span class="action-icon">💚</span><span class="action-label">First Aid</span><span class="action-shortcut">H</span></button>
+                    <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span><span class="action-label">Invigorate</span><span class="action-shortcut">I</span></button>
+                    <div class="popup-divider"></div>
+                    <button data-action="build-harbor"><span class="action-icon">⛵</span><span class="action-label">Build Harbor</span></button>
+                    <button data-action="build-raft"><span class="action-icon">🪵</span><span class="action-label">Build Raft</span></button>
+                    <div class="popup-divider"></div>
+                    <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
+                    <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
+                    <div class="popup-divider"></div>
+                    <button data-action="manage-city"><span class="action-icon">🏗️</span><span class="action-label">Manage City</span><span class="action-shortcut">B</span></button>
+                    <button data-action="upgrade-city"><span class="action-icon">⬆</span><span class="action-label">Upgrade City</span></button>
                 </div>
             </div>
         </div>
@@ -1446,7 +1575,7 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL (also used for alerts) -->
+    <!-- MODAL -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-box" id="modal-box">
@@ -1503,7 +1632,7 @@
         ASSET_PATHS['mine'] = 'mine.png';
         ASSET_PATHS['quarry'] = 'quarry.png';
         ASSET_PATHS['harbor'] = 'harbor.png';
-        ASSET_PATHS['fog'] = 'fog.png'; // new fog image
+        ASSET_PATHS['fog'] = 'fog.png';
 
         const RESOURCE_MAP = {
             '🪙': 'resource_gold',
@@ -2119,7 +2248,7 @@
                 }
             }
 
-            // Wonders - show city building them
+            // Wonders
             html += `<div class="tech-group-label" style="margin-top:12px;">— Wonders —</div>`;
             html += `<div class="tech-row">`;
             for (const wonder of WONDERS) {
@@ -2181,7 +2310,6 @@
                 return;
             }
 
-            // Find idle cities (no project)
             const idleCities = player.cities.filter(c => !c.project);
             if (idleCities.length === 0) {
                 showAlert('No idle cities', 'All your cities are busy. Free one up first.');
@@ -2194,7 +2322,7 @@
                 '<p>Choose a city to construct this wonder:</p><div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">';
             for (const city of idleCities) {
                 html +=
-                    `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.9rem;" 
+                    `<button style="padding:10px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.9rem,2.2vw,1rem);min-height:44px;touch-action:manipulation;" 
                 onclick="assignWonderToCityConfirm('${wonderId}', ${city.id})">${city.name}</button>`;
             }
             html += '</div>';
@@ -2222,7 +2350,7 @@
             updateUI();
             render();
             showAlert('Construction started', `Building ${wonder.name} in ${city.name}!`);
-            showTechTree(); // refresh
+            showTechTree();
             saveGame();
         }
 
@@ -2266,14 +2394,12 @@
                 return;
             }
 
-            // Find idle cities (no project)
             const idleCities = player.cities.filter(c => !c.project);
             if (idleCities.length === 0) {
                 showAlert('No idle cities', 'All your cities are busy. Free one up first.');
                 return;
             }
 
-            // Show modal with city selection
             const overlay = document.getElementById('modal-overlay');
             document.getElementById('modal-title').textContent = 'Assign Research: ' + TECH_TREE.find(t => t.id === techId)
             .name;
@@ -2281,7 +2407,7 @@
                 '<p>Choose a city to research this technology:</p><div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">';
             for (const city of idleCities) {
                 html +=
-                    `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.9rem;" 
+                    `<button style="padding:10px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.9rem,2.2vw,1rem);min-height:44px;touch-action:manipulation;" 
                 onclick="assignTechToCityConfirm('${techId}', ${city.id})">${city.name}</button>`;
             }
             html += '</div>';
@@ -2299,17 +2425,17 @@
             if (!city) { showAlert('Error', 'City not found'); return; }
             if (city.project) { showAlert('Busy', 'City is already busy!'); return; }
             if (isTechBeingResearched(techId)) { showAlert('Already researching',
-                'Tech already being researched elsewhere.'); return; }
+                    'Tech already being researched elsewhere.'); return; }
             if (player.techs.includes(techId)) { showAlert('Already researched', 'Tech already researched.'); return; }
             if (!isTechAvailable(player, techId)) { showAlert('Prerequisites missing',
-                'Required technologies not researched.'); return; }
+                    'Required technologies not researched.'); return; }
 
             setCityProject(city, 'tech', techId);
             closeModal();
             updateUI();
             render();
             showAlert('Research started', `Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
-            showTechTree(); // refresh
+            showTechTree();
             saveGame();
         }
 
@@ -2391,13 +2517,9 @@
                 if (!raw) return false;
                 const data = JSON.parse(raw);
                 if (!data.G) return false;
-                // Restore G
                 Object.assign(G, data.G);
-                // Restore camera
                 Object.assign(camera, data.camera);
-                // Restore settlement names
                 usedSettlementNames = data.usedSettlementNames || [];
-                // Rebuild map reference pointers (cities, harbors, units)
                 for (let r = 0; r < G.mapHeight; r++) {
                     for (let q = 0; q < G.mapWidth; q++) {
                         const tile = G.map[r][q];
@@ -2739,28 +2861,25 @@
             }
         }
 
-        // ─── IMPROVED MAP GENERATION (Africa biomes) ──────────────
+        // ─── IMPROVED MAP GENERATION ────────────────────────────────
         function generateMap() {
             const w = G.mapWidth,
                 h = G.mapHeight;
             G.map = [];
 
-            // Use a simple elevation map with moderate noise, adjusted for more lowlands
             const elevation = [];
             for (let r = 0; r < h; r++) {
                 elevation[r] = [];
                 for (let q = 0; q < w; q++) {
-                    // More uniform distribution with slight noise
                     let val = 0;
                     val += Math.sin(q * 0.08 + r * 0.07) * 0.15;
                     val += Math.cos(q * 0.06 - r * 0.05 + 1.2) * 0.12;
                     val += Math.sin((q + r) * 0.04) * 0.10;
-                    val += Math.random() * 0.30; // increase randomness for more varied but lower peaks
+                    val += Math.random() * 0.30;
                     elevation[r][q] = Math.max(0, Math.min(1, val + 0.3));
                 }
             }
 
-            // Create a central sea (smaller)
             const centerQ = Math.floor(w / 2);
             const centerR = Math.floor(h / 2);
             const seaRadius = 2 + Math.floor(Math.random() * 2);
@@ -2776,8 +2895,7 @@
                 }
             }
 
-            // Place very few mountain peaks (5-10% of tiles)
-            const numPeaks = 2 + Math.floor(Math.random() * 2); // 2-3 peaks
+            const numPeaks = 2 + Math.floor(Math.random() * 2);
             const mountainPeaks = [];
             for (let i = 0; i < numPeaks; i++) {
                 let q, r, attempts = 0;
@@ -2799,7 +2917,7 @@
                 }
                 if (valid) {
                     mountainPeaks.push({ q, r });
-                    const radius = 1; // smaller radius
+                    const radius = 1;
                     for (let dr = -radius; dr <= radius; dr++) {
                         for (let dq = -radius; dq <= radius; dq++) {
                             const nq = q + dq,
@@ -2813,8 +2931,7 @@
                 }
             }
 
-            // Place very few hills (reduce hills)
-            const numHills = 3 + Math.floor(Math.random() * 3); // 3-5 hills
+            const numHills = 3 + Math.floor(Math.random() * 3);
             const hillPeaks = [];
             for (let i = 0; i < numHills; i++) {
                 let q, r, attempts = 0;
@@ -2850,8 +2967,6 @@
                 }
             }
 
-            // ─── AFRICA BIOME THRESHOLDS (adjusted for fewer mountains/hills) ──
-            // 0-20% water, 20-40% forest, 40-60% plains, 60-75% desert, 75-88% hills, 88-100% mountains (12% max, but we have few peaks)
             for (let r = 0; r < h; r++) {
                 G.map[r] = [];
                 for (let q = 0; q < w; q++) {
@@ -2864,7 +2979,6 @@
                     else if (elev < 0.88) terrain = 'hill';
                     else terrain = 'mountain';
 
-                    // Ensure edges are not water (except where sea forced)
                     if (r === 0 || r === h - 1 || q === 0 || q === w - 1) {
                         if (terrain === 'water' && !G.map[r]?.[q]?.isRiver) terrain = 'plains';
                     }
@@ -2873,7 +2987,6 @@
                 }
             }
 
-            // Rivers: flow from mountains to sea (fewer rivers)
             for (let r = 0; r < h; r++) {
                 for (let q = 0; q < w; q++) {
                     if (G.map[r][q].terrain === 'mountain' && Math.random() < 0.1) {
@@ -2907,7 +3020,6 @@
                 }
             }
 
-            // Place resources
             const resourceTypes = {
                 mountain: ['🪙'],
                 plains: ['🌾'],
@@ -2937,7 +3049,6 @@
                 }
             }
 
-            // Place neutral villages
             const numVillages = Math.floor(Math.random() * 6) + 5;
             let placed = 0,
                 attempts = 0;
@@ -3871,7 +3982,7 @@
             overlay.classList.add('active');
         }
 
-        // ─── ALERT REPLACEMENT ──────────────────────────────────
+        // ─── ALERT ──────────────────────────────────────────────────
         function showAlert(title, message) {
             const overlay = document.getElementById('modal-overlay');
             document.getElementById('modal-title').textContent = title;
@@ -3993,7 +4104,7 @@
             applyStockpileToProject(city);
         }
 
-        // ─── AI TURN (sequential per tribe) ──────────────────────
+        // ─── AI TURN ──────────────────────────────────────────────
         function processAITribe(tribe) {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('ai-turn-overlay');
@@ -4053,7 +4164,6 @@
             }
         }
 
-        // AI unit decisions (simplified)
         function processAIAttack(unit, tribe) {
             if (unit.hasMoved || !unit.active) return;
             let targets = [];
@@ -4343,7 +4453,7 @@
             const overlay = document.getElementById('modal-overlay');
             document.getElementById('modal-title').textContent = '⛵ Manage Harbor';
             let html =
-                `<div style="margin-bottom:8px;font-size:0.9rem;color:#b8957a;">
+                `<div style="margin-bottom:8px;font-size:clamp(0.9rem,2.2vw,1rem);color:#b8957a;">
             Production: ${harbor.production} / ${harbor.project ? (TRIBES_DATA.find(t=>t.id===player.id).units[harbor.project.id].cost || 0) : '—'}
             ${harbor.project ? ' - Building: ' + harbor.project.id : ''}
           </div>`;
@@ -4355,7 +4465,7 @@
                 for (const type of navalTypes) {
                     const def = availUnits[type];
                     html +=
-                        `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                        `<button style="padding:10px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
                 onclick="setHarborProjectAndClose('${type}','unit')">${def.name} (${def.cost} prod)</button>`;
                 }
                 html += `</div>`;
@@ -4365,7 +4475,7 @@
                     const def = availUnits[type];
                     const goldCost = def.cost * 2;
                     html +=
-                        `<button style="padding:6px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:4px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                        `<button style="padding:10px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:6px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
                 onclick="buyNavalUnitAtHarbor(window._harbor, '${type}')">${def.name} (${goldCost} gold)</button>`;
                 }
                 html += `</div>`;
@@ -4427,7 +4537,7 @@
                 }
             }
 
-            let html = `<div style="margin-bottom:8px;font-size:0.9rem;color:#b8957a;">
+            let html = `<div style="margin-bottom:8px;font-size:clamp(0.9rem,2.2vw,1rem);color:#b8957a;">
             <div>📦 Stockpile: <strong style="color:#fff;">${stockpileDisplay}</strong></div>
             <div>🔨 Progress: ${progressDisplay} / ${costDisplay}</div>
             ${city.project ? ' - Building: ' + city.project.id : ''}
@@ -4440,7 +4550,7 @@
             ${city.level >= 4 ? `<button class="gui-action-btn primary" onclick="showProductionTab('upgrades')">Upgrades</button>` : ''}
           </div>`;
 
-            html += `<div id="production-tab-content" style="max-height:300px;overflow-y:auto;">`;
+            html += `<div id="production-tab-content" style="max-height:300px;overflow-y:auto;-webkit-overflow-scrolling: touch;">`;
             html += `<p style="color:#6b5a4a;">Select a tab above.</p>`;
             html += `</div>`;
 
@@ -4485,12 +4595,12 @@
                     const reducedCost = Math.ceil(cost * (1 - discount));
                     const goldCost = def.cost * 2;
                     html +=
-                        `<div style="display:flex;flex-direction:column;gap:4px;background:rgba(20,12,8,0.5);padding:6px;border-radius:4px;border:1px solid #3a281e;">
-                <span style="font-size:0.8rem;color:var(--cream);">${def.name}</span>
+                        `<div style="display:flex;flex-direction:column;gap:4px;background:rgba(20,12,8,0.5);padding:8px;border-radius:6px;border:1px solid #3a281e;">
+                <span style="font-size:clamp(0.8rem,2vw,0.9rem);color:var(--cream);">${def.name}</span>
                 <div style="display:flex;gap:4px;flex-wrap:wrap;">
-                  <button style="padding:3px 6px;background:rgba(201,162,39,0.15);border:1px solid var(--coastal-gold);border-radius:4px;color:var(--coastal-gold);cursor:pointer;font-family:inherit;font-size:0.7rem;" 
+                  <button style="padding:6px 10px;background:rgba(201,162,39,0.15);border:1px solid var(--coastal-gold);border-radius:4px;color:var(--coastal-gold);cursor:pointer;font-family:inherit;font-size:clamp(0.7rem,1.8vw,0.8rem);min-height:38px;touch-action:manipulation;" 
                     onclick="setCityProjectAndClose('${type}','unit')">Produce (${reducedCost})</button>
-                  <button style="padding:3px 6px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:4px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:0.7rem;" 
+                  <button style="padding:6px 10px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:4px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:clamp(0.7rem,1.8vw,0.8rem);min-height:38px;touch-action:manipulation;" 
                     onclick="buyUnitWithGold(window._prodCity, '${type}')">Buy (${goldCost} gold)</button>
                 </div>
               </div>`;
@@ -4507,7 +4617,7 @@
                         const inProgressCity = inProgress ? getTechResearcher(tech.id) : '';
                         const disabled = inProgress || player.techs.includes(tech.id);
                         html +=
-                            `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid ${disabled ? '#3a281e' : '#4a3528'};border-radius:4px;color:var(--cream);cursor:${disabled ? 'default' : 'pointer'};font-family:inherit;font-size:0.8rem;opacity:${disabled ? 0.5 : 1};" 
+                            `<button style="padding:8px;background:rgba(20,12,8,0.7);border:1px solid ${disabled ? '#3a281e' : '#4a3528'};border-radius:6px;color:var(--cream);cursor:${disabled ? 'default' : 'pointer'};font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;opacity:${disabled ? 0.5 : 1};" 
                   onclick="${disabled ? '' : `setCityProjectAndClose('${tech.id}','tech')`}" ${disabled ? 'disabled' : ''}>
                   ${tech.name} (${tech.cost} prod)
                   ${inProgress ? `<br><span style="font-size:0.6rem;color:#ff9800;">⏳ ${inProgressCity}</span>` : ''}
@@ -4524,7 +4634,7 @@
                     html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
                     for (const w of availWonders) {
                         html +=
-                            `<button style="padding:6px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:4px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:0.8rem;" 
+                            `<button style="padding:8px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
                   onclick="setCityProjectAndClose('${w.id}','wonder')">${w.name} (${w.cost} prod)<br><span style="font-size:0.6rem;color:#6b5a4a;">${w.desc}</span></button>`;
                     }
                     html += `</div>`;
@@ -4535,10 +4645,10 @@
                 const universityCost = 200;
                 if (!city.hasLibrary) {
                     html +=
-                        `<button class="gui-action-btn primary" onclick="buildLibrary(window._prodCity)" ${player.gold < libraryCost ? 'disabled' : ''}>📚 Build Library (${libraryCost} gold) – +2 research/turn</button>`;
+                        `<button class="gui-action-btn primary" onclick="buildLibrary(window._prodCity)" ${player.gold < libraryCost ? 'disabled' : ''} style="min-height:44px;touch-action:manipulation;">📚 Build Library (${libraryCost} gold) – +2 research/turn</button>`;
                 } else if (!city.hasUniversity) {
                     html +=
-                        `<button class="gui-action-btn primary" onclick="buildUniversity(window._prodCity)" ${player.gold < universityCost ? 'disabled' : ''}>🏛️ Build University (${universityCost} gold) – +4 research/turn</button>`;
+                        `<button class="gui-action-btn primary" onclick="buildUniversity(window._prodCity)" ${player.gold < universityCost ? 'disabled' : ''} style="min-height:44px;touch-action:manipulation;">🏛️ Build University (${universityCost} gold) – +4 research/turn</button>`;
                 } else {
                     html += `<p style="color:#6b5a4a;">All upgrades built.</p>`;
                 }
@@ -4591,8 +4701,9 @@
             });
             data.sort((a, b) => b.cities - a.cities || b.tiles - a.tiles);
 
-            let html = `<div style="font-size:0.9rem;margin-bottom:6px;">Turn ${G.turn}</div>`;
-            html += `<table style="width:100%;border-collapse:collapse;font-size:0.8rem;color:var(--cream-muted);">`;
+            let html = `<div style="font-size:clamp(0.9rem,2.2vw,1rem);margin-bottom:6px;">Turn ${G.turn}</div>`;
+            html +=
+                `<table style="width:100%;border-collapse:collapse;font-size:clamp(0.8rem,2vw,0.9rem);color:var(--cream-muted);">`;
             html += `<tr style="border-bottom:1px solid #3a281e;">
             <th style="text-align:left;padding:4px;">#</th>
             <th style="text-align:left;padding:4px;">Tribe</th>
@@ -4633,10 +4744,17 @@
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
             popup.style.display = 'flex';
+            // Trigger show animation
+            requestAnimationFrame(() => {
+                popup.classList.add('show');
+            });
         }
 
         function hideActionPopup() {
-            popup.style.display = 'none';
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 150);
         }
 
         function updateActionPopup() {
@@ -4647,8 +4765,8 @@
             const quarryBtn = popup.querySelector('[data-action="build-quarry"]');
             if (unit && unit.tribeId === player.id && !unit.hasMoved) {
                 const tile = G.map[unit.r]?.[unit.q];
-                mineBtn.style.display = canBuildMine(unit) ? 'block' : 'none';
-                quarryBtn.style.display = canBuildQuarry(unit) ? 'block' : 'none';
+                mineBtn.style.display = canBuildMine(unit) ? 'flex' : 'none';
+                quarryBtn.style.display = canBuildQuarry(unit) ? 'flex' : 'none';
             } else {
                 mineBtn.style.display = 'none';
                 quarryBtn.style.display = 'none';
@@ -4659,8 +4777,8 @@
                 const hasCity = city && city.owner === player.id;
                 const manageBtn = popup.querySelector('[data-action="manage-city"]');
                 const upgradeBtn = popup.querySelector('[data-action="upgrade-city"]');
-                manageBtn.style.display = 'block';
-                upgradeBtn.style.display = 'block';
+                manageBtn.style.display = 'flex';
+                upgradeBtn.style.display = 'flex';
                 if (hasCity) {
                     const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
                     const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
@@ -4680,9 +4798,10 @@
                 return;
             }
 
+            // Show all buttons by default (except mine/quarry which are handled above)
             popup.querySelectorAll('button').forEach(b => {
                 if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry') return;
-                b.style.display = 'block';
+                b.style.display = 'flex';
             });
 
             const moveBtn = popup.querySelector('[data-action="move"]');
@@ -4703,10 +4822,10 @@
 
             healBtn.disabled = unit.hasMoved || unit.hasAttacked || unit.hasHealed || unit.hasUsedAbility ||
                 unit.hp >= unit.maxHp || G.turnPhase !== 'player';
-            healBtn.style.display = 'block';
+            healBtn.style.display = 'flex';
 
             if (unit.isGeneral) {
-                invigorateBtn.style.display = 'block';
+                invigorateBtn.style.display = 'flex';
                 invigorateBtn.disabled = unit.hasMoved || unit.hasAttacked || unit.hasHealed || unit.hasUsedAbility ||
                     G.turnPhase !== 'player';
             } else {
@@ -4721,11 +4840,11 @@
             const hasCity = city && city.owner === player.id;
 
             if (hasCity) {
-                manageCityBtn.style.display = 'block';
+                manageCityBtn.style.display = 'flex';
                 manageCityBtn.disabled = false;
                 const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
                 const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
-                upgradeCityBtn.style.display = 'block';
+                upgradeCityBtn.style.display = 'flex';
                 upgradeCityBtn.disabled = city.level >= 4 || player.gold < reduced;
                 G.selectedCity = city;
             } else {
@@ -4734,8 +4853,8 @@
             }
 
             if (unit && !unit.isNaval && unit.type !== 'tank') {
-                buildHarborBtn.style.display = 'block';
-                buildRaftBtn.style.display = 'block';
+                buildHarborBtn.style.display = 'flex';
+                buildRaftBtn.style.display = 'flex';
             } else {
                 buildHarborBtn.style.display = 'none';
                 buildRaftBtn.style.display = 'none';
@@ -4901,7 +5020,6 @@
                 }
             }
 
-            // Preload fog image
             const fogImg = images['fog'];
 
             for (let r = 0; r < G.mapHeight; r++) {
@@ -4921,7 +5039,6 @@
                     for (let i = 1; i < pts.length; i++) hexPath.lineTo(pts[i].x, pts[i].y);
                     hexPath.closePath();
 
-                    // Draw fog for unexplored tiles
                     if (!isExplored) {
                         if (fogImg && fogImg.complete && fogImg.naturalWidth > 0) {
                             ctx.save();
@@ -4953,7 +5070,6 @@
                     const hasHarbor = tile.harbor !== null && tile.harbor !== undefined;
                     const harbor = tile.harbor;
 
-                    // ─── Terrain background ───
                     if (isVisible && !hasCity && !hasHarbor) {
                         let terrainKey = 'hex_plains';
                         if (tile.terrain === 'forest') terrainKey = 'hex_forest';
@@ -5041,7 +5157,6 @@
                         ctx.fill(hexPath);
                     }
 
-                    // ─── Influence border ───
                     const key = hexKey(q, r);
                     const influenceColor = influenceMap[key];
                     if (influenceColor && (isVisible || tile.owner === player.id)) {
@@ -5052,7 +5167,6 @@
                         ctx.restore();
                     }
 
-                    // ─── Border ───
                     let borderColor = '#d0c4b8';
                     let borderWidth = 1.0 / camera.zoom;
                     if (isVisible && tile.owner) {
@@ -5066,7 +5180,6 @@
                     ctx.lineWidth = borderWidth;
                     ctx.stroke(hexPath);
 
-                    // ─── Reachable/attackable highlights ───
                     if (isVisible) {
                         const isReachable = reachableTiles.some(t => t.q === q && t.r === r);
                         const isAttackable = attackableTiles.some(t => t.q === q && t.r === r);
@@ -5082,7 +5195,6 @@
                         }
                     }
 
-                    // ─── City influence ring ───
                     if (isVisible && hasCity) {
                         const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
                         if (radius > 0) {
@@ -5096,9 +5208,7 @@
                         }
                     }
 
-                    // ─── Draw elements on visible tiles ───
                     if (isVisible) {
-                        // ─── Resource icon ───
                         if (tile.resource && !hasCity && !hasHarbor) {
                             const resKey = RESOURCE_MAP[tile.resource];
                             const resImg = resKey ? images[resKey] : null;
@@ -5118,7 +5228,6 @@
                             }
                         }
 
-                        // ─── Mine / Quarry icon ───
                         if (tile.mine) {
                             const mineImg = images['mine'];
                             if (mineImg && mineImg.complete && mineImg.naturalWidth > 0) {
@@ -5150,7 +5259,6 @@
                             }
                         }
 
-                        // ─── City ───
                         if (hasCity) {
                             let settlementKey = 'settlement_village';
                             if (city.level === 2) settlementKey = 'settlement_town';
@@ -5293,7 +5401,6 @@
                             ctx.stroke();
                         }
 
-                        // ─── Harbor ───
                         if (hasHarbor) {
                             const harborImg = images['harbor'];
                             const hSize = size * 0.6;
@@ -5339,7 +5446,6 @@
                             }
                         }
 
-                        // ─── Unit ───
                         if (tile.unit) {
                             const unit = tile.unit;
                             const tribe = G.tribes.find(t => t.id === unit.tribeId);
@@ -5434,7 +5540,6 @@
                             }
                         }
 
-                        // Selection highlights
                         if (G.selectedHex && G.selectedHex.q === q && G.selectedHex.r === r) {
                             ctx.beginPath();
                             ctx.arc(cx, cy, size * 0.45, 0, Math.PI * 2);
@@ -5458,7 +5563,6 @@
                             ctx.stroke();
                         }
                     } else {
-                        // For non-visible but explored, show a dimmed version (already handled)
                         if (tile.city) {
                             ctx.font = `${size * 0.4}px sans-serif`;
                             ctx.textAlign = 'center';
@@ -5578,7 +5682,6 @@
             if (!inMap(hex.q, hex.r)) return;
             const tile = G.map[hex.r]?.[hex.q];
 
-            // If clicked on a tile with a player unit, select it
             if (tile && tile.unit && tile.unit.tribeId === player.id) {
                 G.selectedUnit = tile.unit;
                 G.selectedCity = null;
@@ -5592,10 +5695,8 @@
                 return;
             }
 
-            // If we have a selected unit, handle actions
             if (G.selectedUnit) {
                 const unit = G.selectedUnit;
-                // Attack enemy unit
                 if (tile && tile.unit && tile.unit.tribeId !== player.id) {
                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
                     if (dist <= unit.attackRange && !unit.hasAttacked) {
@@ -5604,7 +5705,6 @@
                         return;
                     }
                 }
-                // Move to reachable tile
                 if (tile && !tile.unit && isTilePassable(hex.q, hex.r, unit.isNaval, unit)) {
                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
                     if (dist <= unit.move && !unit.hasMoved) {
@@ -5615,7 +5715,6 @@
                 }
             }
 
-            // Check for city or harbor
             if (tile && tile.city && tile.visible) {
                 const city = tile.city;
                 if (city.owner === player.id) {
@@ -5686,7 +5785,6 @@
 
         canvas.addEventListener('mouseleave', () => { isDragging = false; });
 
-        // ─── TOUCH EVENTS ────────────────────────────────────────
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touches = e.touches;
@@ -5704,15 +5802,6 @@
                 isClick = true;
                 isDragging = false;
             } else if (touches.length === 2) {
-                // ZOOM DISABLED - commented out
-                // const t1 = touches[0], t2 = touches[1];
-                // const rect = canvas.getBoundingClientRect();
-                // const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
-                // const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
-                // const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
-                // const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
-                // const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
-                // lastTouchDist = dist;
                 isDragging = false;
             }
         }, { passive: false });
@@ -5737,29 +5826,7 @@
                     render();
                 }
             } else if (touches.length === 2) {
-                // ZOOM DISABLED - commented out
-                // const t1 = touches[0], t2 = touches[1];
-                // const rect = canvas.getBoundingClientRect();
-                // const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
-                // const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
-                // const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
-                // const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
-                // const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
-                // if (lastTouchDist > 0) {
-                //   const scale = dist / lastTouchDist;
-                //   const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom * scale));
-                //   if (newZoom !== camera.zoom) {
-                //     const cx = (sx1 + sx2) / 2, cy = (sy1 + sy2) / 2;
-                //     const worldBefore = screenToWorld(cx, cy);
-                //     camera.zoom = newZoom;
-                //     const worldAfter = screenToWorld(cx, cy);
-                //     camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
-                //     camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
-                //     camera.centered = true;
-                //     render();
-                //   }
-                // }
-                // lastTouchDist = dist;
+                // Zoom disabled for mobile stability
             }
         }, { passive: false });
 
@@ -5782,25 +5849,6 @@
             }
         }, { passive: false });
 
-        // ─── MOUSE WHEEL ZOOM ──────────────────────────────
-        // ZOOM DISABLED - commented out
-        // canvas.addEventListener('wheel', (e) => {
-        //   e.preventDefault();
-        //   const rect = canvas.getBoundingClientRect();
-        //   const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
-        //   const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
-        //   const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        //   const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom + delta));
-        //   if (newZoom === camera.zoom) return;
-        //   const worldBefore = screenToWorld(sx, sy);
-        //   camera.zoom = newZoom;
-        //   const worldAfter = screenToWorld(sx, sy);
-        //   camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
-        //   camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
-        //   camera.centered = true;
-        //   render();
-        // }, { passive: false });
-
         // ─── MODAL OVERLAY SCROLL LOCK ──────────────────────────
         function openModal() {
             document.body.classList.add('modal-open');
@@ -5811,7 +5859,6 @@
             document.body.classList.remove('modal-open');
         }
 
-        // Override the modal overlay click to close (but keep our closeModal)
         document.getElementById('modal-overlay').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
@@ -5912,22 +5959,22 @@
               Move units, attack enemies, manage cities, and research technologies. Click <strong>End Turn</strong> when done.</p>
               <br>
               <p><strong>🔹 Selecting & Moving</strong><br>
-              Click a unit to select it – a popup menu appears. Click any reachable tile to move there. After moving, green highlights disappear but red attack indicators remain.</p>
+              Tap a unit to select it – a popup menu appears. Tap any reachable tile to move there.</p>
               <br>
               <p><strong>🔹 Cities & Production</strong><br>
               Each city produces points every turn, stored as a <strong>stockpile</strong>. You can spend stockpile on units, technologies, or wonders. Changing projects never wastes progress – stockpile carries over.</p>
               <br>
               <p><strong>🔹 Tech Tree</strong><br>
-              Click <strong>📜 Tech</strong> to view all technologies. Click an available tech to assign it to a city for research. Click a wonder to assign it to a city for construction.</p>
+              Tap <strong>📜 Tech</strong> to view all technologies. Tap an available tech to assign it to a city for research.</p>
               <br>
               <p><strong>🔹 Naval & Harbors</strong><br>
-              Research <strong>Sailing</strong> to build Harbors and Rafts. Harbors produce Galleys and Warships. Rafts allow units to cross water – tanks cannot build rafts but can cross rivers and shallow water.</p>
+              Research <strong>Sailing</strong> to build Harbors and Rafts. Harbors produce Galleys and Warships.</p>
               <br>
               <p><strong>🔹 Healing & Invigorate</strong><br>
               Units that do not move or attack heal 5 HP per turn. Generals can <strong>Invigorate</strong> troops within 3 hexes.</p>
               <br>
               <p><strong>🔹 Resources & Improvements</strong><br>
-              Gold and stone deposits can be upgraded with Mines (+2 gold/turn) and Quarries (20% unit production cost reduction in that city).</p>
+              Gold and stone deposits can be upgraded with Mines (+2 gold/turn) and Quarries (20% unit production cost reduction).</p>
               <br>
               <p><strong>🔹 Fog of War & Territory</strong><br>
               Explored areas stay dimly visible. Controlled territory is shown with a thick coloured border.</p>
@@ -6172,7 +6219,7 @@
                     }
                 });
 
-                console.log('Oba v9.2 – Fixed fog, terrain, alerts, UI, and touch movement.');
+                console.log('Oba v10 – Mobile-optimized 4X strategy with game-style menus.');
             });
         });
     </script>
