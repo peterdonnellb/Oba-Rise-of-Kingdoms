@@ -38,6 +38,9 @@
             -webkit-user-select: none;
             touch-action: none;
         }
+        body.modal-open {
+            overflow: hidden;
+        }
         .screen {
             position: fixed;
             top: 0;
@@ -91,8 +94,9 @@
 
         #menu-logo-container {
             width: 100%;
-            max-width: 792px;
-            max-height: 26.4vh;
+            max-width: 435px;
+            /* reduced by 50% from 871px */
+            margin-top: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -102,8 +106,7 @@
         #menu-logo-container img {
             width: 100%;
             height: auto;
-            max-height: 26.4vh;
-            object-fit: contain;
+            display: block;
         }
         #menu-text-logo {
             font-family: 'MedievalSharp', cursive;
@@ -545,23 +548,26 @@
             pointer-events: auto;
         }
 
+        /* ─── TOP BAR ─── */
         .gui-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            padding: 6px 8px;
+            align-items: center;
+            padding: 4px 8px;
             background: linear-gradient(180deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 4px;
+            min-height: 44px;
         }
         .gui-top-left {
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            white-space: nowrap;
         }
         .gui-top-left .tribe-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: var(--warm-gold);
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -570,154 +576,172 @@
             gap: 4px;
         }
         .gui-top-left .tribe-name .tribe-icon img {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 4px;
         }
         .gui-top-left .turn-counter {
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             color: var(--coastal-gold);
             font-weight: 600;
             background: rgba(0, 0, 0, 0.3);
-            padding: 1px 8px;
+            padding: 2px 10px;
             border-radius: 12px;
             border: 1px solid rgba(201, 162, 39, 0.2);
         }
         .gui-top-right {
             display: flex;
             align-items: center;
-            gap: 4px;
-            flex-wrap: wrap;
+            gap: 6px;
+            flex-wrap: nowrap;
         }
         .gui-resource {
             display: flex;
             align-items: center;
             gap: 2px;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: var(--cream-muted);
             background: rgba(20, 18, 24, 0.6);
-            padding: 1px 6px;
+            padding: 2px 8px;
             border-radius: 10px;
             border: 1px solid rgba(201, 162, 39, 0.15);
             backdrop-filter: blur(2px);
+            white-space: nowrap;
         }
         .gui-resource .icon {
-            font-size: 0.8rem;
+            font-size: 1rem;
         }
         .gui-resource .val {
             font-weight: 700;
             color: var(--cream);
-            min-width: 16px;
+            min-width: 20px;
             text-align: center;
         }
         .gui-resource.gold .val {
             color: var(--vivid-gold);
         }
-        .gui-menu-btn {
-            padding: 2px 10px;
+
+        .gui-top-btn {
+            padding: 4px 12px;
             border: 1px solid #4a3528;
             background: rgba(20, 18, 24, 0.6);
             color: #b8957a;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.65rem;
+            font-size: 0.9rem;
             transition: 0.2s;
             letter-spacing: 0.5px;
             font-family: inherit;
             -webkit-tap-highlight-color: transparent;
+            min-height: 32px;
+            font-weight: 600;
+            white-space: nowrap;
         }
-        .gui-menu-btn:active {
+        .gui-top-btn:active {
             background: rgba(74, 53, 40, 0.4);
         }
-        .gui-menu-btn.tech-btn {
+        .gui-top-btn.tech-btn {
             border-color: var(--coastal-gold);
             color: var(--coastal-gold);
         }
-        .gui-menu-btn.tech-btn:hover {
+        .gui-top-btn.tech-btn:hover {
             background: rgba(201, 162, 39, 0.1);
         }
+        .gui-top-btn.menu-btn {
+            border-color: #4a3528;
+            color: #b8957a;
+            /* same size as tech-btn */
+        }
 
+        /* ─── BOTTOM BAR ─── */
         .gui-bottom {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 4px 8px;
-            background: linear-gradient(0deg, rgba(27, 42, 107, 0.85) 0%, transparent 100%);
+            padding: 8px 10px;
+            background: linear-gradient(0deg, rgba(27, 42, 107, 0.9) 0%, transparent 100%);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 8px;
+            min-height: 56px;
         }
         .gui-unit-info {
             display: flex;
             align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            background: rgba(20, 18, 24, 0.7);
-            border-radius: 6px;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(20, 18, 24, 0.8);
+            border-radius: 8px;
             border: 1px solid rgba(166, 90, 42, 0.3);
-            min-height: 26px;
-            flex: 1 1 120px;
+            min-height: 40px;
+            flex: 1 1 140px;
             flex-wrap: wrap;
+            backdrop-filter: blur(4px);
         }
         .gui-unit-info .unit-name {
             font-weight: 700;
             color: var(--terracotta);
-            font-size: 0.7rem;
-            min-width: 40px;
+            font-size: 0.9rem;
+            min-width: 50px;
         }
         .gui-unit-info .unit-stats {
-            font-size: 0.6rem;
+            font-size: 0.8rem;
             color: #b8957a;
             display: flex;
-            gap: 3px;
+            gap: 6px;
             flex-wrap: wrap;
         }
         .gui-unit-info .unit-stats span {
             display: flex;
             align-items: center;
-            gap: 1px;
+            gap: 2px;
         }
         .gui-unit-info .unit-stats .stat-val {
             color: var(--cream);
             font-weight: 600;
         }
+
         .gui-actions {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             flex-wrap: wrap;
+            align-items: center;
         }
         .gui-action-btn {
-            padding: 4px 12px;
+            padding: 8px 16px;
             border: 1px solid #3a281e;
-            background: rgba(20, 18, 24, 0.6);
+            background: rgba(20, 18, 24, 0.7);
             color: var(--cream-muted);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             transition: 0.2s;
             letter-spacing: 0.3px;
             font-family: inherit;
-            font-weight: 500;
+            font-weight: 600;
             -webkit-tap-highlight-color: transparent;
-            min-height: 32px;
+            min-height: 40px;
+            min-width: 48px;
+            backdrop-filter: blur(2px);
         }
         .gui-action-btn:active:not(:disabled) {
-            background: rgba(74, 53, 40, 0.3);
+            background: rgba(74, 53, 40, 0.4);
+            transform: scale(0.96);
         }
         .gui-action-btn:disabled {
-            opacity: 0.25;
+            opacity: 0.3;
             cursor: not-allowed;
         }
         .gui-action-btn.primary {
             border-color: var(--coastal-gold);
             color: var(--coastal-gold);
-            background: rgba(201, 162, 39, 0.1);
+            background: rgba(201, 162, 39, 0.12);
         }
         .gui-action-btn.primary:active:not(:disabled) {
-            background: rgba(201, 162, 39, 0.2);
+            background: rgba(201, 162, 39, 0.25);
         }
         .gui-action-btn.danger {
             border-color: #6a2a1a;
@@ -725,12 +749,14 @@
         }
         .gui-action-btn.end-turn {
             border-color: var(--vivid-gold);
-            background: rgba(255, 215, 0, 0.06);
+            background: rgba(255, 215, 0, 0.08);
             color: var(--vivid-gold);
-            font-weight: 600;
+            font-weight: 700;
+            padding: 8px 20px;
+            min-width: 64px;
         }
         .gui-action-btn.end-turn:active:not(:disabled) {
-            background: rgba(255, 215, 0, 0.15);
+            background: rgba(255, 215, 0, 0.18);
         }
         .gui-action-btn.heal {
             border-color: #4caf50;
@@ -752,15 +778,15 @@
         /* ─── POPUP ACTION MENU ─── */
         #action-popup {
             position: absolute;
-            background: rgba(20, 18, 24, 0.95);
+            background: rgba(20, 18, 24, 0.96);
             backdrop-filter: blur(8px);
             border: 2px solid var(--coastal-gold);
-            border-radius: 10px;
-            padding: 6px 4px;
+            border-radius: 12px;
+            padding: 8px 6px;
             display: none;
             flex-direction: column;
-            gap: 3px;
-            min-width: 120px;
+            gap: 4px;
+            min-width: 140px;
             z-index: 50;
             pointer-events: auto;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
@@ -769,10 +795,10 @@
         #action-popup button {
             background: rgba(27, 42, 107, 0.3);
             border: 1px solid rgba(201, 162, 39, 0.15);
-            border-radius: 4px;
+            border-radius: 6px;
             color: var(--cream);
-            padding: 6px 12px;
-            font-size: 0.8rem;
+            padding: 10px 14px;
+            font-size: 0.9rem;
             font-family: 'Afacad', sans-serif;
             cursor: pointer;
             transition: 0.15s;
@@ -781,7 +807,7 @@
             font-weight: 500;
             letter-spacing: 0.3px;
             -webkit-tap-highlight-color: transparent;
-            min-height: 36px;
+            min-height: 44px;
         }
         #action-popup button:hover:not(:disabled) {
             background: rgba(201, 162, 39, 0.2);
@@ -824,8 +850,8 @@
             background: rgba(155, 89, 182, 0.15);
         }
         #action-popup .action-icon {
-            margin-right: 4px;
-            font-size: 0.9rem;
+            margin-right: 6px;
+            font-size: 1rem;
         }
         #action-popup button.mine-btn {
             border-color: #f1c40f;
@@ -1038,9 +1064,6 @@
             .ng-summary {
                 grid-template-columns: 1fr 1fr;
             }
-            #menu-logo-container {
-                max-height: 18vh;
-            }
             .tech-node {
                 min-width: 60px;
                 padding: 4px 6px;
@@ -1048,32 +1071,38 @@
             }
             .gui-top {
                 padding: 4px 6px;
+                min-height: 38px;
             }
             .gui-top-left .tribe-name {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .gui-top-left .turn-counter {
-                font-size: 0.7rem;
+                font-size: 0.8rem;
                 padding: 1px 6px;
             }
             .gui-resource {
-                font-size: 0.6rem;
-                padding: 1px 4px;
-            }
-            .gui-menu-btn {
-                font-size: 0.55rem;
+                font-size: 0.8rem;
                 padding: 2px 6px;
             }
+            .gui-top-btn {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+                min-height: 28px;
+            }
             .gui-unit-info .unit-name {
-                font-size: 0.65rem;
+                font-size: 0.8rem;
             }
             .gui-unit-info .unit-stats {
-                font-size: 0.55rem;
+                font-size: 0.7rem;
             }
             .gui-action-btn {
-                font-size: 0.65rem;
-                padding: 3px 8px;
-                min-height: 28px;
+                font-size: 0.8rem;
+                padding: 6px 12px;
+                min-height: 36px;
+            }
+            .gui-action-btn.end-turn {
+                padding: 6px 16px;
+                min-width: 56px;
             }
         }
         @media (max-width: 480px) {
@@ -1098,9 +1127,6 @@
             .ng-step-header h2 {
                 font-size: 1.4rem;
             }
-            #menu-logo-container {
-                max-height: 15vh;
-            }
             .tech-node {
                 min-width: 50px;
                 padding: 3px 4px;
@@ -1108,37 +1134,54 @@
             }
             .gui-top {
                 padding: 3px 4px;
+                min-height: 34px;
             }
             .gui-top-left .tribe-name {
                 font-size: 0.7rem;
             }
             .gui-top-left .turn-counter {
-                font-size: 0.6rem;
+                font-size: 0.65rem;
                 padding: 1px 4px;
             }
             .gui-resource {
-                font-size: 0.55rem;
-                padding: 1px 3px;
+                font-size: 0.65rem;
+                padding: 1px 4px;
             }
-            .gui-menu-btn {
-                font-size: 0.5rem;
-                padding: 1px 5px;
-            }
-            .gui-unit-info .unit-name {
-                font-size: 0.55rem;
-            }
-            .gui-unit-info .unit-stats {
-                font-size: 0.5rem;
-            }
-            .gui-action-btn {
-                font-size: 0.55rem;
-                padding: 2px 6px;
+            .gui-top-btn {
+                font-size: 0.65rem;
+                padding: 3px 8px;
                 min-height: 24px;
             }
+            .gui-unit-info .unit-name {
+                font-size: 0.7rem;
+                min-width: 36px;
+            }
+            .gui-unit-info .unit-stats {
+                font-size: 0.6rem;
+                gap: 4px;
+            }
+            .gui-action-btn {
+                font-size: 0.7rem;
+                padding: 5px 10px;
+                min-height: 32px;
+                min-width: 40px;
+            }
+            .gui-action-btn.end-turn {
+                padding: 5px 12px;
+                min-width: 48px;
+            }
             #action-popup button {
-                font-size: 0.65rem;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+                min-height: 40px;
+            }
+            .gui-bottom {
+                padding: 6px 8px;
+                min-height: 48px;
+            }
+            .gui-unit-info {
                 padding: 4px 8px;
-                min-height: 30px;
+                min-height: 34px;
             }
         }
 
@@ -1242,7 +1285,7 @@
         <div class="menu-decoration tr"></div>
         <div class="menu-content">
             <div id="menu-logo-container">
-                <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none;" />
+                <img id="main-logo" src="logo_oba.png" alt="Oba Logo" style="display: none; width:100%; height:auto;" />
                 <div id="menu-text-logo" class="menu-title" style="display: block;">OBA</div>
             </div>
             <div class="menu-subtitle">— Rise of Kingdoms —</div>
@@ -1343,6 +1386,7 @@
         <div id="game-canvas-wrapper">
             <canvas id="gameCanvas"></canvas>
             <div id="game-ui">
+                <!-- TOP BAR -->
                 <div class="gui-top">
                     <div class="gui-top-left">
                         <span class="tribe-name" id="gui-tribe-name"></span>
@@ -1350,15 +1394,13 @@
                     </div>
                     <div class="gui-top-right">
                         <div class="gui-resource gold"><span class="icon">🪙</span><span class="val" id="gui-gold">0</span></div>
-                        <div class="gui-resource"><span class="icon">🏙️</span><span class="val" id="gui-cities">0</span></div>
-                        <div class="gui-resource"><span class="icon">⚔️</span><span class="val" id="gui-units">0</span></div>
                         <div class="gui-resource"><span class="icon">🔬</span><span class="val" id="gui-research">0</span></div>
-                        <div class="gui-resource"><span class="icon">🌍</span><span class="val" id="gui-influence">0</span></div>
-                        <button class="gui-menu-btn tech-btn" onclick="showTechTree()">📜 Tech</button>
-                        <button class="gui-menu-btn" onclick="showInGameMenu()">☰</button>
+                        <button class="gui-top-btn tech-btn" onclick="showTechTree()">📜 Tech</button>
+                        <button class="gui-top-btn menu-btn" onclick="showInGameMenu()">☰</button>
                     </div>
                 </div>
 
+                <!-- BOTTOM BAR -->
                 <div class="gui-bottom">
                     <div class="gui-unit-info" id="gui-unit-info">
                         <span class="unit-name" id="unit-name-display">No selection</span>
@@ -1371,7 +1413,7 @@
                     </div>
                     <div class="gui-actions">
                         <button class="gui-action-btn" id="btn-progress" onclick="showProgressModal()">📊</button>
-                        <button class="gui-action-btn end-turn" id="btn-end-turn" onclick="endTurn()">⏭</button>
+                        <button class="gui-action-btn end-turn" id="btn-end-turn" onclick="endTurn()">⏭ End</button>
                     </div>
                 </div>
 
@@ -1404,7 +1446,7 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- MODAL -->
+    <!-- MODAL (also used for alerts) -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <div class="modal-overlay" id="modal-overlay">
         <div class="modal-box" id="modal-box">
@@ -1441,7 +1483,7 @@
         ASSET_PATHS['hex_mountain'] = 'hex_mountain.png';
         ASSET_PATHS['hex_water'] = 'hex_water.png';
         ASSET_PATHS['hex_hill'] = 'hex_hill.png';
-        ASSET_PATHS['hex_desert'] = 'hex_desert.png'; // new desert tile
+        ASSET_PATHS['hex_desert'] = 'hex_desert.png';
         ASSET_PATHS['resource_gold'] = 'resource_gold.png';
         ASSET_PATHS['resource_food'] = 'resource_food.png';
         ASSET_PATHS['resource_wood'] = 'resource_wood.png';
@@ -1461,6 +1503,7 @@
         ASSET_PATHS['mine'] = 'mine.png';
         ASSET_PATHS['quarry'] = 'quarry.png';
         ASSET_PATHS['harbor'] = 'harbor.png';
+        ASSET_PATHS['fog'] = 'fog.png'; // new fog image
 
         const RESOURCE_MAP = {
             '🪙': 'resource_gold',
@@ -2128,20 +2171,20 @@
             const player = G.tribes.find(t => t.isPlayer);
             if (!player) return;
             if (player.wonders.includes(wonderId)) {
-                alert('Already built!');
+                showAlert('Already built', 'This wonder has already been constructed.');
                 return;
             }
             const wonder = WONDERS.find(w => w.id === wonderId);
             if (!wonder) return;
             if (wonder.requires && !player.techs.includes(wonder.requires)) {
-                alert('Prerequisite technology not met!');
+                showAlert('Prerequisite missing', 'You need to research the required technology first.');
                 return;
             }
 
             // Find idle cities (no project)
             const idleCities = player.cities.filter(c => !c.project);
             if (idleCities.length === 0) {
-                alert('All your cities are busy. Free one up first.');
+                showAlert('No idle cities', 'All your cities are busy. Free one up first.');
                 return;
             }
 
@@ -2165,20 +2208,20 @@
             const player = G.tribes.find(t => t.isPlayer);
             if (!player) return;
             const city = player.cities.find(c => c.id === cityId);
-            if (!city) { alert('City not found'); return; }
-            if (city.project) { alert('City is already busy!'); return; }
-            if (player.wonders.includes(wonderId)) { alert('Already built.'); return; }
+            if (!city) { showAlert('Error', 'City not found'); return; }
+            if (city.project) { showAlert('Busy', 'City is already busy!'); return; }
+            if (player.wonders.includes(wonderId)) { showAlert('Already built', 'Wonder already built.'); return; }
             const wonder = WONDERS.find(w => w.id === wonderId);
             if (!wonder) return;
             if (wonder.requires && !player.techs.includes(wonder.requires)) {
-                alert('Prerequisite not met.');
+                showAlert('Prerequisite missing', 'Required technology not researched.');
                 return;
             }
             setCityProject(city, 'wonder', wonderId);
             closeModal();
             updateUI();
             render();
-            alert(`Building ${wonder.name} in ${city.name}!`);
+            showAlert('Construction started', `Building ${wonder.name} in ${city.name}!`);
             showTechTree(); // refresh
             saveGame();
         }
@@ -2210,22 +2253,23 @@
             const player = G.tribes.find(t => t.isPlayer);
             if (!player) return;
             if (isTechBeingResearched(techId)) {
-                alert('This technology is already being researched in ' + getTechResearcher(techId));
+                showAlert('Already researching', 'This technology is already being researched in ' + getTechResearcher(
+                techId));
                 return;
             }
             if (player.techs.includes(techId)) {
-                alert('Already researched!');
+                showAlert('Already researched', 'This technology has already been researched.');
                 return;
             }
             if (!isTechAvailable(player, techId)) {
-                alert('Prerequisites not met!');
+                showAlert('Prerequisites missing', 'Research the required technologies first.');
                 return;
             }
 
             // Find idle cities (no project)
             const idleCities = player.cities.filter(c => !c.project);
             if (idleCities.length === 0) {
-                alert('All your cities are busy with other projects. Free one up first.');
+                showAlert('No idle cities', 'All your cities are busy. Free one up first.');
                 return;
             }
 
@@ -2252,17 +2296,19 @@
             const player = G.tribes.find(t => t.isPlayer);
             if (!player) return;
             const city = player.cities.find(c => c.id === cityId);
-            if (!city) { alert('City not found'); return; }
-            if (city.project) { alert('City is already busy!'); return; }
-            if (isTechBeingResearched(techId)) { alert('Tech already being researched elsewhere.'); return; }
-            if (player.techs.includes(techId)) { alert('Already researched.'); return; }
-            if (!isTechAvailable(player, techId)) { alert('Prerequisites not met.'); return; }
+            if (!city) { showAlert('Error', 'City not found'); return; }
+            if (city.project) { showAlert('Busy', 'City is already busy!'); return; }
+            if (isTechBeingResearched(techId)) { showAlert('Already researching',
+                'Tech already being researched elsewhere.'); return; }
+            if (player.techs.includes(techId)) { showAlert('Already researched', 'Tech already researched.'); return; }
+            if (!isTechAvailable(player, techId)) { showAlert('Prerequisites missing',
+                'Required technologies not researched.'); return; }
 
             setCityProject(city, 'tech', techId);
             closeModal();
             updateUI();
             render();
-            alert(`Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
+            showAlert('Research started', `Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
             showTechTree(); // refresh
             saveGame();
         }
@@ -2699,21 +2745,22 @@
                 h = G.mapHeight;
             G.map = [];
 
-            // Use a simple elevation map with moderate noise
+            // Use a simple elevation map with moderate noise, adjusted for more lowlands
             const elevation = [];
             for (let r = 0; r < h; r++) {
                 elevation[r] = [];
                 for (let q = 0; q < w; q++) {
+                    // More uniform distribution with slight noise
                     let val = 0;
-                    val += Math.sin(q * 0.12 + r * 0.10) * 0.30;
-                    val += Math.cos(q * 0.08 - r * 0.07 + 1.2) * 0.25;
-                    val += Math.sin((q + r) * 0.05) * 0.20;
-                    val += Math.random() * 0.12;
-                    elevation[r][q] = Math.max(0, Math.min(1, val + 0.5));
+                    val += Math.sin(q * 0.08 + r * 0.07) * 0.15;
+                    val += Math.cos(q * 0.06 - r * 0.05 + 1.2) * 0.12;
+                    val += Math.sin((q + r) * 0.04) * 0.10;
+                    val += Math.random() * 0.30; // increase randomness for more varied but lower peaks
+                    elevation[r][q] = Math.max(0, Math.min(1, val + 0.3));
                 }
             }
 
-            // Create a central sea (smaller, for strategic variety)
+            // Create a central sea (smaller)
             const centerQ = Math.floor(w / 2);
             const centerR = Math.floor(h / 2);
             const seaRadius = 2 + Math.floor(Math.random() * 2);
@@ -2721,17 +2768,17 @@
                 for (let q = 0; q < w; q++) {
                     const dist = hexDistance({ q, r }, { q: centerQ, r: centerR });
                     if (dist <= seaRadius) {
-                        elevation[r][q] = Math.min(elevation[r][q], 0.08);
+                        elevation[r][q] = Math.min(elevation[r][q], 0.05);
                     }
                     if (dist <= seaRadius + 2 && dist > seaRadius) {
-                        elevation[r][q] = Math.max(elevation[r][q], 0.30);
+                        elevation[r][q] = Math.max(elevation[r][q], 0.25);
                     }
                 }
             }
 
-            // Place a few isolated mountain peaks (low density)
+            // Place very few mountain peaks (5-10% of tiles)
+            const numPeaks = 2 + Math.floor(Math.random() * 2); // 2-3 peaks
             const mountainPeaks = [];
-            const numPeaks = 2 + Math.floor(Math.random() * 3);
             for (let i = 0; i < numPeaks; i++) {
                 let q, r, attempts = 0;
                 let valid = false;
@@ -2742,7 +2789,7 @@
                     if (distToSea > seaRadius + 2) {
                         valid = true;
                         for (const peak of mountainPeaks) {
-                            if (hexDistance({ q, r }, peak) < 5) {
+                            if (hexDistance({ q, r }, peak) < 6) {
                                 valid = false;
                                 break;
                             }
@@ -2752,23 +2799,23 @@
                 }
                 if (valid) {
                     mountainPeaks.push({ q, r });
-                    const radius = 1 + Math.floor(Math.random() * 1.5);
+                    const radius = 1; // smaller radius
                     for (let dr = -radius; dr <= radius; dr++) {
                         for (let dq = -radius; dq <= radius; dq++) {
                             const nq = q + dq,
                                 nr = r + dr;
                             if (inMap(nq, nr) && hexDistance({ q, r }, { q: nq, r: nr }) <= radius) {
-                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.75 + (radius - hexDistance({ q, r },
-                                    { q: nq, r: nr })) * 0.08);
+                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.85 + (radius - hexDistance({ q, r },
+                                    { q: nq, r: nr })) * 0.05);
                             }
                         }
                     }
                 }
             }
 
-            // Place a few hill clusters (low density)
+            // Place very few hills (reduce hills)
+            const numHills = 3 + Math.floor(Math.random() * 3); // 3-5 hills
             const hillPeaks = [];
-            const numHills = 3 + Math.floor(Math.random() * 4);
             for (let i = 0; i < numHills; i++) {
                 let q, r, attempts = 0;
                 let valid = false;
@@ -2779,10 +2826,10 @@
                     if (distToSea > seaRadius + 1) {
                         valid = true;
                         for (const peak of mountainPeaks) {
-                            if (hexDistance({ q, r }, peak) < 4) { valid = false; break; }
+                            if (hexDistance({ q, r }, peak) < 5) { valid = false; break; }
                         }
                         for (const peak of hillPeaks) {
-                            if (hexDistance({ q, r }, peak) < 4) { valid = false; break; }
+                            if (hexDistance({ q, r }, peak) < 5) { valid = false; break; }
                         }
                     }
                     attempts++;
@@ -2795,21 +2842,16 @@
                             const nq = q + dq,
                                 nr = r + dr;
                             if (inMap(nq, nr) && hexDistance({ q, r }, { q: nq, r: nr }) <= radius) {
-                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.60 + (radius - hexDistance({ q, r },
-                                    { q: nq, r: nr })) * 0.08);
+                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.65 + (radius - hexDistance({ q, r },
+                                    { q: nq, r: nr })) * 0.05);
                             }
                         }
                     }
                 }
             }
 
-            // ─── AFRICA BIOME THRESHOLDS ─────────────────────────────
-            // 0-20%  water
-            // 21-40% forest
-            // 41-60% plains
-            // 61-75% desert
-            // 76-90% hills
-            // 91-100% mountains
+            // ─── AFRICA BIOME THRESHOLDS (adjusted for fewer mountains/hills) ──
+            // 0-20% water, 20-40% forest, 40-60% plains, 60-75% desert, 75-88% hills, 88-100% mountains (12% max, but we have few peaks)
             for (let r = 0; r < h; r++) {
                 G.map[r] = [];
                 for (let q = 0; q < w; q++) {
@@ -2819,7 +2861,7 @@
                     else if (elev < 0.40) terrain = 'forest';
                     else if (elev < 0.60) terrain = 'plains';
                     else if (elev < 0.75) terrain = 'desert';
-                    else if (elev < 0.90) terrain = 'hill';
+                    else if (elev < 0.88) terrain = 'hill';
                     else terrain = 'mountain';
 
                     // Ensure edges are not water (except where sea forced)
@@ -2834,7 +2876,7 @@
             // Rivers: flow from mountains to sea (fewer rivers)
             for (let r = 0; r < h; r++) {
                 for (let q = 0; q < w; q++) {
-                    if (G.map[r][q].terrain === 'mountain' && Math.random() < 0.15) {
+                    if (G.map[r][q].terrain === 'mountain' && Math.random() < 0.1) {
                         let currentQ = q,
                             currentR = r;
                         let steps = 0;
@@ -3334,7 +3376,8 @@
             const unitDef = tribeData.units[unitType];
             if (!unitDef) return false;
             const goldCost = unitDef.cost * 2;
-            if (player.gold < goldCost) { alert('Not enough gold!'); return false; }
+            if (player.gold < goldCost) { showAlert('Not enough gold', 'You need ' + goldCost + ' gold to purchase this unit.');
+                return false; }
             const neighbors = hexNeighbors(city.q, city.r);
             const shuffled = neighbors.sort(() => Math.random() - 0.5);
             let placed = false;
@@ -3344,7 +3387,7 @@
                     if (unit) { placed = true; break; }
                 }
             }
-            if (!placed) { alert('No space to place unit!'); return false; }
+            if (!placed) { showAlert('No space', 'No adjacent tile available to place the unit.'); return false; }
             player.gold -= goldCost;
             updateUI();
             render();
@@ -3361,13 +3404,13 @@
             const unitDef = tribeData.units[unitType];
             if (!unitDef) return false;
             if (unitDef.techRequired && !player.techs.includes(unitDef.techRequired)) {
-                alert('Technology required: ' + unitDef.techRequired);
+                showAlert('Tech required', 'You need to research ' + unitDef.techRequired + ' first.');
                 return false;
             }
             const goldCost = unitDef.cost * 2;
-            if (player.gold < goldCost) { alert('Not enough gold!'); return false; }
+            if (player.gold < goldCost) { showAlert('Not enough gold', 'You need ' + goldCost + ' gold.'); return false; }
             const unit = spawnUnit(player.id, harbor.q, harbor.r, unitType);
-            if (!unit) { alert('Could not spawn unit'); return false; }
+            if (!unit) { showAlert('Error', 'Could not spawn unit.'); return false; }
             player.gold -= goldCost;
             updateUI();
             render();
@@ -3379,10 +3422,11 @@
         function buildLibrary(city) {
             const player = getTribe(city.owner);
             if (!player) return false;
-            if (city.level < 4) { alert('City must be max level (Metropolis) to build a library.'); return false; }
-            if (city.hasLibrary) { alert('Library already built.'); return false; }
+            if (city.level < 4) { showAlert('City level too low', 'City must be a Metropolis (level 4) to build a library.');
+                return false; }
+            if (city.hasLibrary) { showAlert('Already built', 'Library already exists in this city.'); return false; }
             const cost = 100;
-            if (player.gold < cost) { alert('Not enough gold!'); return false; }
+            if (player.gold < cost) { showAlert('Not enough gold', 'You need 100 gold.'); return false; }
             player.gold -= cost;
             city.hasLibrary = true;
             updateUI();
@@ -3394,11 +3438,12 @@
         function buildUniversity(city) {
             const player = getTribe(city.owner);
             if (!player) return false;
-            if (city.level < 4) { alert('City must be max level (Metropolis) to build a university.'); return false; }
-            if (!city.hasLibrary) { alert('Must build a library first.'); return false; }
-            if (city.hasUniversity) { alert('University already built.'); return false; }
+            if (city.level < 4) { showAlert('City level too low', 'City must be a Metropolis (level 4) to build a university.');
+                return false; }
+            if (!city.hasLibrary) { showAlert('Library required', 'You must first build a library in this city.'); return false; }
+            if (city.hasUniversity) { showAlert('Already built', 'University already exists.'); return false; }
             const cost = 200;
-            if (player.gold < cost) { alert('Not enough gold!'); return false; }
+            if (player.gold < cost) { showAlert('Not enough gold', 'You need 200 gold.'); return false; }
             player.gold -= cost;
             city.hasUniversity = true;
             updateUI();
@@ -3823,6 +3868,16 @@
             actions.innerHTML =
                 `<button class="primary" onclick="closeModal();showScreen('menu-screen');">Main Menu</button>
                        <button onclick="closeModal();restartGame();">Play Again</button>`;
+            overlay.classList.add('active');
+        }
+
+        // ─── ALERT REPLACEMENT ──────────────────────────────────
+        function showAlert(title, message) {
+            const overlay = document.getElementById('modal-overlay');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = `<p>${message}</p>`;
+            const actions = document.getElementById('modal-actions');
+            actions.innerHTML = `<button class="primary" onclick="closeModal()">OK</button>`;
             overlay.classList.add('active');
         }
 
@@ -4496,7 +4551,8 @@
             const city = window._prodCity;
             if (!city) return;
             if (type === 'tech' && isTechBeingResearched(id)) {
-                alert('This technology is already being researched in ' + getTechResearcher(id));
+                showAlert('Already researching', 'This technology is already being researched in ' + getTechResearcher(
+                id));
                 return;
             }
             setCityProject(city, type, id);
@@ -4511,8 +4567,8 @@
             if (!player || city.owner !== player.id) return;
             let cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
             if (player.techs.includes('architecture')) cost = Math.floor(cost * 0.8);
-            if (player.gold < cost) { alert('Not enough gold!'); return; }
-            if (city.level >= 4) { alert('City is already max level!'); return; }
+            if (player.gold < cost) { showAlert('Not enough gold', 'You need ' + cost + ' gold to upgrade.'); return; }
+            if (city.level >= 4) { showAlert('Max level', 'City is already at maximum level.'); return; }
             player.gold -= cost;
             city.level++;
             updateUI();
@@ -4845,6 +4901,9 @@
                 }
             }
 
+            // Preload fog image
+            const fogImg = images['fog'];
+
             for (let r = 0; r < G.mapHeight; r++) {
                 for (let q = 0; q < G.mapWidth; q++) {
                     const tile = G.map[r]?.[q];
@@ -4862,9 +4921,27 @@
                     for (let i = 1; i < pts.length; i++) hexPath.lineTo(pts[i].x, pts[i].y);
                     hexPath.closePath();
 
+                    // Draw fog for unexplored tiles
                     if (!isExplored) {
-                        ctx.fillStyle = '#0a0f1a';
-                        ctx.fill(hexPath);
+                        if (fogImg && fogImg.complete && fogImg.naturalWidth > 0) {
+                            ctx.save();
+                            ctx.clip(hexPath);
+                            let minX = Infinity,
+                                maxX = -Infinity,
+                                minY = Infinity,
+                                maxY = -Infinity;
+                            for (const p of pts) {
+                                if (p.x < minX) minX = p.x;
+                                if (p.x > maxX) maxX = p.x;
+                                if (p.y < minY) minY = p.y;
+                                if (p.y > maxY) maxY = p.y;
+                            }
+                            ctx.drawImage(fogImg, minX, minY, maxX - minX, maxY - minY);
+                            ctx.restore();
+                        } else {
+                            ctx.fillStyle = '#0a0f1a';
+                            ctx.fill(hexPath);
+                        }
                         ctx.strokeStyle = 'rgba(60,50,40,0.3)';
                         ctx.lineWidth = 1.0 / camera.zoom;
                         ctx.stroke(hexPath);
@@ -5381,6 +5458,7 @@
                             ctx.stroke();
                         }
                     } else {
+                        // For non-visible but explored, show a dimmed version (already handled)
                         if (tile.city) {
                             ctx.font = `${size * 0.4}px sans-serif`;
                             ctx.textAlign = 'center';
@@ -5438,10 +5516,7 @@
 
             document.getElementById('gui-turn').textContent = `Turn ${G.turn}`;
             document.getElementById('gui-gold').textContent = Math.floor(player.gold);
-            document.getElementById('gui-cities').textContent = player.cities.length;
-            document.getElementById('gui-units').textContent = player.units.length;
             document.getElementById('gui-research').textContent = Math.floor(player.researchPoints);
-            document.getElementById('gui-influence').textContent = getTribeControlledTiles(player.id);
 
             const unit = G.selectedUnit;
             const city = G.selectedCity;
@@ -5611,7 +5686,7 @@
 
         canvas.addEventListener('mouseleave', () => { isDragging = false; });
 
-        // Touch events
+        // ─── TOUCH EVENTS ────────────────────────────────────────
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touches = e.touches;
@@ -5629,15 +5704,15 @@
                 isClick = true;
                 isDragging = false;
             } else if (touches.length === 2) {
-                const t1 = touches[0],
-                    t2 = touches[1];
-                const rect = canvas.getBoundingClientRect();
-                const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
-                const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
-                const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
-                const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
-                const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
-                lastTouchDist = dist;
+                // ZOOM DISABLED - commented out
+                // const t1 = touches[0], t2 = touches[1];
+                // const rect = canvas.getBoundingClientRect();
+                // const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
+                // const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
+                // const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
+                // const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
+                // const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
+                // lastTouchDist = dist;
                 isDragging = false;
             }
         }, { passive: false });
@@ -5662,30 +5737,29 @@
                     render();
                 }
             } else if (touches.length === 2) {
-                const t1 = touches[0],
-                    t2 = touches[1];
-                const rect = canvas.getBoundingClientRect();
-                const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
-                const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
-                const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
-                const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
-                const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
-                if (lastTouchDist > 0) {
-                    const scale = dist / lastTouchDist;
-                    const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom * scale));
-                    if (newZoom !== camera.zoom) {
-                        const cx = (sx1 + sx2) / 2,
-                            cy = (sy1 + sy2) / 2;
-                        const worldBefore = screenToWorld(cx, cy);
-                        camera.zoom = newZoom;
-                        const worldAfter = screenToWorld(cx, cy);
-                        camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
-                        camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
-                        camera.centered = true;
-                        render();
-                    }
-                }
-                lastTouchDist = dist;
+                // ZOOM DISABLED - commented out
+                // const t1 = touches[0], t2 = touches[1];
+                // const rect = canvas.getBoundingClientRect();
+                // const sx1 = (t1.clientX - rect.left) * (canvas.width / rect.width);
+                // const sy1 = (t1.clientY - rect.top) * (canvas.height / rect.height);
+                // const sx2 = (t2.clientX - rect.left) * (canvas.width / rect.width);
+                // const sy2 = (t2.clientY - rect.top) * (canvas.height / rect.height);
+                // const dist = Math.hypot(sx2 - sx1, sy2 - sy1);
+                // if (lastTouchDist > 0) {
+                //   const scale = dist / lastTouchDist;
+                //   const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom * scale));
+                //   if (newZoom !== camera.zoom) {
+                //     const cx = (sx1 + sx2) / 2, cy = (sy1 + sy2) / 2;
+                //     const worldBefore = screenToWorld(cx, cy);
+                //     camera.zoom = newZoom;
+                //     const worldAfter = screenToWorld(cx, cy);
+                //     camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
+                //     camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
+                //     camera.centered = true;
+                //     render();
+                //   }
+                // }
+                // lastTouchDist = dist;
             }
         }, { passive: false });
 
@@ -5694,9 +5768,14 @@
             if (e.touches.length === 0) {
                 if (isClick) {
                     const rect = canvas.getBoundingClientRect();
-                    const sx = (mouseDownPos.x) * (canvas.width / rect.width);
-                    const sy = (mouseDownPos.y) * (canvas.height / rect.height);
-                    handleClick(sx, sy);
+                    const touch = e.changedTouches[0];
+                    if (touch) {
+                        const sx = (touch.clientX - rect.left) * (canvas.width / rect.width);
+                        const sy = (touch.clientY - rect.top) * (canvas.height / rect.height);
+                        handleClick(sx, sy);
+                    } else {
+                        handleClick(mouseDownPos.x, mouseDownPos.y);
+                    }
                 }
                 isDragging = false;
                 lastTouchDist = 0;
@@ -5704,27 +5783,40 @@
         }, { passive: false });
 
         // ─── MOUSE WHEEL ZOOM ──────────────────────────────
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+        // ZOOM DISABLED - commented out
+        // canvas.addEventListener('wheel', (e) => {
+        //   e.preventDefault();
+        //   const rect = canvas.getBoundingClientRect();
+        //   const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+        //   const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+        //   const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        //   const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom + delta));
+        //   if (newZoom === camera.zoom) return;
+        //   const worldBefore = screenToWorld(sx, sy);
+        //   camera.zoom = newZoom;
+        //   const worldAfter = screenToWorld(sx, sy);
+        //   camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
+        //   camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
+        //   camera.centered = true;
+        //   render();
+        // }, { passive: false });
 
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
-            const newZoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom + delta));
+        // ─── MODAL OVERLAY SCROLL LOCK ──────────────────────────
+        function openModal() {
+            document.body.classList.add('modal-open');
+        }
 
-            if (newZoom === camera.zoom) return;
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
 
-            const worldBefore = screenToWorld(sx, sy);
-            camera.zoom = newZoom;
-            const worldAfter = screenToWorld(sx, sy);
-
-            camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
-            camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
-            camera.centered = true;
-
-            render();
-        }, { passive: false });
+        // Override the modal overlay click to close (but keep our closeModal)
+        document.getElementById('modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
 
         // ─── NAVIGATION ──────────────────────────────────────────
         function showScreen(id) {
@@ -5848,8 +5940,6 @@
             actions.innerHTML = `<button class="primary" onclick="closeModal()">Got it!</button>`;
             overlay.classList.add('active');
         }
-
-        function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
 
         function showInGameMenu() {
             const overlay = document.getElementById('modal-overlay');
@@ -6082,7 +6172,7 @@
                     }
                 });
 
-                console.log('Oba v9.0 – Africa biome map: water(0-20%), forest(20-40%), plains(40-60%), desert(60-75%), hills(75-90%), mountains(90-100%)');
+                console.log('Oba v9.2 – Fixed fog, terrain, alerts, UI, and touch movement.');
             });
         });
     </script>
