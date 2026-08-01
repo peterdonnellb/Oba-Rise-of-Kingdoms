@@ -64,13 +64,13 @@
         /* ─── MAIN MENU ─── */
         #menu-screen {
             background: var(--near-black);
-            justify-content: flex-start;
-            padding-top: 10px;
+            padding-top: 0;
             padding-bottom: 40px;
             position: relative;
             min-height: 100%;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            justify-content: flex-start;
         }
         #menu-screen::before {
             content: '';
@@ -99,12 +99,13 @@
             max-width: 792px;
             padding: 0 16px 30px 16px;
             flex: 1;
+            margin-top: 0;
         }
 
         #menu-logo-container {
             width: 100%;
             max-width: 435px;
-            margin-top: 12px;
+            margin-top: 10px;
             margin-bottom: 2px;
             display: flex;
             justify-content: center;
@@ -673,7 +674,6 @@
         .gui-top-btn.tech-btn:hover {
             background: rgba(201, 162, 39, 0.1);
         }
-        /* ─── MENU BUTTON NARROW ─── */
         .gui-top-btn.menu-btn {
             padding: 4px 6px;
             min-width: 28px;
@@ -1589,7 +1589,6 @@
                     <div class="popup-divider"></div>
                     <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
                     <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
-                    <!-- Fishing & Farm actions (shown conditionally) -->
                     <button data-action="launch-fishing" class="fish-btn" style="display:none;"><span class="action-icon">🎣</span><span class="action-label">Launch Fishing Boats</span></button>
                     <button data-action="build-farm" class="farm-btn" style="display:none;"><span class="action-icon">🌾</span><span class="action-label">Build Farm</span></button>
                     <div class="popup-divider"></div>
@@ -1654,7 +1653,6 @@
         ASSET_PATHS['resource_wood'] = 'resource_wood.png';
         ASSET_PATHS['resource_stone'] = 'resource_stone.png';
         ASSET_PATHS['resource_fish'] = 'resource_fish.png';
-        // New assets for fishing and farming
         ASSET_PATHS['fishing'] = 'fishing.png';
         ASSET_PATHS['farm'] = 'farm.png';
         ASSET_PATHS['ui_gold'] = 'ui_gold.png';
@@ -2805,8 +2803,6 @@
                     if (tileData.fishing && tileData.farm) discount = Math.max(discount, 0.35);
                 }
             }
-            // Also check if the city itself has a fishing or farm tile in its influence
-            // and stack with quarry discount
             return discount;
         }
 
@@ -3906,7 +3902,6 @@
                     return;
                 }
                 cost = unitDef.cost;
-                // Apply discount from nearby city
                 const city = G.cities.find(c => c.owner === tribe.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
                         r: harbor.r }) <= 2);
                 if (city) {
@@ -4894,18 +4889,37 @@
 
         function showActionPopup(x, y) {
             const rect = canvas.getBoundingClientRect();
+            // We'll position the popup so that it is fully visible.
+            // We'll measure the popup after it's visible, but we need to know its size.
+            // We'll set display to flex, measure, then adjust.
+            popup.style.display = 'flex';
+            popup.style.opacity = '0'; // hide briefly for measurement
+            // Force a reflow to get accurate dimensions
             const popupRect = popup.getBoundingClientRect();
-            let left = x - popupRect.width / 2;
-            let top = y - popupRect.height - 10;
-            // Ensure the popup is fully visible within the viewport
-            const padding = 10;
-            if (left < padding) left = padding;
-            if (left + popupRect.width > rect.width - padding) left = rect.width - popupRect.width - padding;
-            if (top < padding) top = padding;
-            if (top + popupRect.height > rect.height - padding) top = rect.height - popupRect.height - padding;
+            const pw = popupRect.width;
+            const ph = popupRect.height;
+
+            // Desired position: centered above the click point, but if it overflows, adjust.
+            let left = x - pw / 2;
+            let top = y - ph - 10; // above the cursor
+
+            // Clamp to viewport
+            const padding = 8;
+            const maxLeft = rect.width - pw - padding;
+            const maxTop = rect.height - ph - padding;
+            left = Math.max(padding, Math.min(left, maxLeft));
+            top = Math.max(padding, Math.min(top, maxTop));
+
+            // If still not visible (e.g., too small screen), force to center
+            if (left < padding || left > maxLeft || top < padding || top > maxTop) {
+                left = (rect.width - pw) / 2;
+                top = (rect.height - ph) / 2;
+            }
+
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-            popup.style.display = 'flex';
+            popup.style.opacity = '1'; // show
+
             // Trigger show animation
             requestAnimationFrame(() => {
                 popup.classList.add('show');
@@ -4916,6 +4930,7 @@
             popup.classList.remove('show');
             setTimeout(() => {
                 popup.style.display = 'none';
+                popup.style.opacity = '1'; // reset
             }, 150);
             G.selectedResourceTile = null;
         }
@@ -6605,7 +6620,7 @@
                 // Setup popup dismissal
                 setupPopupDismissal();
 
-                console.log('Oba v11 – Mobile-optimized with fishing, farming, harbor scaling, and smart menus.');
+                console.log('Oba v12 – Context menu fully visible, logo at top, menu only scrolls when needed.');
             });
         });
     </script>
