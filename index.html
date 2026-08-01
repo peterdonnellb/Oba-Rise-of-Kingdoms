@@ -32,13 +32,11 @@
             background: var(--near-black);
             color: var(--cream);
             overflow-y: auto;
-            /* allow scroll when needed */
             height: 100vh;
             width: 100vw;
             user-select: none;
             -webkit-user-select: none;
             touch-action: pan-y;
-            /* allow vertical scroll */;
         }
         body.modal-open {
             overflow: hidden;
@@ -675,9 +673,15 @@
         .gui-top-btn.tech-btn:hover {
             background: rgba(201, 162, 39, 0.1);
         }
+        /* ─── MENU BUTTON NARROW ─── */
         .gui-top-btn.menu-btn {
+            padding: 4px 6px;
+            min-width: 28px;
+            width: auto;
+            font-size: 1.2rem;
             border-color: #4a3528;
             color: #b8957a;
+            line-height: 1;
         }
 
         /* ─── BOTTOM BAR ─── */
@@ -917,6 +921,20 @@
         }
         #action-popup button.quarry-btn:hover:not(:disabled) {
             background: rgba(149, 165, 166, 0.12);
+        }
+        #action-popup button.fish-btn {
+            border-color: #00bcd4;
+            color: #00bcd4;
+        }
+        #action-popup button.fish-btn:hover:not(:disabled) {
+            background: rgba(0, 188, 212, 0.12);
+        }
+        #action-popup button.farm-btn {
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+        #action-popup button.farm-btn:hover:not(:disabled) {
+            background: rgba(76, 175, 80, 0.12);
         }
         #action-popup .popup-divider {
             height: 1px;
@@ -1170,6 +1188,11 @@
                 padding: 4px 10px;
                 min-height: 28px;
             }
+            .gui-top-btn.menu-btn {
+                padding: 4px 6px;
+                min-width: 26px;
+                font-size: 1.1rem;
+            }
             .gui-unit-info .unit-name {
                 font-size: 0.85rem;
             }
@@ -1241,6 +1264,11 @@
                 font-size: 0.7rem;
                 padding: 3px 8px;
                 min-height: 26px;
+            }
+            .gui-top-btn.menu-btn {
+                padding: 3px 4px;
+                min-width: 22px;
+                font-size: 1rem;
             }
             .gui-unit-info .unit-name {
                 font-size: 0.75rem;
@@ -1325,6 +1353,11 @@
                 font-size: 0.6rem;
                 padding: 2px 6px;
                 min-height: 22px;
+            }
+            .gui-top-btn.menu-btn {
+                padding: 2px 3px;
+                min-width: 18px;
+                font-size: 0.85rem;
             }
             .gui-unit-info .unit-stats {
                 font-size: 0.55rem;
@@ -1556,6 +1589,9 @@
                     <div class="popup-divider"></div>
                     <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
                     <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
+                    <!-- Fishing & Farm actions (shown conditionally) -->
+                    <button data-action="launch-fishing" class="fish-btn" style="display:none;"><span class="action-icon">🎣</span><span class="action-label">Launch Fishing Boats</span></button>
+                    <button data-action="build-farm" class="farm-btn" style="display:none;"><span class="action-icon">🌾</span><span class="action-label">Build Farm</span></button>
                     <div class="popup-divider"></div>
                     <button data-action="manage-city"><span class="action-icon">🏗️</span><span class="action-label">Manage City</span><span class="action-shortcut">B</span></button>
                     <button data-action="upgrade-city"><span class="action-icon">⬆</span><span class="action-label">Upgrade City</span></button>
@@ -1618,6 +1654,9 @@
         ASSET_PATHS['resource_wood'] = 'resource_wood.png';
         ASSET_PATHS['resource_stone'] = 'resource_stone.png';
         ASSET_PATHS['resource_fish'] = 'resource_fish.png';
+        // New assets for fishing and farming
+        ASSET_PATHS['fishing'] = 'fishing.png';
+        ASSET_PATHS['farm'] = 'farm.png';
         ASSET_PATHS['ui_gold'] = 'ui_gold.png';
         ASSET_PATHS['ui_sword'] = 'ui_sword.png';
         ASSET_PATHS['ui_shield'] = 'ui_shield.png';
@@ -2456,6 +2495,7 @@
             selectedHex: null,
             selectedCity: null,
             selectedHarbor: null,
+            selectedResourceTile: null,
             gameOver: false,
             winner: null,
             map: [],
@@ -2752,6 +2792,32 @@
             return yieldTotal;
         }
 
+        // ─── CITY DISCOUNT from fishing/farming ──────────────────────
+        function getCityDiscount(city) {
+            if (!city) return 0;
+            const influence = getCityInfluence(city);
+            let discount = 0;
+            for (const tile of influence) {
+                const tileData = G.map[tile.r]?.[tile.q];
+                if (tileData) {
+                    if (tileData.fishing) discount = Math.max(discount, 0.2);
+                    if (tileData.farm) discount = Math.max(discount, 0.2);
+                    if (tileData.fishing && tileData.farm) discount = Math.max(discount, 0.35);
+                }
+            }
+            // Also check if the city itself has a fishing or farm tile in its influence
+            // and stack with quarry discount
+            return discount;
+        }
+
+        function getCityUnitDiscount(city) {
+            return getCityDiscount(city);
+        }
+
+        function getCityImprovementDiscount(city) {
+            return getCityDiscount(city);
+        }
+
         // ─── FOG OF WAR ─────────────────────────────────────────────
         function updateVisibility() {
             for (let r = 0; r < G.mapHeight; r++) {
@@ -2861,7 +2927,7 @@
             }
         }
 
-        // ─── IMPROVED MAP GENERATION ────────────────────────────────
+        // ─── MAP GENERATION ──────────────────────────────────────────
         function generateMap() {
             const w = G.mapWidth,
                 h = G.mapHeight;
@@ -2983,7 +3049,8 @@
                         if (terrain === 'water' && !G.map[r]?.[q]?.isRiver) terrain = 'plains';
                     }
                     G.map[r][q] = { q, r, terrain, owner: null, city: null, unit: null, harbor: null, explored: false,
-                        visible: false, isRiver: false, resource: null, mine: false, quarry: false };
+                        visible: false, isRiver: false, resource: null, mine: false, quarry: false, fishing: false,
+                        farm: false };
                 }
             }
 
@@ -3486,7 +3553,9 @@
             if (!tribeData) return false;
             const unitDef = tribeData.units[unitType];
             if (!unitDef) return false;
-            const goldCost = unitDef.cost * 2;
+            let goldCost = unitDef.cost * 2;
+            const discount = getCityUnitDiscount(city);
+            goldCost = Math.ceil(goldCost * (1 - discount));
             if (player.gold < goldCost) { showAlert('Not enough gold', 'You need ' + goldCost + ' gold to purchase this unit.');
                 return false; }
             const neighbors = hexNeighbors(city.q, city.r);
@@ -3518,7 +3587,13 @@
                 showAlert('Tech required', 'You need to research ' + unitDef.techRequired + ' first.');
                 return false;
             }
-            const goldCost = unitDef.cost * 2;
+            let goldCost = unitDef.cost * 2;
+            const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
+                    r: harbor.r }) <= 2);
+            if (city) {
+                const discount = getCityUnitDiscount(city);
+                goldCost = Math.ceil(goldCost * (1 - discount));
+            }
             if (player.gold < goldCost) { showAlert('Not enough gold', 'You need ' + goldCost + ' gold.'); return false; }
             const unit = spawnUnit(player.id, harbor.q, harbor.r, unitType);
             if (!unit) { showAlert('Error', 'Could not spawn unit.'); return false; }
@@ -3536,8 +3611,10 @@
             if (city.level < 4) { showAlert('City level too low', 'City must be a Metropolis (level 4) to build a library.');
                 return false; }
             if (city.hasLibrary) { showAlert('Already built', 'Library already exists in this city.'); return false; }
-            const cost = 100;
-            if (player.gold < cost) { showAlert('Not enough gold', 'You need 100 gold.'); return false; }
+            let cost = 100;
+            const discount = getCityImprovementDiscount(city);
+            cost = Math.ceil(cost * (1 - discount));
+            if (player.gold < cost) { showAlert('Not enough gold', 'You need ' + cost + ' gold.'); return false; }
             player.gold -= cost;
             city.hasLibrary = true;
             updateUI();
@@ -3553,8 +3630,10 @@
                 return false; }
             if (!city.hasLibrary) { showAlert('Library required', 'You must first build a library in this city.'); return false; }
             if (city.hasUniversity) { showAlert('Already built', 'University already exists.'); return false; }
-            const cost = 200;
-            if (player.gold < cost) { showAlert('Not enough gold', 'You need 200 gold.'); return false; }
+            let cost = 200;
+            const discount = getCityImprovementDiscount(city);
+            cost = Math.ceil(cost * (1 - discount));
+            if (player.gold < cost) { showAlert('Not enough gold', 'You need ' + cost + ' gold.'); return false; }
             player.gold -= cost;
             city.hasUniversity = true;
             updateUI();
@@ -3605,6 +3684,47 @@
             tile.resource = null;
             unit.hasMoved = true;
             queueMessage('🪨 Quarry built! Unit production costs reduced by 20% in the controlling city.');
+            updateVisibility();
+            updateUI();
+            render();
+            saveGame();
+            return true;
+        }
+
+        // ─── FISHING / FARM ──────────────────────────────────────────
+        function canLaunchFishing(tile, playerId) {
+            if (!tile) return false;
+            if (tile.resource !== '🐟') return false;
+            if (tile.fishing) return false;
+            if (tile.owner !== playerId) return false;
+            return true;
+        }
+
+        function launchFishing(tile) {
+            if (!canLaunchFishing(tile, G.playerTribeId)) return false;
+            tile.fishing = true;
+            tile.resource = null;
+            queueMessage('🎣 Fishing boats launched! Settlement improvements and unit production costs reduced.');
+            updateVisibility();
+            updateUI();
+            render();
+            saveGame();
+            return true;
+        }
+
+        function canBuildFarm(tile, playerId) {
+            if (!tile) return false;
+            if (tile.resource !== '🌾') return false;
+            if (tile.farm) return false;
+            if (tile.owner !== playerId) return false;
+            return true;
+        }
+
+        function buildFarm(tile) {
+            if (!canBuildFarm(tile, G.playerTribeId)) return false;
+            tile.farm = true;
+            tile.resource = null;
+            queueMessage('🌾 Farm built! Settlement improvements and unit production costs reduced.');
             updateVisibility();
             updateUI();
             render();
@@ -3786,6 +3906,13 @@
                     return;
                 }
                 cost = unitDef.cost;
+                // Apply discount from nearby city
+                const city = G.cities.find(c => c.owner === tribe.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
+                        r: harbor.r }) <= 2);
+                if (city) {
+                    const discount = getCityUnitDiscount(city);
+                    cost = Math.ceil(cost * (1 - discount));
+                }
             }
             if (cost && harbor.production >= cost) {
                 if (project.type === 'unit') {
@@ -4020,7 +4147,9 @@
                 const influence = getCityInfluence(city);
                 for (const tile of influence) {
                     const tileData = G.map[tile.r]?.[tile.q];
-                    if (tileData && tileData.quarry) { discount = 0.2; break; }
+                    if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
+                    if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
+                    if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                 }
                 cost = Math.ceil(cost * (1 - discount));
                 progressTarget = () => {
@@ -4074,6 +4203,8 @@
                     return;
                 }
                 cost = getWonderCost(city.project.id);
+                const discount = getCityImprovementDiscount(city);
+                cost = Math.ceil(cost * (1 - discount));
                 progressTarget = () => {
                     if (city.progress >= cost) {
                         if (!isWonderBuilt(tribe, city.project.id)) tribe.wonders.push(city.project.id);
@@ -4464,16 +4595,29 @@
                 html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">`;
                 for (const type of navalTypes) {
                     const def = availUnits[type];
+                    const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor
+                            .q, r: harbor.r }) <= 2);
+                    let cost = def.cost;
+                    if (city) {
+                        const discount = getCityUnitDiscount(city);
+                        cost = Math.ceil(cost * (1 - discount));
+                    }
                     html +=
                         `<button style="padding:10px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
-                onclick="setHarborProjectAndClose('${type}','unit')">${def.name} (${def.cost} prod)</button>`;
+                onclick="setHarborProjectAndClose('${type}','unit')">${def.name} (${cost} prod)</button>`;
                 }
                 html += `</div>`;
                 html += `<div style="margin-top:12px;font-weight:bold;color:var(--vivid-gold);">Buy with gold:</div>`;
                 html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">`;
                 for (const type of navalTypes) {
                     const def = availUnits[type];
-                    const goldCost = def.cost * 2;
+                    let goldCost = def.cost * 2;
+                    const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor
+                            .q, r: harbor.r }) <= 2);
+                    if (city) {
+                        const discount = getCityUnitDiscount(city);
+                        goldCost = Math.ceil(goldCost * (1 - discount));
+                    }
                     html +=
                         `<button style="padding:10px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:6px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
                 onclick="buyNavalUnitAtHarbor(window._harbor, '${type}')">${def.name} (${goldCost} gold)</button>`;
@@ -4526,14 +4670,18 @@
                         const influence = getCityInfluence(city);
                         for (const tile of influence) {
                             const tileData = G.map[tile.r]?.[tile.q];
-                            if (tileData && tileData.quarry) { discount = 0.2; break; }
+                            if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
+                            if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
+                            if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                         }
                         costDisplay = Math.ceil(cost * (1 - discount));
                     }
                 } else if (city.project.type === 'tech') {
                     costDisplay = getTechCost(city.project.id);
                 } else if (city.project.type === 'wonder') {
-                    costDisplay = getWonderCost(city.project.id);
+                    let cost = getWonderCost(city.project.id);
+                    const discount = getCityImprovementDiscount(city);
+                    costDisplay = Math.ceil(cost * (1 - discount));
                 }
             }
 
@@ -4554,11 +4702,13 @@
             html += `<p style="color:#6b5a4a;">Select a tab above.</p>`;
             html += `</div>`;
 
-            const upgradeCost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
-            const reducedCost = player.techs.includes('architecture') ? Math.floor(upgradeCost * 0.8) : upgradeCost;
+            let upgradeCost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+            if (player.techs.includes('architecture')) upgradeCost = Math.floor(upgradeCost * 0.8);
+            const discount = getCityImprovementDiscount(city);
+            upgradeCost = Math.ceil(upgradeCost * (1 - discount));
             if (city.level < 4) {
                 html += `<div style="margin-top:12px;text-align:center;">
-              <button class="gui-action-btn primary" onclick="upgradeCity(window._prodCity)">⬆ Upgrade to ${levelNames[Math.min(city.level, 3)]} (${reducedCost} gold)</button>
+              <button class="gui-action-btn primary" onclick="upgradeCity(window._prodCity)">⬆ Upgrade to ${levelNames[Math.min(city.level, 3)]} (${upgradeCost} gold)</button>
             </div>`;
             } else {
                 html += `<div style="margin-top:12px;text-align:center;color:#6b5a4a;">Maximum level reached.</div>`;
@@ -4590,10 +4740,12 @@
                     const influence = getCityInfluence(city);
                     for (const tile of influence) {
                         const tileData = G.map[tile.r]?.[tile.q];
-                        if (tileData && tileData.quarry) { discount = 0.2; break; }
+                        if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
+                        if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
+                        if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                     }
                     const reducedCost = Math.ceil(cost * (1 - discount));
-                    const goldCost = def.cost * 2;
+                    const goldCost = Math.ceil(cost * 2 * (1 - discount));
                     html +=
                         `<div style="display:flex;flex-direction:column;gap:4px;background:rgba(20,12,8,0.5);padding:8px;border-radius:6px;border:1px solid #3a281e;">
                 <span style="font-size:clamp(0.8rem,2vw,0.9rem);color:var(--cream);">${def.name}</span>
@@ -4633,16 +4785,22 @@
                 } else {
                     html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
                     for (const w of availWonders) {
+                        let cost = w.cost;
+                        const discount = getCityImprovementDiscount(city);
+                        cost = Math.ceil(cost * (1 - discount));
                         html +=
                             `<button style="padding:8px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
-                  onclick="setCityProjectAndClose('${w.id}','wonder')">${w.name} (${w.cost} prod)<br><span style="font-size:0.6rem;color:#6b5a4a;">${w.desc}</span></button>`;
+                  onclick="setCityProjectAndClose('${w.id}','wonder')">${w.name} (${cost} prod)<br><span style="font-size:0.6rem;color:#6b5a4a;">${w.desc}</span></button>`;
                     }
                     html += `</div>`;
                 }
             } else if (tab === 'upgrades') {
                 html = `<div style="display:flex;flex-direction:column;gap:8px;">`;
-                const libraryCost = 100;
-                const universityCost = 200;
+                let libraryCost = 100;
+                let universityCost = 200;
+                const discount = getCityImprovementDiscount(city);
+                libraryCost = Math.ceil(libraryCost * (1 - discount));
+                universityCost = Math.ceil(universityCost * (1 - discount));
                 if (!city.hasLibrary) {
                     html +=
                         `<button class="gui-action-btn primary" onclick="buildLibrary(window._prodCity)" ${player.gold < libraryCost ? 'disabled' : ''} style="min-height:44px;touch-action:manipulation;">📚 Build Library (${libraryCost} gold) – +2 research/turn</button>`;
@@ -4677,6 +4835,8 @@
             if (!player || city.owner !== player.id) return;
             let cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
             if (player.techs.includes('architecture')) cost = Math.floor(cost * 0.8);
+            const discount = getCityImprovementDiscount(city);
+            cost = Math.ceil(cost * (1 - discount));
             if (player.gold < cost) { showAlert('Not enough gold', 'You need ' + cost + ' gold to upgrade.'); return; }
             if (city.level >= 4) { showAlert('Max level', 'City is already at maximum level.'); return; }
             player.gold -= cost;
@@ -4737,10 +4897,12 @@
             const popupRect = popup.getBoundingClientRect();
             let left = x - popupRect.width / 2;
             let top = y - popupRect.height - 10;
-            if (left < 10) left = 10;
-            if (left + popupRect.width > rect.width - 10) left = rect.width - popupRect.width - 10;
-            if (top < 10) top = 10;
-            if (top + popupRect.height > rect.height - 10) top = rect.height - popupRect.height - 10;
+            // Ensure the popup is fully visible within the viewport
+            const padding = 10;
+            if (left < padding) left = padding;
+            if (left + popupRect.width > rect.width - padding) left = rect.width - popupRect.width - padding;
+            if (top < padding) top = padding;
+            if (top + popupRect.height > rect.height - padding) top = rect.height - popupRect.height - padding;
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
             popup.style.display = 'flex';
@@ -4755,6 +4917,46 @@
             setTimeout(() => {
                 popup.style.display = 'none';
             }, 150);
+            G.selectedResourceTile = null;
+        }
+
+        // Dismiss popup on scroll or outside click
+        function setupPopupDismissal() {
+            // On wheel/scroll
+            canvas.addEventListener('wheel', () => {
+                if (popup.style.display !== 'none') hideActionPopup();
+            }, { passive: true });
+
+            // On touch move (scrolling)
+            let touchStartY = 0;
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+            canvas.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && popup.style.display !== 'none') {
+                    const dy = Math.abs(e.touches[0].clientY - touchStartY);
+                    if (dy > 20) {
+                        hideActionPopup();
+                    }
+                }
+            }, { passive: true });
+
+            // On click outside the popup (handled in the click handler)
+            document.addEventListener('click', (e) => {
+                if (popup.style.display !== 'none') {
+                    const target = e.target;
+                    if (!popup.contains(target) && target !== canvas && !canvas.contains(target)) {
+                        hideActionPopup();
+                    }
+                }
+            });
+
+            // On resize - reposition or hide
+            window.addEventListener('resize', () => {
+                if (popup.style.display !== 'none') hideActionPopup();
+            });
         }
 
         function updateActionPopup() {
@@ -4763,6 +4965,36 @@
 
             const mineBtn = popup.querySelector('[data-action="build-mine"]');
             const quarryBtn = popup.querySelector('[data-action="build-quarry"]');
+            const fishBtn = popup.querySelector('[data-action="launch-fishing"]');
+            const farmBtn = popup.querySelector('[data-action="build-farm"]');
+
+            // Check if we have a resource tile selected
+            const resourceTile = G.selectedResourceTile;
+            if (resourceTile && !unit) {
+                // Show resource actions
+                const isFish = resourceTile.resource === '🐟' && !resourceTile.fishing && resourceTile.owner === player.id;
+                const isFood = resourceTile.resource === '🌾' && !resourceTile.farm && resourceTile.owner === player.id;
+
+                fishBtn.style.display = isFish ? 'flex' : 'none';
+                farmBtn.style.display = isFood ? 'flex' : 'none';
+
+                // Hide all other action buttons except resource ones
+                popup.querySelectorAll('button').forEach(b => {
+                    const action = b.dataset.action;
+                    if (action !== 'launch-fishing' && action !== 'build-farm') {
+                        b.style.display = 'none';
+                    }
+                });
+                // Show divider if any resource action is visible
+                const dividers = popup.querySelectorAll('.popup-divider');
+                dividers.forEach(d => d.style.display = (isFish || isFood) ? 'block' : 'none');
+                return;
+            }
+
+            // Hide resource buttons by default
+            fishBtn.style.display = 'none';
+            farmBtn.style.display = 'none';
+
             if (unit && unit.tribeId === player.id && !unit.hasMoved) {
                 const tile = G.map[unit.r]?.[unit.q];
                 mineBtn.style.display = canBuildMine(unit) ? 'flex' : 'none';
@@ -4780,9 +5012,11 @@
                 manageBtn.style.display = 'flex';
                 upgradeBtn.style.display = 'flex';
                 if (hasCity) {
-                    const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
-                    const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
-                    upgradeBtn.disabled = city.level >= 4 || player.gold < reduced;
+                    let cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+                    if (player.techs.includes('architecture')) cost = Math.floor(cost * 0.8);
+                    const discount = getCityImprovementDiscount(city);
+                    cost = Math.ceil(cost * (1 - discount));
+                    upgradeBtn.disabled = city.level >= 4 || player.gold < cost;
                 }
                 popup.querySelectorAll('button').forEach(b => {
                     if (b.dataset.action !== 'manage-city' && b.dataset.action !== 'upgrade-city' &&
@@ -4790,6 +5024,9 @@
                         b.style.display = 'none';
                     }
                 });
+                // Show dividers
+                const dividers = popup.querySelectorAll('.popup-divider');
+                dividers.forEach(d => d.style.display = 'block');
                 return;
             }
 
@@ -4800,9 +5037,13 @@
 
             // Show all buttons by default (except mine/quarry which are handled above)
             popup.querySelectorAll('button').forEach(b => {
-                if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry') return;
+                if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry' ||
+                    b.dataset.action === 'launch-fishing' || b.dataset.action === 'build-farm') return;
                 b.style.display = 'flex';
             });
+            // Show dividers
+            const dividers = popup.querySelectorAll('.popup-divider');
+            dividers.forEach(d => d.style.display = 'block');
 
             const moveBtn = popup.querySelector('[data-action="move"]');
             const attackBtn = popup.querySelector('[data-action="attack"]');
@@ -4842,10 +5083,12 @@
             if (hasCity) {
                 manageCityBtn.style.display = 'flex';
                 manageCityBtn.disabled = false;
-                const cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
-                const reduced = player.techs.includes('architecture') ? Math.floor(cost * 0.8) : cost;
+                let cost = city.level === 1 ? 50 : city.level === 2 ? 80 : 120;
+                if (player.techs.includes('architecture')) cost = Math.floor(cost * 0.8);
+                const discount = getCityImprovementDiscount(city);
+                cost = Math.ceil(cost * (1 - discount));
                 upgradeCityBtn.style.display = 'flex';
-                upgradeCityBtn.disabled = city.level >= 4 || player.gold < reduced;
+                upgradeCityBtn.disabled = city.level >= 4 || player.gold < cost;
                 G.selectedCity = city;
             } else {
                 manageCityBtn.style.display = 'none';
@@ -4941,6 +5184,26 @@
                 } else if (action === 'build-quarry') {
                     if (G.selectedUnit) {
                         if (buildQuarry(G.selectedUnit)) {
+                            updateVisibility();
+                            updateUI();
+                            render();
+                        }
+                    }
+                    hideActionPopup();
+                } else if (action === 'launch-fishing') {
+                    if (G.selectedResourceTile) {
+                        if (launchFishing(G.selectedResourceTile)) {
+                            G.selectedResourceTile = null;
+                            updateVisibility();
+                            updateUI();
+                            render();
+                        }
+                    }
+                    hideActionPopup();
+                } else if (action === 'build-farm') {
+                    if (G.selectedResourceTile) {
+                        if (buildFarm(G.selectedResourceTile)) {
+                            G.selectedResourceTile = null;
                             updateVisibility();
                             updateUI();
                             render();
@@ -5070,6 +5333,7 @@
                     const hasHarbor = tile.harbor !== null && tile.harbor !== undefined;
                     const harbor = tile.harbor;
 
+                    // ─── Terrain background ────────────────────────────
                     if (isVisible && !hasCity && !hasHarbor) {
                         let terrainKey = 'hex_plains';
                         if (tile.terrain === 'forest') terrainKey = 'hex_forest';
@@ -5138,8 +5402,8 @@
                             const tribe = G.tribes.find(t => t.id === city.owner);
                             if (tribe) bgColor = tribe.color;
                         } else if (hasHarbor && harbor.owner) {
-                            const tribe = G.tribes.find(t => t.id === harbor.owner);
-                            if (tribe) bgColor = tribe.secondary || tribe.color;
+                            // REMOVED: do not color water tiles with tribe color
+                            bgColor = '#1a3a5a'; // default water color
                         }
                         ctx.fillStyle = bgColor;
                         ctx.fill(hexPath);
@@ -5157,6 +5421,7 @@
                         ctx.fill(hexPath);
                     }
 
+                    // ─── Influence border ───
                     const key = hexKey(q, r);
                     const influenceColor = influenceMap[key];
                     if (influenceColor && (isVisible || tile.owner === player.id)) {
@@ -5167,6 +5432,7 @@
                         ctx.restore();
                     }
 
+                    // ─── Border ───
                     let borderColor = '#d0c4b8';
                     let borderWidth = 1.0 / camera.zoom;
                     if (isVisible && tile.owner) {
@@ -5180,6 +5446,7 @@
                     ctx.lineWidth = borderWidth;
                     ctx.stroke(hexPath);
 
+                    // ─── Reachable/attackable highlights ───
                     if (isVisible) {
                         const isReachable = reachableTiles.some(t => t.q === q && t.r === r);
                         const isAttackable = attackableTiles.some(t => t.q === q && t.r === r);
@@ -5195,6 +5462,7 @@
                         }
                     }
 
+                    // ─── City influence ring ───
                     if (isVisible && hasCity) {
                         const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
                         if (radius > 0) {
@@ -5208,8 +5476,10 @@
                         }
                     }
 
+                    // ─── Draw elements on visible tiles ───
                     if (isVisible) {
-                        if (tile.resource && !hasCity && !hasHarbor) {
+                        // ─── Resource icon ───
+                        if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm) {
                             const resKey = RESOURCE_MAP[tile.resource];
                             const resImg = resKey ? images[resKey] : null;
                             if (resImg && resImg.complete && resImg.naturalWidth > 0) {
@@ -5228,6 +5498,41 @@
                             }
                         }
 
+                        // ─── Fishing icon ───
+                        if (tile.fishing) {
+                            const fishImg = images['fishing'];
+                            if (fishImg && fishImg.complete && fishImg.naturalWidth > 0) {
+                                const fSize = size * 0.5;
+                                ctx.drawImage(fishImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
+                            } else {
+                                ctx.save();
+                                ctx.font = `${size * 0.45}px sans-serif`;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = '#00bcd4';
+                                ctx.fillText('🎣', cx, cy + size * 0.1);
+                                ctx.restore();
+                            }
+                        }
+
+                        // ─── Farm icon ───
+                        if (tile.farm) {
+                            const farmImg = images['farm'];
+                            if (farmImg && farmImg.complete && farmImg.naturalWidth > 0) {
+                                const fSize = size * 0.5;
+                                ctx.drawImage(farmImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
+                            } else {
+                                ctx.save();
+                                ctx.font = `${size * 0.45}px sans-serif`;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = '#4caf50';
+                                ctx.fillText('🌾', cx, cy + size * 0.1);
+                                ctx.restore();
+                            }
+                        }
+
+                        // ─── Mine / Quarry icon ───
                         if (tile.mine) {
                             const mineImg = images['mine'];
                             if (mineImg && mineImg.complete && mineImg.naturalWidth > 0) {
@@ -5259,6 +5564,7 @@
                             }
                         }
 
+                        // ─── City ───
                         if (hasCity) {
                             let settlementKey = 'settlement_village';
                             if (city.level === 2) settlementKey = 'settlement_town';
@@ -5367,7 +5673,12 @@
                                             const influence = getCityInfluence(city);
                                             for (const tileInf of influence) {
                                                 const tileData = G.map[tileInf.r]?.[tileInf.q];
-                                                if (tileData && tileData.quarry) { discount = 0.2; break; }
+                                                if (tileData && tileData.quarry) { discount = Math.max(discount,
+                                                    0.2); }
+                                                if (tileData && tileData.fishing) { discount = Math.max(discount,
+                                                    0.2); }
+                                                if (tileData && tileData.farm) { discount = Math.max(discount,
+                                                    0.2); }
                                             }
                                             cost = Math.ceil(cost * (1 - discount));
                                         }
@@ -5380,6 +5691,8 @@
                                     ringColor = '#4fc3f7';
                                 } else if (city.project.type === 'wonder') {
                                     cost = getWonderCost(city.project.id);
+                                    const discount = getCityImprovementDiscount(city);
+                                    cost = Math.ceil(cost * (1 - discount));
                                     ringColor = '#ab47bc';
                                 }
                                 if (cost > 0 && progressVal > 0) {
@@ -5401,29 +5714,25 @@
                             ctx.stroke();
                         }
 
+                        // ─── Harbor ─── (increased size to fill hexagon)
                         if (hasHarbor) {
                             const harborImg = images['harbor'];
-                            const hSize = size * 0.6;
+                            const hSize = size * 0.95; // Increased from 0.6 to fill hex
                             if (harborImg && harborImg.complete && harborImg.naturalWidth > 0) {
                                 ctx.save();
                                 ctx.globalAlpha = 0.9;
-                                ctx.drawImage(harborImg, cx - hSize / 2, cy - hSize / 2 - size * 0.05, hSize, hSize);
-                                const tribe = G.tribes.find(t => t.id === harbor.owner);
-                                if (tribe) {
-                                    ctx.globalAlpha = 0.25;
-                                    ctx.fillStyle = tribe.color;
-                                    ctx.fillRect(cx - hSize / 2, cy - hSize / 2 - size * 0.05, hSize, hSize);
-                                }
+                                ctx.drawImage(harborImg, cx - hSize / 2, cy - hSize / 2 - size * 0.02, hSize, hSize);
+                                // Removed tribe color overlay on water
                                 ctx.restore();
                             } else {
                                 ctx.save();
-                                ctx.font = `${size * 0.5}px sans-serif`;
+                                ctx.font = `${size * 0.8}px sans-serif`;
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
                                 ctx.shadowColor = 'rgba(0,0,0,0.8)';
                                 ctx.shadowBlur = 15 / camera.zoom;
                                 ctx.fillStyle = '#f0e6d3';
-                                ctx.fillText('⚓', cx, cy - size * 0.05);
+                                ctx.fillText('⚓', cx, cy - size * 0.02);
                                 ctx.shadowBlur = 0;
                                 ctx.restore();
                             }
@@ -5433,6 +5742,12 @@
                                 if (tribeData) {
                                     const unitDef = tribeData.units[harbor.project.id];
                                     if (unitDef) cost = unitDef.cost;
+                                    const city = G.cities.find(c => c.owner === harbor.owner && hexDistance({ q: c.q,
+                                            r: c.r }, { q: harbor.q, r: harbor.r }) <= 2);
+                                    if (city) {
+                                        const discount = getCityUnitDiscount(city);
+                                        cost = Math.ceil(cost * (1 - discount));
+                                    }
                                 }
                                 if (cost > 0) {
                                     const pct = Math.min(1, harbor.production / cost);
@@ -5446,6 +5761,7 @@
                             }
                         }
 
+                        // ─── Unit ───
                         if (tile.unit) {
                             const unit = tile.unit;
                             const tribe = G.tribes.find(t => t.id === unit.tribeId);
@@ -5540,6 +5856,7 @@
                             }
                         }
 
+                        // ─── Selection highlights ───
                         if (G.selectedHex && G.selectedHex.q === q && G.selectedHex.r === r) {
                             ctx.beginPath();
                             ctx.arc(cx, cy, size * 0.45, 0, Math.PI * 2);
@@ -5561,6 +5878,16 @@
                             ctx.strokeStyle = 'rgba(0,200,255,0.5)';
                             ctx.lineWidth = 2 / camera.zoom;
                             ctx.stroke();
+                        }
+                        // ─── Resource tile selection highlight ───
+                        if (G.selectedResourceTile && G.selectedResourceTile.q === q && G.selectedResourceTile.r === r) {
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                            ctx.strokeStyle = 'rgba(0,255,100,0.5)';
+                            ctx.lineWidth = 2.5 / camera.zoom;
+                            ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
                         }
                     } else {
                         if (tile.city) {
@@ -5682,10 +6009,52 @@
             if (!inMap(hex.q, hex.r)) return;
             const tile = G.map[hex.r]?.[hex.q];
 
+            // If popup is open, close it on outside click
+            if (popup.style.display !== 'none') {
+                // Check if click is inside popup
+                const popupRect = popup.getBoundingClientRect();
+                const rect = canvas.getBoundingClientRect();
+                const canvasX = (sx / canvas.width) * rect.width + rect.left;
+                const canvasY = (sy / canvas.height) * rect.height + rect.top;
+                if (!(canvasX >= popupRect.left && canvasX <= popupRect.right &&
+                        canvasY >= popupRect.top && canvasY <= popupRect.bottom)) {
+                    hideActionPopup();
+                    // Continue to handle the click
+                } else {
+                    return; // Click on popup handled by button
+                }
+            }
+
+            // Check if clicked on a player-owned resource tile (fish or food)
+            if (tile && tile.visible && tile.owner === player.id && !tile.unit && !tile.city && !tile.harbor) {
+                if (tile.resource === '🐟' && !tile.fishing) {
+                    G.selectedResourceTile = tile;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
+                }
+                if (tile.resource === '🌾' && !tile.farm) {
+                    G.selectedResourceTile = tile;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
+                }
+            }
+
+            // If clicked on a tile with a player unit, select it
             if (tile && tile.unit && tile.unit.tribeId === player.id) {
                 G.selectedUnit = tile.unit;
                 G.selectedCity = null;
                 G.selectedHarbor = null;
+                G.selectedResourceTile = null;
                 if (tile.city && tile.city.owner === player.id) {
                     G.selectedCity = tile.city;
                 }
@@ -5695,8 +6064,10 @@
                 return;
             }
 
+            // If we have a selected unit, handle actions
             if (G.selectedUnit) {
                 const unit = G.selectedUnit;
+                // Attack enemy unit
                 if (tile && tile.unit && tile.unit.tribeId !== player.id) {
                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
                     if (dist <= unit.attackRange && !unit.hasAttacked) {
@@ -5705,6 +6076,7 @@
                         return;
                     }
                 }
+                // Move to reachable tile
                 if (tile && !tile.unit && isTilePassable(hex.q, hex.r, unit.isNaval, unit)) {
                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
                     if (dist <= unit.move && !unit.hasMoved) {
@@ -5715,12 +6087,14 @@
                 }
             }
 
+            // Check for city or harbor
             if (tile && tile.city && tile.visible) {
                 const city = tile.city;
                 if (city.owner === player.id) {
                     G.selectedCity = city;
                     G.selectedUnit = null;
                     G.selectedHarbor = null;
+                    G.selectedResourceTile = null;
                     openCityProduction();
                     return;
                 }
@@ -5732,6 +6106,7 @@
                     G.selectedHarbor = harbor;
                     G.selectedUnit = null;
                     G.selectedCity = null;
+                    G.selectedResourceTile = null;
                     manageHarbor();
                     return;
                 }
@@ -5740,6 +6115,7 @@
             G.selectedUnit = null;
             G.selectedCity = null;
             G.selectedHarbor = null;
+            G.selectedResourceTile = null;
             hideActionPopup();
             updateUI();
             render();
@@ -5767,6 +6143,8 @@
             if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                 isClick = false;
                 isDragging = true;
+                // Hide popup on drag
+                if (popup.style.display !== 'none') hideActionPopup();
                 camera.x = camStartX + dx;
                 camera.y = camStartY + dy;
                 render();
@@ -5819,6 +6197,7 @@
                 if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
                     isClick = false;
                     isDragging = true;
+                    if (popup.style.display !== 'none') hideActionPopup();
                 }
                 if (isDragging) {
                     camera.x = camStartX + dx;
@@ -5976,6 +6355,9 @@
               <p><strong>🔹 Resources & Improvements</strong><br>
               Gold and stone deposits can be upgraded with Mines (+2 gold/turn) and Quarries (20% unit production cost reduction).</p>
               <br>
+              <p><strong>🔹 Fishing & Farming</strong><br>
+              Fish resources can be developed into Fishing Boats, and Food resources into Farms. Both provide a 20% discount on settlement improvements and unit production in the controlling city.</p>
+              <br>
               <p><strong>🔹 Fog of War & Territory</strong><br>
               Explored areas stay dimly visible. Controlled territory is shown with a thick coloured border.</p>
               <br>
@@ -6008,6 +6390,7 @@
             G.selectedHex = null;
             G.selectedCity = null;
             G.selectedHarbor = null;
+            G.selectedResourceTile = null;
             G.gameOver = false;
             G.winner = null;
             G.turn = 0;
@@ -6219,7 +6602,10 @@
                     }
                 });
 
-                console.log('Oba v10 – Mobile-optimized 4X strategy with game-style menus.');
+                // Setup popup dismissal
+                setupPopupDismissal();
+
+                console.log('Oba v11 – Mobile-optimized with fishing, farming, harbor scaling, and smart menus.');
             });
         });
     </script>
