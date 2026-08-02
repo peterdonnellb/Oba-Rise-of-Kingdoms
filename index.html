@@ -65,7 +65,7 @@
         #menu-screen {
             background: var(--near-black);
             padding-top: 0;
-            padding-bottom: 40px;
+            padding-bottom: 0;
             position: relative;
             min-height: 100%;
             overflow-y: auto;
@@ -97,9 +97,11 @@
             align-items: center;
             width: 100%;
             max-width: 792px;
-            padding: 0 16px 30px 16px;
+            padding: 0 16px 20px 16px;
             flex: 1;
             margin-top: 0;
+            justify-content: flex-start;
+            gap: 6px;
         }
 
         #menu-logo-container {
@@ -139,7 +141,7 @@
             color: var(--vivid-gold);
             letter-spacing: 6px;
             text-transform: uppercase;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1rem;
             opacity: 0.85;
             font-weight: 300;
             text-align: center;
@@ -150,21 +152,21 @@
             font-family: 'Afacad', sans-serif;
             font-size: clamp(1rem, 3vw, 1.25rem);
             font-weight: 600;
-            padding: 14px 28px;
-            margin: 5px 0;
+            padding: 12px 24px;
+            margin: 3px 0;
             border: 2px solid var(--antique-gold);
             border-radius: 8px;
             background: rgba(75, 22, 122, 0.3);
             color: var(--cream);
             cursor: pointer;
             transition: all 0.25s ease;
-            min-width: 200px;
+            min-width: 180px;
             text-align: center;
             letter-spacing: 2px;
             text-transform: uppercase;
             -webkit-tap-highlight-color: transparent;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
             touch-action: manipulation;
         }
         .menu-btn:active {
@@ -174,7 +176,7 @@
             border-color: var(--vivid-gold);
             background: rgba(212, 175, 55, 0.15);
             font-size: clamp(1.1rem, 3.5vw, 1.4rem);
-            padding: 16px 32px;
+            padding: 14px 28px;
             color: var(--vivid-gold);
         }
         .menu-btn.primary:hover {
@@ -215,6 +217,124 @@
             width: 300px;
             height: 300px;
             background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+        }
+
+        /* ─── MOBILE OVERRIDES ─── */
+        @media (max-width: 480px) {
+            #menu-screen {
+                overflow: hidden;
+                height: 100vh;
+                min-height: 100vh;
+                padding: 0;
+                justify-content: flex-start;
+            }
+            .menu-content {
+                padding: 0 12px 10px 12px;
+                gap: 4px;
+                flex: 0 1 auto;
+                justify-content: flex-start;
+                max-width: 100%;
+            }
+            #menu-logo-container {
+                max-width: 280px;
+                margin-top: 6px;
+                margin-bottom: 0;
+            }
+            #menu-text-logo {
+                font-size: 2.6rem;
+                letter-spacing: 2px;
+            }
+            #menu-text-logo::before,
+            #menu-text-logo::after {
+                font-size: 1.4rem;
+                margin: 0 4px;
+            }
+            .menu-subtitle {
+                font-size: 0.8rem;
+                letter-spacing: 4px;
+                margin-bottom: 0.6rem;
+            }
+            .menu-btn {
+                font-size: 0.9rem;
+                padding: 10px 18px;
+                min-width: 140px;
+                max-width: 260px;
+                margin: 2px 0;
+            }
+            .menu-btn.primary {
+                font-size: 1rem;
+                padding: 12px 24px;
+            }
+            .menu-decoration {
+                display: none;
+            }
+
+            /* ─── GAME UI MOBILE FONT INCREASE ─── */
+            .gui-top-left .tribe-name {
+                font-size: 1rem !important;
+            }
+            .gui-top-left .turn-counter {
+                font-size: 0.95rem !important;
+            }
+            .gui-resource {
+                font-size: 0.9rem !important;
+                padding: 2px 10px !important;
+            }
+            .gui-top-btn {
+                font-size: 0.85rem !important;
+                padding: 4px 12px !important;
+                min-height: 32px !important;
+            }
+            .gui-top-btn.menu-btn {
+                font-size: 1.2rem !important;
+                padding: 4px 8px !important;
+                min-width: 30px !important;
+            }
+            .gui-unit-info .unit-name {
+                font-size: 1rem !important;
+            }
+            .gui-unit-info .unit-stats {
+                font-size: 0.9rem !important;
+            }
+            .gui-action-btn {
+                font-size: 0.95rem !important;
+                padding: 6px 14px !important;
+                min-height: 44px !important;
+            }
+            .gui-action-btn.end-turn {
+                font-size: 0.95rem !important;
+                padding: 6px 16px !important;
+            }
+        }
+
+        @media (max-width: 380px) {
+            #menu-text-logo {
+                font-size: 2.2rem;
+            }
+            #menu-text-logo::before,
+            #menu-text-logo::after {
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .menu-btn {
+                font-size: 0.8rem;
+                padding: 8px 14px;
+                min-width: 120px;
+                max-width: 220px;
+            }
+            .menu-btn.primary {
+                font-size: 0.9rem;
+                padding: 10px 18px;
+            }
+            #menu-logo-container {
+                max-width: 220px;
+                margin-top: 4px;
+            }
+            .menu-subtitle {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                margin-bottom: 0.4rem;
+            }
         }
 
         /* ─── NEW GAME WIZARD ─── */
@@ -936,6 +1056,13 @@
         #action-popup button.farm-btn:hover:not(:disabled) {
             background: rgba(76, 175, 80, 0.12);
         }
+        #action-popup button.harbor-btn {
+            border-color: #00bcd4;
+            color: #00bcd4;
+        }
+        #action-popup button.harbor-btn:hover:not(:disabled) {
+            background: rgba(0, 188, 212, 0.12);
+        }
         #action-popup .popup-divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.15), transparent);
@@ -1127,261 +1254,6 @@
         ::-webkit-scrollbar-thumb {
             background: var(--coastal-gold);
             border-radius: 2px;
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 820px) {
-            #menu-text-logo {
-                font-size: 3.6rem;
-                letter-spacing: 4px;
-            }
-            #menu-text-logo::before,
-            #menu-text-logo::after {
-                font-size: 2rem;
-                margin: 0 6px;
-            }
-            .menu-subtitle {
-                font-size: 1rem;
-                letter-spacing: 6px;
-                margin-bottom: 1.5rem;
-            }
-            .menu-btn {
-                font-size: 1rem;
-                padding: 12px 28px;
-                min-width: 180px;
-            }
-            .menu-btn.primary {
-                font-size: 1.1rem;
-                padding: 14px 36px;
-            }
-            .ng-tribe-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .ng-mode-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .ng-summary {
-                grid-template-columns: 1fr 1fr;
-            }
-            .tech-node {
-                min-width: 60px;
-                padding: 4px 6px;
-                font-size: 0.6rem;
-            }
-            .gui-top {
-                padding: 4px 6px;
-                min-height: 38px;
-            }
-            .gui-top-left .tribe-name {
-                font-size: 0.85rem;
-            }
-            .gui-top-left .turn-counter {
-                font-size: 0.8rem;
-                padding: 1px 6px;
-            }
-            .gui-resource {
-                font-size: 0.8rem;
-                padding: 2px 6px;
-            }
-            .gui-top-btn {
-                font-size: 0.8rem;
-                padding: 4px 10px;
-                min-height: 28px;
-            }
-            .gui-top-btn.menu-btn {
-                padding: 4px 6px;
-                min-width: 26px;
-                font-size: 1.1rem;
-            }
-            .gui-unit-info .unit-name {
-                font-size: 0.85rem;
-            }
-            .gui-unit-info .unit-stats {
-                font-size: 0.75rem;
-            }
-            .gui-action-btn {
-                font-size: 0.8rem;
-                padding: 6px 12px;
-                min-height: 40px;
-            }
-            .gui-action-btn.end-turn {
-                padding: 6px 16px;
-                min-width: 56px;
-                font-size: 0.85rem;
-            }
-            #action-popup {
-                min-width: 140px;
-            }
-            #action-popup button {
-                padding: 10px 14px;
-                font-size: 0.85rem;
-                min-height: 44px;
-            }
-        }
-        @media (max-width: 480px) {
-            #menu-text-logo {
-                font-size: 2.6rem;
-                letter-spacing: 2px;
-            }
-            #menu-text-logo::before,
-            #menu-text-logo::after {
-                font-size: 1.4rem;
-                margin: 0 4px;
-            }
-            .ng-tribe-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .ng-mode-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .ng-summary {
-                grid-template-columns: 1fr;
-            }
-            .ng-step-header h2 {
-                font-size: 1.3rem;
-            }
-            .tech-node {
-                min-width: 50px;
-                padding: 3px 4px;
-                font-size: 0.55rem;
-            }
-            .gui-top {
-                padding: 3px 4px;
-                min-height: 34px;
-            }
-            .gui-top-left .tribe-name {
-                font-size: 0.75rem;
-            }
-            .gui-top-left .turn-counter {
-                font-size: 0.7rem;
-                padding: 1px 4px;
-            }
-            .gui-resource {
-                font-size: 0.7rem;
-                padding: 1px 4px;
-            }
-            .gui-top-btn {
-                font-size: 0.7rem;
-                padding: 3px 8px;
-                min-height: 26px;
-            }
-            .gui-top-btn.menu-btn {
-                padding: 3px 4px;
-                min-width: 22px;
-                font-size: 1rem;
-            }
-            .gui-unit-info .unit-name {
-                font-size: 0.75rem;
-                min-width: 36px;
-            }
-            .gui-unit-info .unit-stats {
-                font-size: 0.65rem;
-                gap: 4px;
-            }
-            .gui-action-btn {
-                font-size: 0.75rem;
-                padding: 5px 10px;
-                min-height: 38px;
-                min-width: 40px;
-            }
-            .gui-action-btn.end-turn {
-                padding: 5px 12px;
-                min-width: 48px;
-                font-size: 0.8rem;
-            }
-            #action-popup button {
-                font-size: 0.8rem;
-                padding: 10px 12px;
-                min-height: 44px;
-            }
-            #action-popup {
-                min-width: 130px;
-                padding: 6px 4px;
-            }
-            .gui-bottom {
-                padding: 6px 8px 10px 8px;
-                min-height: 56px;
-            }
-            .gui-unit-info {
-                padding: 4px 10px;
-                min-height: 40px;
-            }
-            #action-popup button .action-icon {
-                font-size: 1rem;
-                min-width: 24px;
-            }
-            #action-popup button .action-shortcut {
-                display: none;
-            }
-            .menu-btn {
-                font-size: 0.9rem;
-                padding: 12px 20px;
-                min-width: 160px;
-                max-width: 280px;
-            }
-            .menu-btn.primary {
-                font-size: 1rem;
-                padding: 14px 28px;
-            }
-            .menu-subtitle {
-                font-size: 0.85rem;
-                letter-spacing: 4px;
-                margin-bottom: 1.2rem;
-            }
-            #menu-logo-container {
-                max-width: 300px;
-                margin-top: 8px;
-            }
-        }
-        @media (max-width: 380px) {
-            #menu-text-logo {
-                font-size: 2.2rem;
-            }
-            #menu-text-logo::before,
-            #menu-text-logo::after {
-                font-size: 1rem;
-                margin: 0 2px;
-            }
-            .gui-top-left .tribe-name {
-                font-size: 0.65rem;
-            }
-            .gui-resource {
-                font-size: 0.6rem;
-                padding: 1px 3px;
-            }
-            .gui-top-btn {
-                font-size: 0.6rem;
-                padding: 2px 6px;
-                min-height: 22px;
-            }
-            .gui-top-btn.menu-btn {
-                padding: 2px 3px;
-                min-width: 18px;
-                font-size: 0.85rem;
-            }
-            .gui-unit-info .unit-stats {
-                font-size: 0.55rem;
-                gap: 2px;
-            }
-            .gui-action-btn {
-                font-size: 0.65rem;
-                padding: 4px 8px;
-                min-height: 34px;
-                min-width: 34px;
-            }
-            .gui-action-btn.end-turn {
-                padding: 4px 10px;
-                min-width: 40px;
-                font-size: 0.7rem;
-            }
-            #action-popup {
-                min-width: 110px;
-            }
-            #action-popup button {
-                font-size: 0.7rem;
-                padding: 8px 10px;
-                min-height: 38px;
-            }
         }
 
         /* ─── AI TURN OVERLAY ─── */
@@ -1584,13 +1456,14 @@
                     <button data-action="heal" class="heal-btn"><span class="action-icon">💚</span><span class="action-label">First Aid</span><span class="action-shortcut">H</span></button>
                     <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span><span class="action-label">Invigorate</span><span class="action-shortcut">I</span></button>
                     <div class="popup-divider"></div>
-                    <button data-action="build-harbor"><span class="action-icon">⛵</span><span class="action-label">Build Harbor</span></button>
                     <button data-action="build-raft"><span class="action-icon">🪵</span><span class="action-label">Build Raft</span></button>
                     <div class="popup-divider"></div>
                     <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
                     <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
+                    <!-- Fishing, Farm, Harbor (shown conditionally) -->
                     <button data-action="launch-fishing" class="fish-btn" style="display:none;"><span class="action-icon">🎣</span><span class="action-label">Launch Fishing Boats</span></button>
                     <button data-action="build-farm" class="farm-btn" style="display:none;"><span class="action-icon">🌾</span><span class="action-label">Build Farm</span></button>
+                    <button data-action="build-harbor-from-tile" class="harbor-btn" style="display:none;"><span class="action-icon">⛵</span><span class="action-label">Build Harbor</span></button>
                     <div class="popup-divider"></div>
                     <button data-action="manage-city"><span class="action-icon">🏗️</span><span class="action-label">Manage City</span><span class="action-shortcut">B</span></button>
                     <button data-action="upgrade-city"><span class="action-icon">⬆</span><span class="action-label">Upgrade City</span></button>
@@ -1655,6 +1528,11 @@
         ASSET_PATHS['resource_fish'] = 'resource_fish.png';
         ASSET_PATHS['fishing'] = 'fishing.png';
         ASSET_PATHS['farm'] = 'farm.png';
+        // Wonder icons
+        ASSET_PATHS['wonder_pyramids'] = 'wonder_pyramids.png';
+        ASSET_PATHS['wonder_great_zimbabwe'] = 'wonder_great_zimbabwe.png';
+        ASSET_PATHS['wonder_timbuktu'] = 'wonder_timbuktu.png';
+        ASSET_PATHS['wonder_obelisks'] = 'wonder_obelisks.png';
         ASSET_PATHS['ui_gold'] = 'ui_gold.png';
         ASSET_PATHS['ui_sword'] = 'ui_sword.png';
         ASSET_PATHS['ui_shield'] = 'ui_shield.png';
@@ -1677,6 +1555,13 @@
             '🪵': 'resource_wood',
             '🪨': 'resource_stone',
             '🐟': 'resource_fish'
+        };
+
+        const WONDER_ICON_MAP = {
+            'pyramids': 'wonder_pyramids',
+            'great_zimbabwe': 'wonder_great_zimbabwe',
+            'timbuktu': 'wonder_timbuktu',
+            'obelisks': 'wonder_obelisks'
         };
 
         let images = {};
@@ -2494,6 +2379,7 @@
             selectedCity: null,
             selectedHarbor: null,
             selectedResourceTile: null,
+            selectedWaterTile: null,
             gameOver: false,
             winner: null,
             map: [],
@@ -3046,7 +2932,7 @@
                     }
                     G.map[r][q] = { q, r, terrain, owner: null, city: null, unit: null, harbor: null, explored: false,
                         visible: false, isRiver: false, resource: null, mine: false, quarry: false, fishing: false,
-                        farm: false };
+                        farm: false, wonderIcon: null };
                 }
             }
 
@@ -3148,6 +3034,40 @@
                 placed++;
             }
             G.neutralVillages = placed;
+        }
+
+        // ─── PLACE WONDER ICON ──────────────────────────────────────
+        function placeWonderIcon(tribe, wonderId) {
+            const candidates = [];
+            for (const city of tribe.cities) {
+                const influence = getCityInfluence(city);
+                for (const tilePos of influence) {
+                    const tile = G.map[tilePos.r]?.[tilePos.q];
+                    if (!tile) continue;
+                    if (tile.city || tile.unit || tile.harbor || tile.resource || tile.mine || tile.quarry || tile.fishing ||
+                        tile.farm || tile.wonderIcon) continue;
+                    if (tile.terrain === 'water') continue;
+                    candidates.push(tile);
+                }
+            }
+            if (candidates.length === 0) {
+                for (const city of tribe.cities) {
+                    const influence = getCityInfluence(city);
+                    for (const tilePos of influence) {
+                        const tile = G.map[tilePos.r]?.[tilePos.q];
+                        if (!tile) continue;
+                        if (tile.city || tile.unit || tile.harbor || tile.wonderIcon) continue;
+                        if (tile.terrain === 'water') continue;
+                        candidates.push(tile);
+                    }
+                }
+            }
+            if (candidates.length === 0) {
+                console.warn('No suitable tile for wonder icon');
+                return;
+            }
+            const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+            chosen.wonderIcon = wonderId;
         }
 
         // ─── PLAYER PLACEMENT ──────────────────────────────────────
@@ -3452,32 +3372,19 @@
             const tile = G.map[r]?.[q];
             if (!tile) return false;
             if (isNaval) {
-                if (tile.terrain === 'water') return true;
-                return false;
+                return true; // allow any terrain (disembark will handle land)
+            } else {
+                if (tile.terrain === 'water') return false;
+                return true;
             }
-            if (unit && unit.type === 'tank' && tile.terrain === 'water') {
-                if (tile.isRiver) return true;
-                const neighbors = hexNeighbors(q, r);
-                for (const n of neighbors) {
-                    if (!inMap(n.q, n.r)) continue;
-                    const nTile = G.map[n.r]?.[n.q];
-                    if (nTile && nTile.terrain !== 'water') return true;
-                }
-                return false;
-            }
-            return tile.terrain !== 'water';
         }
 
         function getUnitMoveCost(unit, q, r) {
             const tile = G.map[r]?.[q];
             if (!tile) return 999;
-            if (unit.isNaval || unit.type === 'tank') {
-                if (tile.terrain === 'water') return 1;
-                if (unit.type === 'tank' && tile.isRiver) return 1;
-            }
             if (unit.isNaval) {
                 if (tile.terrain === 'water') return 1;
-                return 999;
+                return 1;
             }
             if (tile.terrain === 'mountain') return 2;
             if (tile.terrain === 'forest') return 2;
@@ -3509,24 +3416,8 @@
                     }
                     const isNaval = unit.isNaval || (unit.type === 'raft');
                     let passable = true;
-                    if (unit.type === 'tank' && tile.terrain === 'water') {
-                        const currentTile = G.map[current.r]?.[current.q];
-                        const currentIsWater = currentTile && currentTile.terrain === 'water';
-                        if (tile.isRiver) passable = true;
-                        else {
-                            let hasLandNeighbor = false;
-                            const nbrs = hexNeighbors(n.q, n.r);
-                            for (const nb of nbrs) {
-                                if (!inMap(nb.q, nb.r)) continue;
-                                const nbTile = G.map[nb.r]?.[nb.q];
-                                if (nbTile && nbTile.terrain !== 'water') { hasLandNeighbor = true; break; }
-                            }
-                            if (!hasLandNeighbor) passable = false;
-                            else if (currentIsWater) passable = false;
-                            else passable = true;
-                        }
-                    } else if (isNaval) {
-                        passable = tile.terrain === 'water';
+                    if (isNaval) {
+                        passable = true;
                     } else {
                         passable = tile.terrain !== 'water';
                     }
@@ -3692,8 +3583,17 @@
             if (!tile) return false;
             if (tile.resource !== '🐟') return false;
             if (tile.fishing) return false;
-            if (tile.owner !== playerId) return false;
-            return true;
+            const playerTribe = getTribe(playerId);
+            if (!playerTribe) return false;
+            for (const city of playerTribe.cities) {
+                const tiles = getCityInfluence(city);
+                for (const t of tiles) {
+                    if (t.q === tile.q && t.r === tile.r) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         function launchFishing(tile) {
@@ -3712,8 +3612,17 @@
             if (!tile) return false;
             if (tile.resource !== '🌾') return false;
             if (tile.farm) return false;
-            if (tile.owner !== playerId) return false;
-            return true;
+            const playerTribe = getTribe(playerId);
+            if (!playerTribe) return false;
+            for (const city of playerTribe.cities) {
+                const tiles = getCityInfluence(city);
+                for (const t of tiles) {
+                    if (t.q === tile.q && t.r === tile.r) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         function buildFarm(tile) {
@@ -3728,66 +3637,49 @@
             return true;
         }
 
-        // ─── HARBOR FUNCTIONS ─────────────────────────────────────
-        function canBuildHarbor(unit) {
-            const tribe = getTribe(unit.tribeId);
-            if (!tribe) return false;
-            if (!tribe.techs.includes('sailing')) return false;
-            if (unit.hasMoved) return false;
-            const neighbors = hexNeighbors(unit.q, unit.r);
+        // ─── HARBOR BUILD FROM WATER TILE ─────────────────────────
+        function canBuildHarborOnTile(tile, playerId) {
+            if (!tile) return false;
+            if (tile.terrain !== 'water') return false;
+            if (tile.harbor) return false;
+            if (tile.resource === '🐟') return false;
+            const neighbors = hexNeighbors(tile.q, tile.r);
+            let hasLandNeighbor = false;
             for (const n of neighbors) {
                 if (!inMap(n.q, n.r)) continue;
-                const tile = G.map[n.r]?.[n.q];
-                if (!tile) continue;
-                if (tile.terrain !== 'water') continue;
-                if (tile.harbor) continue;
-                const landNeighbors = hexNeighbors(n.q, n.r);
-                let hasOwnedLand = false;
-                for (const ln of landNeighbors) {
-                    if (!inMap(ln.q, ln.r)) continue;
-                    const landTile = G.map[ln.r]?.[ln.q];
-                    if (landTile && landTile.terrain !== 'water' && landTile.owner === tribe.id) {
-                        hasOwnedLand = true;
-                        break;
-                    }
-                }
-                if (hasOwnedLand) return true;
+                const nTile = G.map[n.r]?.[n.q];
+                if (nTile && nTile.terrain !== 'water') { hasLandNeighbor = true; break; }
             }
-            return false;
-        }
-
-        function buildHarbor(unit) {
-            if (!canBuildHarbor(unit)) return false;
-            const tribe = getTribe(unit.tribeId);
-            const neighbors = hexNeighbors(unit.q, unit.r);
-            for (const n of neighbors) {
-                if (!inMap(n.q, n.r)) continue;
-                const tile = G.map[n.r]?.[n.q];
-                if (!tile || tile.terrain !== 'water' || tile.harbor) continue;
-                const landNeighbors = hexNeighbors(n.q, n.r);
-                let hasOwnedLand = false;
-                for (const ln of landNeighbors) {
-                    if (!inMap(ln.q, ln.r)) continue;
-                    const landTile = G.map[ln.r]?.[ln.q];
-                    if (landTile && landTile.terrain !== 'water' && landTile.owner === tribe.id) {
-                        hasOwnedLand = true;
-                        break;
+            if (!hasLandNeighbor) return false;
+            const playerTribe = getTribe(playerId);
+            if (!playerTribe) return false;
+            if (!playerTribe.techs.includes('sailing')) return false;
+            for (const city of playerTribe.cities) {
+                const tiles = getCityInfluence(city);
+                for (const t of tiles) {
+                    if (t.q === tile.q && t.r === tile.r) {
+                        return true;
                     }
-                }
-                if (hasOwnedLand) {
-                    const harbor = { id: G.harborIdCounter++, q: n.q, r: n.r, owner: tribe.id, production: 0,
-                        project: null };
-                    G.harbors.push(harbor);
-                    tile.harbor = harbor;
-                    unit.hasMoved = true;
-                    updateVisibility();
-                    saveGame();
-                    return true;
                 }
             }
             return false;
         }
 
+        function buildHarborOnTile(tile) {
+            if (!canBuildHarborOnTile(tile, G.playerTribeId)) return false;
+            const harbor = { id: G.harborIdCounter++, q: tile.q, r: tile.r, owner: G.playerTribeId, production: 0,
+                project: null };
+            G.harbors.push(harbor);
+            tile.harbor = harbor;
+            queueMessage('⛵ Harbor built! You can now produce ships.');
+            updateVisibility();
+            updateUI();
+            render();
+            saveGame();
+            return true;
+        }
+
+        // ─── HARBOR FUNCTIONS (legacy) ─────────────────────────────
         function canBuildRaft(unit) {
             const tribe = getTribe(unit.tribeId);
             if (!tribe) return false;
@@ -3850,26 +3742,40 @@
             return false;
         }
 
-        function disembarkRaft(unit) {
-            if (!unit.isRaft) return;
+        // ─── DISEMBARK NAVAL UNIT ──────────────────────────────────
+        function disembarkNavalUnit(unit) {
+            if (!unit.isNaval) return false;
             const tile = G.map[unit.r]?.[unit.q];
-            if (!tile) return;
-            if (tile.terrain === 'water') return;
+            if (!tile || tile.terrain === 'water') return false;
+
             const tribe = getTribe(unit.tribeId);
-            const originalType = unit.originalType;
+            if (!tribe) return false;
             const tribeData = TRIBES_DATA.find(t => t.id === tribe.id);
-            if (!tribeData || !originalType) return;
-            const origDef = tribeData.units[originalType];
-            if (!origDef) return;
-            unit.type = originalType;
-            unit.name = origDef.name;
-            unit.move = unit.originalMove;
-            unit.atk = unit.originalAtk;
-            unit.def = unit.originalDef;
-            unit.attackRange = unit.originalAttackRange;
-            unit.isNaval = unit.originalIsNaval;
-            unit.maxHp = origDef.hp;
-            unit.hp = Math.min(unit.hp, origDef.hp);
+            if (!tribeData) return false;
+
+            let landType = 'scout';
+            if (unit.isRaft) {
+                landType = 'scout';
+            } else if (unit.type === 'galley') {
+                landType = 'ranged';
+            } else if (unit.type === 'warship') {
+                landType = 'elite';
+            } else {
+                landType = 'scout';
+            }
+
+            const landDef = tribeData.units[landType];
+            if (!landDef) return false;
+
+            unit.type = landType;
+            unit.name = landDef.name;
+            unit.move = landDef.move;
+            unit.atk = landDef.atk;
+            unit.def = landDef.def;
+            unit.maxHp = landDef.hp;
+            unit.hp = Math.min(unit.hp, landDef.hp);
+            unit.attackRange = landDef.attackRange;
+            unit.isNaval = false;
             unit.isRaft = false;
             unit.originalType = null;
             unit.originalAtk = 0;
@@ -3877,9 +3783,12 @@
             unit.originalMove = 0;
             unit.originalAttackRange = 0;
             unit.originalIsNaval = false;
+
+            queueMessage(`🚢 ${unit.name} has disembarked!`);
             updateUI();
             render();
             saveGame();
+            return true;
         }
 
         function processHarborProduction(harbor) {
@@ -3984,6 +3893,7 @@
                     break;
                 }
             }
+            // Check if old tribe has any cities left
             if (oldTribe && oldTribe.cities.length === 0) {
                 eliminateTribe(oldOwnerId, newOwnerId);
             }
@@ -4016,9 +3926,6 @@
 
         // ─── COMBAT ──────────────────────────────────────────────
         function performAttack(attacker, defender) {
-            if (attacker.isRaft && attacker.originalType !== 'ranged') {
-                return { killed: false, damage: 0, defDamage: 0 };
-            }
             let atk = attacker.atk + (attacker.boostedAtk || 0);
             let defDef = defender.def + (defender.boostedDef || 0);
             let atkDef = attacker.def + (attacker.boostedDef || 0);
@@ -4202,7 +4109,10 @@
                 cost = Math.ceil(cost * (1 - discount));
                 progressTarget = () => {
                     if (city.progress >= cost) {
-                        if (!isWonderBuilt(tribe, city.project.id)) tribe.wonders.push(city.project.id);
+                        if (!isWonderBuilt(tribe, city.project.id)) {
+                            tribe.wonders.push(city.project.id);
+                            placeWonderIcon(tribe, city.project.id);
+                        }
                         city.project = null;
                         city.progress = 0;
                         saveGame();
@@ -4327,6 +4237,9 @@
                                 unit.r = step.r;
                                 G.map[unit.r][unit.q].unit = unit;
                                 unit.hasMoved = true;
+                                if (unit.isNaval && tile.terrain !== 'water') {
+                                    disembarkNavalUnit(unit);
+                                }
                             }
                         }
                     }
@@ -4350,6 +4263,9 @@
                                 unit.r = step.r;
                                 G.map[unit.r][unit.q].unit = unit;
                                 unit.hasMoved = true;
+                                if (unit.isNaval && tile.terrain !== 'water') {
+                                    disembarkNavalUnit(unit);
+                                }
                             }
                         }
                     }
@@ -4366,6 +4282,9 @@
                         unit.r = step.r;
                         G.map[unit.r][unit.q].unit = unit;
                         unit.hasMoved = true;
+                        if (unit.isNaval && tile.terrain !== 'water') {
+                            disembarkNavalUnit(unit);
+                        }
                     }
                 }
             }
@@ -4470,7 +4389,7 @@
             saveGame();
         }
 
-        // ─── MOVEMENT & ATTACK HELPERS ──────────────────────────
+        // ─── THE FIXED tryMoveUnit FUNCTION ───────────────────────────
         function tryMoveUnit() {
             if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return false;
             const hex = G.selectedHex;
@@ -4484,32 +4403,31 @@
             if (dist > unit.move) return false;
             const path = findPath(unit.q, unit.r, hex.q, hex.r, unit, unit.tribeId);
             if (!path || path.length > unit.move + 1) return false;
-            if (unit.isRaft && tile.terrain !== 'water') {
-                G.map[unit.r][unit.q].unit = null;
-                unit.q = hex.q;
-                unit.r = hex.r;
-                G.map[unit.r][unit.q].unit = unit;
-                unit.hasMoved = true;
-                disembarkRaft(unit);
-                updateVisibility();
-                G.selectedUnit = unit;
-                updateUI();
-                render();
-                updateActionPopup();
-                saveGame();
-                return true;
-            }
-            if (tile.city) {
-                if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
-                else if (tile.city.owner !== unit.tribeId) {
-                    if (!tile.unit) { captureCity(tile.city, unit.tribeId); }
-                }
-            }
+
+            const isLand = tile.terrain !== 'water';
+
+            // Move unit
             G.map[unit.r][unit.q].unit = null;
             unit.q = hex.q;
             unit.r = hex.r;
             G.map[unit.r][unit.q].unit = unit;
             unit.hasMoved = true;
+
+            // ─── CAPTURE CITY LOGIC (FIXED) ─────────────────────────────
+            if (tile.city) {
+                if (tile.city.isNeutral) {
+                    captureNeutralVillage(tile.city, unit.tribeId);
+                } else if (tile.city.owner !== unit.tribeId) {
+                    // Capture regardless of tile.unit (now our moving unit)
+                    captureCity(tile.city, unit.tribeId);
+                }
+            }
+
+            // If naval and on land, disembark
+            if (unit.isNaval && isLand) {
+                disembarkNavalUnit(unit);
+            }
+
             updateVisibility();
             G.selectedUnit = unit;
             updateUI();
@@ -4519,6 +4437,7 @@
             return true;
         }
 
+        // ─── OTHER MOVEMENT HELPERS ──────────────────────────────────
         function tryAttackUnit() {
             if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return;
             const hex = G.selectedHex;
@@ -4889,28 +4808,21 @@
 
         function showActionPopup(x, y) {
             const rect = canvas.getBoundingClientRect();
-            // We'll position the popup so that it is fully visible.
-            // We'll measure the popup after it's visible, but we need to know its size.
-            // We'll set display to flex, measure, then adjust.
             popup.style.display = 'flex';
-            popup.style.opacity = '0'; // hide briefly for measurement
-            // Force a reflow to get accurate dimensions
+            popup.style.opacity = '0';
             const popupRect = popup.getBoundingClientRect();
             const pw = popupRect.width;
             const ph = popupRect.height;
 
-            // Desired position: centered above the click point, but if it overflows, adjust.
             let left = x - pw / 2;
-            let top = y - ph - 10; // above the cursor
+            let top = y - ph - 10;
 
-            // Clamp to viewport
             const padding = 8;
             const maxLeft = rect.width - pw - padding;
             const maxTop = rect.height - ph - padding;
             left = Math.max(padding, Math.min(left, maxLeft));
             top = Math.max(padding, Math.min(top, maxTop));
 
-            // If still not visible (e.g., too small screen), force to center
             if (left < padding || left > maxLeft || top < padding || top > maxTop) {
                 left = (rect.width - pw) / 2;
                 top = (rect.height - ph) / 2;
@@ -4918,9 +4830,8 @@
 
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
-            popup.style.opacity = '1'; // show
+            popup.style.opacity = '1';
 
-            // Trigger show animation
             requestAnimationFrame(() => {
                 popup.classList.add('show');
             });
@@ -4930,19 +4841,17 @@
             popup.classList.remove('show');
             setTimeout(() => {
                 popup.style.display = 'none';
-                popup.style.opacity = '1'; // reset
+                popup.style.opacity = '1';
             }, 150);
             G.selectedResourceTile = null;
+            G.selectedWaterTile = null;
         }
 
-        // Dismiss popup on scroll or outside click
         function setupPopupDismissal() {
-            // On wheel/scroll
             canvas.addEventListener('wheel', () => {
                 if (popup.style.display !== 'none') hideActionPopup();
             }, { passive: true });
 
-            // On touch move (scrolling)
             let touchStartY = 0;
             canvas.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
@@ -4958,7 +4867,6 @@
                 }
             }, { passive: true });
 
-            // On click outside the popup (handled in the click handler)
             document.addEventListener('click', (e) => {
                 if (popup.style.display !== 'none') {
                     const target = e.target;
@@ -4968,7 +4876,6 @@
                 }
             });
 
-            // On resize - reposition or hide
             window.addEventListener('resize', () => {
                 if (popup.style.display !== 'none') hideActionPopup();
             });
@@ -4982,33 +4889,52 @@
             const quarryBtn = popup.querySelector('[data-action="build-quarry"]');
             const fishBtn = popup.querySelector('[data-action="launch-fishing"]');
             const farmBtn = popup.querySelector('[data-action="build-farm"]');
+            const harborBtn = popup.querySelector('[data-action="build-harbor-from-tile"]');
 
-            // Check if we have a resource tile selected
             const resourceTile = G.selectedResourceTile;
             if (resourceTile && !unit) {
-                // Show resource actions
-                const isFish = resourceTile.resource === '🐟' && !resourceTile.fishing && resourceTile.owner === player.id;
-                const isFood = resourceTile.resource === '🌾' && !resourceTile.farm && resourceTile.owner === player.id;
+                const isFish = resourceTile.resource === '🐟' && !resourceTile.fishing && canLaunchFishing(resourceTile,
+                    player.id);
+                const isFood = resourceTile.resource === '🌾' && !resourceTile.farm && canBuildFarm(resourceTile, player
+                .id);
 
                 fishBtn.style.display = isFish ? 'flex' : 'none';
                 farmBtn.style.display = isFood ? 'flex' : 'none';
+                harborBtn.style.display = 'none';
 
-                // Hide all other action buttons except resource ones
                 popup.querySelectorAll('button').forEach(b => {
                     const action = b.dataset.action;
                     if (action !== 'launch-fishing' && action !== 'build-farm') {
                         b.style.display = 'none';
                     }
                 });
-                // Show divider if any resource action is visible
                 const dividers = popup.querySelectorAll('.popup-divider');
                 dividers.forEach(d => d.style.display = (isFish || isFood) ? 'block' : 'none');
                 return;
             }
 
-            // Hide resource buttons by default
+            const waterTile = G.selectedWaterTile;
+            if (waterTile && !unit) {
+                const canBuild = canBuildHarborOnTile(waterTile, player.id);
+                harborBtn.style.display = canBuild ? 'flex' : 'none';
+                fishBtn.style.display = 'none';
+                farmBtn.style.display = 'none';
+                mineBtn.style.display = 'none';
+                quarryBtn.style.display = 'none';
+                popup.querySelectorAll('button').forEach(b => {
+                    const action = b.dataset.action;
+                    if (action !== 'build-harbor-from-tile') {
+                        b.style.display = 'none';
+                    }
+                });
+                const dividers = popup.querySelectorAll('.popup-divider');
+                dividers.forEach(d => d.style.display = canBuild ? 'block' : 'none');
+                return;
+            }
+
             fishBtn.style.display = 'none';
             farmBtn.style.display = 'none';
+            harborBtn.style.display = 'none';
 
             if (unit && unit.tribeId === player.id && !unit.hasMoved) {
                 const tile = G.map[unit.r]?.[unit.q];
@@ -5039,7 +4965,6 @@
                         b.style.display = 'none';
                     }
                 });
-                // Show dividers
                 const dividers = popup.querySelectorAll('.popup-divider');
                 dividers.forEach(d => d.style.display = 'block');
                 return;
@@ -5050,13 +4975,12 @@
                 return;
             }
 
-            // Show all buttons by default (except mine/quarry which are handled above)
             popup.querySelectorAll('button').forEach(b => {
                 if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry' ||
-                    b.dataset.action === 'launch-fishing' || b.dataset.action === 'build-farm') return;
+                    b.dataset.action === 'launch-fishing' || b.dataset.action === 'build-farm' ||
+                    b.dataset.action === 'build-harbor-from-tile') return;
                 b.style.display = 'flex';
             });
-            // Show dividers
             const dividers = popup.querySelectorAll('.popup-divider');
             dividers.forEach(d => d.style.display = 'block');
 
@@ -5065,7 +4989,6 @@
             const skipBtn = popup.querySelector('[data-action="skip"]');
             const healBtn = popup.querySelector('[data-action="heal"]');
             const invigorateBtn = popup.querySelector('[data-action="invigorate"]');
-            const buildHarborBtn = popup.querySelector('[data-action="build-harbor"]');
             const buildRaftBtn = popup.querySelector('[data-action="build-raft"]');
             const manageCityBtn = popup.querySelector('[data-action="manage-city"]');
             const upgradeCityBtn = popup.querySelector('[data-action="upgrade-city"]');
@@ -5088,7 +5011,6 @@
                 invigorateBtn.style.display = 'none';
             }
 
-            buildHarborBtn.disabled = !canBuildHarbor(unit);
             buildRaftBtn.disabled = !canBuildRaft(unit);
 
             const tile = G.map[unit.r]?.[unit.q];
@@ -5111,10 +5033,8 @@
             }
 
             if (unit && !unit.isNaval && unit.type !== 'tank') {
-                buildHarborBtn.style.display = 'flex';
                 buildRaftBtn.style.display = 'flex';
             } else {
-                buildHarborBtn.style.display = 'none';
                 buildRaftBtn.style.display = 'none';
             }
         }
@@ -5144,15 +5064,6 @@
                     hideActionPopup();
                 } else if (action === 'invigorate') {
                     tryInvigorate();
-                    hideActionPopup();
-                } else if (action === 'build-harbor') {
-                    if (G.selectedUnit) {
-                        if (buildHarbor(G.selectedUnit)) {
-                            updateVisibility();
-                            updateUI();
-                            render();
-                        }
-                    }
                     hideActionPopup();
                 } else if (action === 'build-raft') {
                     if (G.selectedUnit) {
@@ -5219,6 +5130,16 @@
                     if (G.selectedResourceTile) {
                         if (buildFarm(G.selectedResourceTile)) {
                             G.selectedResourceTile = null;
+                            updateVisibility();
+                            updateUI();
+                            render();
+                        }
+                    }
+                    hideActionPopup();
+                } else if (action === 'build-harbor-from-tile') {
+                    if (G.selectedWaterTile) {
+                        if (buildHarborOnTile(G.selectedWaterTile)) {
+                            G.selectedWaterTile = null;
                             updateVisibility();
                             updateUI();
                             render();
@@ -5417,8 +5338,7 @@
                             const tribe = G.tribes.find(t => t.id === city.owner);
                             if (tribe) bgColor = tribe.color;
                         } else if (hasHarbor && harbor.owner) {
-                            // REMOVED: do not color water tiles with tribe color
-                            bgColor = '#1a3a5a'; // default water color
+                            bgColor = '#1a3a5a';
                         }
                         ctx.fillStyle = bgColor;
                         ctx.fill(hexPath);
@@ -5516,12 +5436,14 @@
                         // ─── Fishing icon ───
                         if (tile.fishing) {
                             const fishImg = images['fishing'];
+                            const fSize = size * 0.9;
                             if (fishImg && fishImg.complete && fishImg.naturalWidth > 0) {
-                                const fSize = size * 0.5;
+                                ctx.save();
                                 ctx.drawImage(fishImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
+                                ctx.restore();
                             } else {
                                 ctx.save();
-                                ctx.font = `${size * 0.45}px sans-serif`;
+                                ctx.font = `${size * 0.8}px sans-serif`;
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
                                 ctx.fillStyle = '#00bcd4';
@@ -5533,12 +5455,14 @@
                         // ─── Farm icon ───
                         if (tile.farm) {
                             const farmImg = images['farm'];
+                            const fSize = size * 0.9;
                             if (farmImg && farmImg.complete && farmImg.naturalWidth > 0) {
-                                const fSize = size * 0.5;
+                                ctx.save();
                                 ctx.drawImage(farmImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
+                                ctx.restore();
                             } else {
                                 ctx.save();
-                                ctx.font = `${size * 0.45}px sans-serif`;
+                                ctx.font = `${size * 0.8}px sans-serif`;
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
                                 ctx.fillStyle = '#4caf50';
@@ -5576,6 +5500,29 @@
                                 ctx.fillStyle = '#95a5a6';
                                 ctx.fillText('🪨', cx, cy + size * 0.1);
                                 ctx.restore();
+                            }
+                        }
+
+                        // ─── Wonder Icon ───
+                        if (tile.wonderIcon) {
+                            const wonderId = tile.wonderIcon;
+                            const iconKey = WONDER_ICON_MAP[wonderId];
+                            if (iconKey && images[iconKey]) {
+                                const img = images[iconKey];
+                                const wSize = size * 0.6;
+                                if (img && img.complete && img.naturalWidth > 0) {
+                                    ctx.save();
+                                    ctx.drawImage(img, cx - wSize / 2, cy + size * 0.1 - wSize / 2, wSize, wSize);
+                                    ctx.restore();
+                                } else {
+                                    ctx.save();
+                                    ctx.font = `${size * 0.6}px sans-serif`;
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.fillStyle = '#ffd700';
+                                    ctx.fillText('🏛️', cx, cy + size * 0.1);
+                                    ctx.restore();
+                                }
                             }
                         }
 
@@ -5729,19 +5676,18 @@
                             ctx.stroke();
                         }
 
-                        // ─── Harbor ─── (increased size to fill hexagon)
+                        // ─── Harbor ─── (50% larger)
                         if (hasHarbor) {
                             const harborImg = images['harbor'];
-                            const hSize = size * 0.95; // Increased from 0.6 to fill hex
+                            const hSize = size * 1.8; // 50% larger than previous 1.2
                             if (harborImg && harborImg.complete && harborImg.naturalWidth > 0) {
                                 ctx.save();
                                 ctx.globalAlpha = 0.9;
                                 ctx.drawImage(harborImg, cx - hSize / 2, cy - hSize / 2 - size * 0.02, hSize, hSize);
-                                // Removed tribe color overlay on water
                                 ctx.restore();
                             } else {
                                 ctx.save();
-                                ctx.font = `${size * 0.8}px sans-serif`;
+                                ctx.font = `${size * 1.2}px sans-serif`;
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'middle';
                                 ctx.shadowColor = 'rgba(0,0,0,0.8)';
@@ -5894,11 +5840,19 @@
                             ctx.lineWidth = 2 / camera.zoom;
                             ctx.stroke();
                         }
-                        // ─── Resource tile selection highlight ───
                         if (G.selectedResourceTile && G.selectedResourceTile.q === q && G.selectedResourceTile.r === r) {
                             ctx.beginPath();
                             ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
                             ctx.strokeStyle = 'rgba(0,255,100,0.5)';
+                            ctx.lineWidth = 2.5 / camera.zoom;
+                            ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+                        if (G.selectedWaterTile && G.selectedWaterTile.q === q && G.selectedWaterTile.r === r) {
+                            ctx.beginPath();
+                            ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                            ctx.strokeStyle = 'rgba(0,200,255,0.6)';
                             ctx.lineWidth = 2.5 / camera.zoom;
                             ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
                             ctx.stroke();
@@ -5972,8 +5926,8 @@
                 const atkVal = unit.atk + (unit.boostedAtk || 0);
                 const defVal = unit.def + (unit.boostedDef || 0);
                 const name = unit.name + (unit.veteranLevel === 1 ? ' ★' : unit.veteranLevel === 2 ? ' ⭐' : '');
-                document.getElementById('unit-name-display').textContent = name + (unit.boosted ? ' ⚡' : '') + (unit.isRaft ?
-                    ' 🪵' : '');
+                document.getElementById('unit-name-display').textContent = name + (unit.boosted ? ' ⚡' : '') + (unit.isNaval ?
+                    ' ⛵' : '');
                 document.getElementById('unit-atk').textContent = atkVal;
                 document.getElementById('unit-def').textContent = defVal;
                 document.getElementById('unit-mov').textContent = unit.hasMoved ? 0 : unit.move;
@@ -6024,9 +5978,7 @@
             if (!inMap(hex.q, hex.r)) return;
             const tile = G.map[hex.r]?.[hex.q];
 
-            // If popup is open, close it on outside click
             if (popup.style.display !== 'none') {
-                // Check if click is inside popup
                 const popupRect = popup.getBoundingClientRect();
                 const rect = canvas.getBoundingClientRect();
                 const canvasX = (sx / canvas.width) * rect.width + rect.left;
@@ -6034,75 +5986,118 @@
                 if (!(canvasX >= popupRect.left && canvasX <= popupRect.right &&
                         canvasY >= popupRect.top && canvasY <= popupRect.bottom)) {
                     hideActionPopup();
-                    // Continue to handle the click
                 } else {
-                    return; // Click on popup handled by button
-                }
-            }
-
-            // Check if clicked on a player-owned resource tile (fish or food)
-            if (tile && tile.visible && tile.owner === player.id && !tile.unit && !tile.city && !tile.harbor) {
-                if (tile.resource === '🐟' && !tile.fishing) {
-                    G.selectedResourceTile = tile;
-                    G.selectedUnit = null;
-                    G.selectedCity = null;
-                    G.selectedHarbor = null;
-                    showActionPopup(sx, sy);
-                    updateUI();
-                    render();
-                    return;
-                }
-                if (tile.resource === '🌾' && !tile.farm) {
-                    G.selectedResourceTile = tile;
-                    G.selectedUnit = null;
-                    G.selectedCity = null;
-                    G.selectedHarbor = null;
-                    showActionPopup(sx, sy);
-                    updateUI();
-                    render();
                     return;
                 }
             }
 
-            // If clicked on a tile with a player unit, select it
-            if (tile && tile.unit && tile.unit.tribeId === player.id) {
-                G.selectedUnit = tile.unit;
-                G.selectedCity = null;
-                G.selectedHarbor = null;
-                G.selectedResourceTile = null;
-                if (tile.city && tile.city.owner === player.id) {
-                    G.selectedCity = tile.city;
+            // --- Unit selection/action ---
+            if (tile && tile.unit) {
+                const unit = tile.unit;
+                if (unit.tribeId === player.id) {
+                    G.selectedUnit = unit;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
+                    if (tile.city && tile.city.owner === player.id) {
+                        G.selectedCity = tile.city;
+                    }
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
+                } else {
+                    if (G.selectedUnit) {
+                        const dist = hexDistance({ q: G.selectedUnit.q, r: G.selectedUnit.r }, { q: hex.q, r: hex.r });
+                        if (dist <= G.selectedUnit.attackRange && !G.selectedUnit.hasAttacked) {
+                            G.selectedHex = hex;
+                            tryAttackUnit();
+                            return;
+                        }
+                    }
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
+                    hideActionPopup();
+                    updateUI();
+                    render();
+                    return;
                 }
-                showActionPopup(sx, sy);
-                updateUI();
-                render();
-                return;
             }
 
-            // If we have a selected unit, handle actions
             if (G.selectedUnit) {
                 const unit = G.selectedUnit;
-                // Attack enemy unit
-                if (tile && tile.unit && tile.unit.tribeId !== player.id) {
-                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
-                    if (dist <= unit.attackRange && !unit.hasAttacked) {
-                        G.selectedHex = hex;
-                        tryAttackUnit();
-                        return;
-                    }
-                }
-                // Move to reachable tile
-                if (tile && !tile.unit && isTilePassable(hex.q, hex.r, unit.isNaval, unit)) {
+                if (tile && !tile.unit) {
                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: hex.q, r: hex.r });
                     if (dist <= unit.move && !unit.hasMoved) {
-                        G.selectedHex = hex;
-                        tryMoveUnit();
-                        return;
+                        if (isTilePassable(hex.q, hex.r, unit.isNaval, unit)) {
+                            G.selectedHex = hex;
+                            tryMoveUnit();
+                            return;
+                        }
                     }
+                }
+                if (tile && tile.city && tile.city.owner === player.id) {
+                    G.selectedCity = tile.city;
+                    G.selectedUnit = null;
+                    G.selectedHarbor = null;
+                    G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
+                    openCityProduction();
+                    return;
+                }
+                if (tile && tile.harbor && tile.harbor.owner === player.id) {
+                    G.selectedHarbor = tile.harbor;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
+                    manageHarbor();
+                    return;
+                }
+                G.selectedUnit = null;
+                hideActionPopup();
+                updateUI();
+                render();
+                // fall through
+            }
+
+            // --- Water tile (harbor) ---
+            if (tile && tile.visible && tile.terrain === 'water' && !tile.harbor && !tile.resource) {
+                if (canBuildHarborOnTile(tile, player.id)) {
+                    G.selectedWaterTile = tile;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    G.selectedResourceTile = null;
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
                 }
             }
 
-            // Check for city or harbor
+            // --- Resource tile (fish/food) ---
+            if (tile && tile.visible && !tile.unit && !tile.city && !tile.harbor) {
+                const isFish = tile.resource === '🐟' && !tile.fishing && canLaunchFishing(tile, player.id);
+                const isFood = tile.resource === '🌾' && !tile.farm && canBuildFarm(tile, player.id);
+                if (isFish || isFood) {
+                    G.selectedResourceTile = tile;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    G.selectedWaterTile = null;
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
+                }
+            }
+
+            // --- City ---
             if (tile && tile.city && tile.visible) {
                 const city = tile.city;
                 if (city.owner === player.id) {
@@ -6110,11 +6105,13 @@
                     G.selectedUnit = null;
                     G.selectedHarbor = null;
                     G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
                     openCityProduction();
                     return;
                 }
             }
 
+            // --- Harbor ---
             if (tile && tile.harbor && tile.visible) {
                 const harbor = tile.harbor;
                 if (harbor.owner === player.id) {
@@ -6122,15 +6119,18 @@
                     G.selectedUnit = null;
                     G.selectedCity = null;
                     G.selectedResourceTile = null;
+                    G.selectedWaterTile = null;
                     manageHarbor();
                     return;
                 }
             }
 
+            // --- Nothing ---
             G.selectedUnit = null;
             G.selectedCity = null;
             G.selectedHarbor = null;
             G.selectedResourceTile = null;
+            G.selectedWaterTile = null;
             hideActionPopup();
             updateUI();
             render();
@@ -6158,7 +6158,6 @@
             if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
                 isClick = false;
                 isDragging = true;
-                // Hide popup on drag
                 if (popup.style.display !== 'none') hideActionPopup();
                 camera.x = camStartX + dx;
                 camera.y = camStartY + dy;
@@ -6220,7 +6219,7 @@
                     render();
                 }
             } else if (touches.length === 2) {
-                // Zoom disabled for mobile stability
+                // Zoom disabled
             }
         }, { passive: false });
 
@@ -6362,16 +6361,20 @@
               Tap <strong>📜 Tech</strong> to view all technologies. Tap an available tech to assign it to a city for research.</p>
               <br>
               <p><strong>🔹 Naval & Harbors</strong><br>
-              Research <strong>Sailing</strong> to build Harbors and Rafts. Harbors produce Galleys and Warships.</p>
+              Research <strong>Sailing</strong> to build Harbors. Tap a water tile you control (adjacent to land) to build a harbor. Harbors produce ships.<br>
+              <strong>Disembarking:</strong> Naval units (rafts, galleys, warships) can move onto land. When they do, they transform: Rafts become Scouts, Galleys become Ranged, and Warships become Elite units.</p>
+              <br>
+              <p><strong>🔹 City Capture</strong><br>
+              To capture an enemy city, move a unit onto the city tile when no enemy unit is present. The city will be captured and you will gain control.</p>
+              <br>
+              <p><strong>🔹 Wonders</strong><br>
+              When a wonder is completed, a special icon appears on a nearby tile within the city's influence.</p>
               <br>
               <p><strong>🔹 Healing & Invigorate</strong><br>
               Units that do not move or attack heal 5 HP per turn. Generals can <strong>Invigorate</strong> troops within 3 hexes.</p>
               <br>
               <p><strong>🔹 Resources & Improvements</strong><br>
-              Gold and stone deposits can be upgraded with Mines (+2 gold/turn) and Quarries (20% unit production cost reduction).</p>
-              <br>
-              <p><strong>🔹 Fishing & Farming</strong><br>
-              Fish resources can be developed into Fishing Boats, and Food resources into Farms. Both provide a 20% discount on settlement improvements and unit production in the controlling city.</p>
+              Gold, stone, fish, and food resources can be improved. Fishing and farming provide a 20% discount on city upgrades and unit production.</p>
               <br>
               <p><strong>🔹 Fog of War & Territory</strong><br>
               Explored areas stay dimly visible. Controlled territory is shown with a thick coloured border.</p>
@@ -6406,6 +6409,7 @@
             G.selectedCity = null;
             G.selectedHarbor = null;
             G.selectedResourceTile = null;
+            G.selectedWaterTile = null;
             G.gameOver = false;
             G.winner = null;
             G.turn = 0;
@@ -6617,10 +6621,9 @@
                     }
                 });
 
-                // Setup popup dismissal
                 setupPopupDismissal();
 
-                console.log('Oba v12 – Context menu fully visible, logo at top, menu only scrolls when needed.');
+                console.log('Oba v16 – City capture fixed, harbor 50% larger, wonder icons placed on map.');
             });
         });
     </script>
