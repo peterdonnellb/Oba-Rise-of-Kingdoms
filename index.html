@@ -26,6 +26,8 @@
             --cream: #f0e6d3;
             --cream-muted: #d4c8bc;
             --tech-border: #3a2a1a;
+            --card-bg: rgba(20, 18, 24, 0.7);
+            --card-border: rgba(201, 162, 39, 0.25);
         }
         body {
             font-family: 'Afacad', sans-serif;
@@ -337,7 +339,7 @@
             }
         }
 
-        /* ─── NEW GAME WIZARD ─── */
+        /* ─── NEW GAME WIZARD (graphical card style) ─── */
         #newgame-screen {
             background: var(--near-black);
             position: relative;
@@ -420,43 +422,73 @@
         .ng-mode-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             padding: 4px 0;
         }
         .ng-mode-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
             padding: 16px 10px;
-            background: rgba(27, 42, 107, 0.35);
-            border: 2px solid rgba(201, 162, 39, 0.2);
-            border-radius: 14px;
             color: var(--cream-muted);
             font-family: inherit;
             font-size: clamp(0.95rem, 2.5vw, 1.1rem);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             text-align: center;
             -webkit-tap-highlight-color: transparent;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            min-height: 80px;
+            gap: 6px;
+            min-height: 100px;
             justify-content: center;
             touch-action: manipulation;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .ng-mode-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.02) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .ng-mode-btn:hover:not(.selected) {
+            border-color: rgba(201, 162, 39, 0.4);
+            background: rgba(27, 42, 107, 0.3);
+            transform: translateY(-2px);
         }
         .ng-mode-btn:active {
             transform: scale(0.96);
+        }
+        .ng-mode-btn .mode-icon {
+            font-size: 2.4rem;
+            display: block;
+            line-height: 1;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+        }
+        .ng-mode-btn .mode-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--cream);
+        }
+        .ng-mode-btn .mode-desc {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #6b5a4a;
         }
         .ng-mode-btn.selected {
             border-color: var(--vivid-gold);
             background: rgba(255, 215, 0, 0.08);
             color: var(--vivid-gold);
-        }
-        .ng-mode-btn .mode-desc {
-            font-size: 0.7rem;
-            font-weight: 400;
-            color: #6b5a4a;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
         }
         .ng-mode-btn.selected .mode-desc {
             color: #b8957a;
@@ -465,7 +497,7 @@
         .ng-tribe-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             max-height: 50vh;
             overflow-y: auto;
@@ -473,44 +505,55 @@
             -webkit-overflow-scrolling: touch;
         }
         .ng-tribe-item {
-            padding: 10px 4px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            background: rgba(20, 18, 24, 0.4);
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 6px;
             cursor: pointer;
-            transition: 0.15s;
-            font-size: 0.8rem;
+            transition: all 0.2s ease;
             text-align: center;
             color: #b8a898;
-            font-weight: 400;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
-            min-height: 70px;
+            min-height: 90px;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .ng-tribe-item:hover {
+            border-color: rgba(201, 162, 39, 0.3);
+            transform: translateY(-2px);
         }
         .ng-tribe-item:active {
-            background: rgba(212, 175, 55, 0.15);
+            transform: scale(0.96);
         }
         .ng-tribe-item.active {
             border-color: var(--coastal-gold);
             background: rgba(212, 175, 55, 0.12);
             color: var(--cream);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.08);
         }
-        .ng-tribe-item .tribe-icon {
-            font-size: 2.2rem;
+        .ng-tribe-item .tribe-icon-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px;
+            object-fit: contain;
             display: block;
-            line-height: 1.2;
+            margin: 0 auto 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .ng-tribe-item .tribe-name {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             font-weight: 600;
+            color: var(--cream);
         }
         .ng-tribe-item .tribe-desc {
-            font-size: 0.55rem;
+            font-size: 0.6rem;
             color: #6b5a4a;
         }
 
@@ -535,6 +578,17 @@
             border: 1px solid #3a281e;
             font-size: clamp(0.75rem, 2vw, 0.85rem);
             color: var(--cream-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #opponent-list .opp-tag img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px;
         }
         .ng-actions-row {
             display: flex;
@@ -928,7 +982,7 @@
             background: rgba(155, 89, 182, 0.2);
         }
 
-        /* ─── POPUP ACTION MENU — GAME-STYLE ─── */
+        /* ─── POPUP ACTION MENU ─── */
         #action-popup {
             position: absolute;
             background: rgba(12, 10, 16, 0.96);
@@ -1055,6 +1109,13 @@
         }
         #action-popup button.farm-btn:hover:not(:disabled) {
             background: rgba(76, 175, 80, 0.12);
+        }
+        #action-popup button.sawpit-btn {
+            border-color: #8d6e63;
+            color: #d4a373;
+        }
+        #action-popup button.sawpit-btn:hover:not(:disabled) {
+            background: rgba(141, 110, 99, 0.2);
         }
         #action-popup button.harbor-btn {
             border-color: #00bcd4;
@@ -1296,10 +1357,18 @@
             font-size: clamp(1rem, 2.8vw, 1.2rem);
         }
         #ai-turn-icon {
-            font-size: 2.5rem;
             display: inline-block;
-            margin-right: 8px;
             vertical-align: middle;
+            margin-right: 8px;
+        }
+        #ai-turn-icon img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
         }
     </style>
 </head>
@@ -1321,7 +1390,7 @@
             <button class="menu-btn primary" onclick="showNewGameWizard()">⚔ New Game</button>
             <button class="menu-btn secondary" id="load-game-btn" onclick="loadGame()" disabled>📂 Load Game</button>
             <button class="menu-btn secondary" disabled>🌐 Multiplayer</button>
-            <button class="menu-btn secondary" onclick="showHowToPlay()">📖 How to Play</button>
+            <button class="menu-btn primary" onclick="showHowToPlay()">📖 How to Play</button>
         </div>
     </div>
 
@@ -1338,19 +1407,23 @@
             </div>
             <div class="ng-mode-grid">
                 <button class="ng-mode-btn selected" data-mode="conquest" onclick="selectMode(this)">
-                    ⚔ Conquest
+                    <span class="mode-icon">⚔️</span>
+                    <span class="mode-name">Conquest</span>
                     <span class="mode-desc">Defeat all enemies</span>
                 </button>
                 <button class="ng-mode-btn" data-mode="sandsoftime" onclick="selectMode(this)">
-                    ⏳ Sands of Time
+                    <span class="mode-icon">⏳</span>
+                    <span class="mode-name">Sands of Time</span>
                     <span class="mode-desc">Control most hexes</span>
                 </button>
                 <button class="ng-mode-btn" data-mode="oba" onclick="selectMode(this)">
-                    👑 Oba
-                    <span class="mode-desc">Conquest · Aggressive AI</span>
+                    <span class="mode-icon">👑</span>
+                    <span class="mode-name">Oba</span>
+                    <span class="mode-desc">All tribes · Aggressive AI</span>
                 </button>
                 <button class="ng-mode-btn" data-mode="custom" onclick="selectMode(this)">
-                    ⚙️ Custom
+                    <span class="mode-icon">⚙️</span>
+                    <span class="mode-name">Custom</span>
                     <span class="mode-desc">Configure your game</span>
                 </button>
             </div>
@@ -1457,10 +1530,11 @@
                     <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span><span class="action-label">Invigorate</span><span class="action-shortcut">I</span></button>
                     <div class="popup-divider"></div>
                     <button data-action="build-raft"><span class="action-icon">🪵</span><span class="action-label">Build Raft</span></button>
-                    <div class="popup-divider"></div>
-                    <button data-action="build-mine" class="mine-btn"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
-                    <button data-action="build-quarry" class="quarry-btn"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
-                    <!-- Fishing, Farm, Harbor (shown conditionally) -->
+                    <!-- Removed build-mine and build-quarry from unit actions -->
+                    <!-- New tile-based actions -->
+                    <button data-action="build-sawpit" class="sawpit-btn" style="display:none;"><span class="action-icon">🪵</span><span class="action-label">Build Sawpit</span></button>
+                    <button data-action="build-mine" class="mine-btn" style="display:none;"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
+                    <button data-action="build-quarry" class="quarry-btn" style="display:none;"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
                     <button data-action="launch-fishing" class="fish-btn" style="display:none;"><span class="action-icon">🎣</span><span class="action-label">Launch Fishing Boats</span></button>
                     <button data-action="build-farm" class="farm-btn" style="display:none;"><span class="action-icon">🌾</span><span class="action-label">Build Farm</span></button>
                     <button data-action="build-harbor-from-tile" class="harbor-btn" style="display:none;"><span class="action-icon">⛵</span><span class="action-label">Build Harbor</span></button>
@@ -1497,6 +1571,9 @@
     <!-- SCRIPTS -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <script>
+        // ─── GAME VERSION ──────────────────────────────────────────────
+        const GAME_VERSION = '0.19.0';
+
         // ─── ASSET PATHS ──────────────────────────────────────────────
         const TRIBE_IDS = ['zulu', 'ashanti', 'yoruba', 'maasai', 'berber', 'hausa', 'dogon', 'songhai', 'oromo', 'tutsi', 'swahili',
             'nubian'
@@ -1528,7 +1605,7 @@
         ASSET_PATHS['resource_fish'] = 'resource_fish.png';
         ASSET_PATHS['fishing'] = 'fishing.png';
         ASSET_PATHS['farm'] = 'farm.png';
-        // Wonder icons
+        ASSET_PATHS['sawpit'] = 'sawpit.png'; // new
         ASSET_PATHS['wonder_pyramids'] = 'wonder_pyramids.png';
         ASSET_PATHS['wonder_great_zimbabwe'] = 'wonder_great_zimbabwe.png';
         ASSET_PATHS['wonder_timbuktu'] = 'wonder_timbuktu.png';
@@ -1686,23 +1763,131 @@
 
         // ─── AI PERSONALITIES ──────────────────────────────────────
         const AI_PERSONALITIES = {
-            zulu: { aggression: 0.9, coordination: 0.8, expansion: 0.9, defense: 0.3, tactic: 'rush' },
-            ashanti: { aggression: 0.7, coordination: 0.7, expansion: 0.8, defense: 0.4, tactic: 'balanced' },
-            yoruba: { aggression: 0.6, coordination: 0.6, expansion: 0.6, defense: 0.6, tactic: 'defensive' },
-            maasai: { aggression: 0.8, coordination: 0.9, expansion: 0.9, defense: 0.3, tactic: 'mobile' },
-            berber: { aggression: 0.7, coordination: 0.8, expansion: 0.8, defense: 0.4, tactic: 'hit_and_run' },
-            hausa: { aggression: 0.6, coordination: 0.6, expansion: 0.8, defense: 0.5, tactic: 'trade' },
-            dogon: { aggression: 0.5, coordination: 0.5, expansion: 0.5, defense: 0.7, tactic: 'defensive' },
-            songhai: { aggression: 0.8, coordination: 0.7, expansion: 0.9, defense: 0.3, tactic: 'river_rush' },
-            oromo: { aggression: 0.7, coordination: 0.8, expansion: 0.7, defense: 0.5, tactic: 'highland' },
-            tutsi: { aggression: 0.6, coordination: 0.7, expansion: 0.7, defense: 0.5, tactic: 'cattle_raids' },
-            swahili: { aggression: 0.5, coordination: 0.6, expansion: 0.8, defense: 0.5, tactic: 'trade' },
-            nubian: { aggression: 0.7, coordination: 0.7, expansion: 0.6, defense: 0.6, tactic: 'archer' },
+            zulu: {
+                aggression: 0.9,
+                coordination: 0.8,
+                expansion: 0.9,
+                defense: 0.3,
+                tactic: 'rush',
+                researchPriority: ['bronze_working', 'iron_working', 'horseback', 'steel_working'],
+                unitPreference: ['foot', 'mounted', 'elite'],
+                leader: 'Shaka'
+            },
+            ashanti: {
+                aggression: 0.7,
+                coordination: 0.7,
+                expansion: 0.8,
+                defense: 0.4,
+                tactic: 'balanced',
+                researchPriority: ['masonry', 'trade', 'philosophy', 'architecture'],
+                unitPreference: ['shield', 'ranged', 'elite'],
+                leader: 'Osei Tutu'
+            },
+            yoruba: {
+                aggression: 0.6,
+                coordination: 0.6,
+                expansion: 0.6,
+                defense: 0.6,
+                tactic: 'defensive',
+                researchPriority: ['masonry', 'engineering', 'medicine', 'architecture'],
+                unitPreference: ['shield', 'ranged', 'tank'],
+                leader: 'Oranmiyan'
+            },
+            maasai: {
+                aggression: 0.8,
+                coordination: 0.9,
+                expansion: 0.9,
+                defense: 0.3,
+                tactic: 'mobile',
+                researchPriority: ['horseback', 'bronze_working', 'iron_working', 'navigation'],
+                unitPreference: ['scout', 'mounted', 'ranged'],
+                leader: 'Mbatian'
+            },
+            berber: {
+                aggression: 0.7,
+                coordination: 0.8,
+                expansion: 0.8,
+                defense: 0.4,
+                tactic: 'hit_and_run',
+                researchPriority: ['horseback', 'sailing', 'navigation', 'trade'],
+                unitPreference: ['mounted', 'ranged', 'galley'],
+                leader: 'Kahina'
+            },
+            hausa: {
+                aggression: 0.6,
+                coordination: 0.6,
+                expansion: 0.8,
+                defense: 0.5,
+                tactic: 'trade',
+                researchPriority: ['trade', 'philosophy', 'masonry', 'architecture'],
+                unitPreference: ['foot', 'shield', 'ranged'],
+                leader: 'Amina'
+            },
+            dogon: {
+                aggression: 0.5,
+                coordination: 0.5,
+                expansion: 0.5,
+                defense: 0.7,
+                tactic: 'defensive',
+                researchPriority: ['masonry', 'engineering', 'medicine', 'obelisks'],
+                unitPreference: ['shield', 'ranged', 'tank'],
+                leader: 'Nommo'
+            },
+            songhai: {
+                aggression: 0.8,
+                coordination: 0.7,
+                expansion: 0.9,
+                defense: 0.3,
+                tactic: 'river_rush',
+                researchPriority: ['sailing', 'navigation', 'bronze_working', 'shipbuilding'],
+                unitPreference: ['foot', 'warship', 'elite'],
+                leader: 'Askia'
+            },
+            oromo: {
+                aggression: 0.7,
+                coordination: 0.8,
+                expansion: 0.7,
+                defense: 0.5,
+                tactic: 'highland',
+                researchPriority: ['bronze_working', 'horseback', 'iron_working', 'steel_working'],
+                unitPreference: ['mounted', 'foot', 'elite'],
+                leader: 'Gada'
+            },
+            tutsi: {
+                aggression: 0.6,
+                coordination: 0.7,
+                expansion: 0.7,
+                defense: 0.5,
+                tactic: 'cattle_raids',
+                researchPriority: ['horseback', 'trade', 'masonry', 'medicine'],
+                unitPreference: ['mounted', 'scout', 'ranged'],
+                leader: 'Rwanda'
+            },
+            swahili: {
+                aggression: 0.5,
+                coordination: 0.6,
+                expansion: 0.8,
+                defense: 0.5,
+                tactic: 'trade',
+                researchPriority: ['sailing', 'navigation', 'trade', 'shipbuilding'],
+                unitPreference: ['galley', 'warship', 'ranged'],
+                leader: 'Tippu Tip'
+            },
+            nubian: {
+                aggression: 0.7,
+                coordination: 0.7,
+                expansion: 0.6,
+                defense: 0.6,
+                tactic: 'archer',
+                researchPriority: ['bronze_working', 'iron_working', 'masonry', 'engineering'],
+                unitPreference: ['ranged', 'shield', 'elite'],
+                leader: 'Taharqa'
+            }
         };
 
         function getAIPersonality(tribeId) {
             return AI_PERSONALITIES[tribeId] || { aggression: 0.6, coordination: 0.6, expansion: 0.6, defense: 0.6,
-                tactic: 'balanced' };
+                tactic: 'balanced', researchPriority: [], unitPreference: [], leader: 'Unknown' };
         }
 
         // ─── TRIBES DATA ──────────────────────────────────────────────
@@ -2397,6 +2582,7 @@
             neutralVillages: 0,
             eliminationMessages: [],
             turnHealBonus: 3,
+            aiTurnLock: false,
         };
 
         const camera = { x: 0, y: 0, zoom: 1.0, minZoom: 0.3, maxZoom: 3.0, centered: false };
@@ -2676,7 +2862,7 @@
             return yieldTotal;
         }
 
-        // ─── CITY DISCOUNT from fishing/farming ──────────────────────
+        // ─── CITY DISCOUNT (including sawpit) ──────────────────────
         function getCityDiscount(city) {
             if (!city) return 0;
             const influence = getCityInfluence(city);
@@ -2686,18 +2872,71 @@
                 if (tileData) {
                     if (tileData.fishing) discount = Math.max(discount, 0.2);
                     if (tileData.farm) discount = Math.max(discount, 0.2);
-                    if (tileData.fishing && tileData.farm) discount = Math.max(discount, 0.35);
+                    if (tileData.sawpit) discount = Math.max(discount, 0.1); // 10% for units & settlements
+                    // quarry handled separately in unit production
+                }
+            }
+            return discount;
+        }
+
+        function getCityShipDiscount(city) {
+            if (!city) return 0;
+            const influence = getCityInfluence(city);
+            let discount = 0;
+            for (const tile of influence) {
+                const tileData = G.map[tile.r]?.[tile.q];
+                if (tileData && tileData.sawpit) {
+                    discount = Math.max(discount, 0.25); // 25% for ships
                 }
             }
             return discount;
         }
 
         function getCityUnitDiscount(city) {
-            return getCityDiscount(city);
+            if (!city) return 0;
+            const influence = getCityInfluence(city);
+            let discount = 0;
+            for (const tile of influence) {
+                const tileData = G.map[tile.r]?.[tile.q];
+                if (tileData) {
+                    if (tileData.quarry) discount = Math.max(discount, 0.2);
+                    if (tileData.fishing) discount = Math.max(discount, 0.2);
+                    if (tileData.farm) discount = Math.max(discount, 0.2);
+                    if (tileData.sawpit) discount = Math.max(discount, 0.1);
+                }
+            }
+            return discount;
         }
 
         function getCityImprovementDiscount(city) {
-            return getCityDiscount(city);
+            if (!city) return 0;
+            const influence = getCityInfluence(city);
+            let discount = 0;
+            for (const tile of influence) {
+                const tileData = G.map[tile.r]?.[tile.q];
+                if (tileData) {
+                    if (tileData.fishing) discount = Math.max(discount, 0.2);
+                    if (tileData.farm) discount = Math.max(discount, 0.2);
+                    if (tileData.sawpit) discount = Math.max(discount, 0.1);
+                }
+            }
+            return discount;
+        }
+
+        // ─── FIND CITY FOR TILE ──────────────────────────────────────
+        function getCityForTile(tile, tribeId) {
+            const tribe = getTribe(tribeId);
+            if (!tribe) return null;
+            // Find the first city that influences this tile
+            for (const city of tribe.cities) {
+                const influence = getCityInfluence(city);
+                for (const t of influence) {
+                    if (t.q === tile.q && t.r === tile.r) {
+                        return city;
+                    }
+                }
+            }
+            return null;
         }
 
         // ─── FOG OF WAR ─────────────────────────────────────────────
@@ -2820,96 +3059,60 @@
                 elevation[r] = [];
                 for (let q = 0; q < w; q++) {
                     let val = 0;
-                    val += Math.sin(q * 0.08 + r * 0.07) * 0.15;
-                    val += Math.cos(q * 0.06 - r * 0.05 + 1.2) * 0.12;
-                    val += Math.sin((q + r) * 0.04) * 0.10;
-                    val += Math.random() * 0.30;
-                    elevation[r][q] = Math.max(0, Math.min(1, val + 0.3));
+                    val += Math.sin(q * 0.08 + r * 0.06) * 0.2;
+                    val += Math.cos(q * 0.05 - r * 0.07 + 1.3) * 0.15;
+                    val += Math.sin((q + r) * 0.04) * 0.1;
+                    val += Math.random() * 0.25;
+                    const distToCenter = Math.sqrt((q - w / 2) ** 2 + (r - h / 2) ** 2);
+                    const centerFactor = 1 - Math.exp(-distToCenter * 0.05);
+                    val = val * 0.7 + centerFactor * 0.3;
+                    elevation[r][q] = Math.max(0, Math.min(1, val + 0.25));
                 }
             }
 
-            const centerQ = Math.floor(w / 2);
-            const centerR = Math.floor(h / 2);
-            const seaRadius = 2 + Math.floor(Math.random() * 2);
-            for (let r = 0; r < h; r++) {
-                for (let q = 0; q < w; q++) {
-                    const dist = hexDistance({ q, r }, { q: centerQ, r: centerR });
-                    if (dist <= seaRadius) {
-                        elevation[r][q] = Math.min(elevation[r][q], 0.05);
-                    }
-                    if (dist <= seaRadius + 2 && dist > seaRadius) {
-                        elevation[r][q] = Math.max(elevation[r][q], 0.25);
-                    }
-                }
-            }
-
-            const numPeaks = 2 + Math.floor(Math.random() * 2);
-            const mountainPeaks = [];
-            for (let i = 0; i < numPeaks; i++) {
-                let q, r, attempts = 0;
-                let valid = false;
-                while (!valid && attempts < 50) {
-                    q = 4 + Math.floor(Math.random() * (w - 8));
-                    r = 4 + Math.floor(Math.random() * (h - 8));
-                    const distToSea = hexDistance({ q, r }, { q: centerQ, r: centerR });
-                    if (distToSea > seaRadius + 2) {
-                        valid = true;
-                        for (const peak of mountainPeaks) {
-                            if (hexDistance({ q, r }, peak) < 6) {
-                                valid = false;
-                                break;
-                            }
-                        }
-                    }
-                    attempts++;
-                }
-                if (valid) {
-                    mountainPeaks.push({ q, r });
-                    const radius = 1;
-                    for (let dr = -radius; dr <= radius; dr++) {
-                        for (let dq = -radius; dq <= radius; dq++) {
+            for (let i = 0; i < 3; i++) {
+                let startQ = Math.floor(Math.random() * w);
+                let startR = 0;
+                let q = startQ,
+                    r = startR;
+                for (let step = 0; step < 15; step++) {
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dq = -1; dq <= 1; dq++) {
                             const nq = q + dq,
                                 nr = r + dr;
-                            if (inMap(nq, nr) && hexDistance({ q, r }, { q: nq, r: nr }) <= radius) {
-                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.85 + (radius - hexDistance({ q, r },
-                                    { q: nq, r: nr })) * 0.05);
+                            if (inMap(nq, nr)) {
+                                elevation[nr][nq] = Math.min(elevation[nr][nq], 0.15);
                             }
                         }
                     }
+                    let bestQ = q,
+                        bestR = r;
+                    let bestElev = elevation[r][q];
+                    const neighbors = hexNeighbors(q, r);
+                    for (const n of neighbors) {
+                        if (!inMap(n.q, n.r)) continue;
+                        if (elevation[n.r][n.q] < bestElev) {
+                            bestElev = elevation[n.r][n.q];
+                            bestQ = n.q;
+                            bestR = n.r;
+                        }
+                    }
+                    if (bestQ === q && bestR === r) break;
+                    q = bestQ;
+                    r = bestR;
                 }
             }
 
-            const numHills = 3 + Math.floor(Math.random() * 3);
-            const hillPeaks = [];
-            for (let i = 0; i < numHills; i++) {
-                let q, r, attempts = 0;
-                let valid = false;
-                while (!valid && attempts < 40) {
-                    q = 3 + Math.floor(Math.random() * (w - 6));
-                    r = 3 + Math.floor(Math.random() * (h - 6));
-                    const distToSea = hexDistance({ q, r }, { q: centerQ, r: centerR });
-                    if (distToSea > seaRadius + 1) {
-                        valid = true;
-                        for (const peak of mountainPeaks) {
-                            if (hexDistance({ q, r }, peak) < 5) { valid = false; break; }
-                        }
-                        for (const peak of hillPeaks) {
-                            if (hexDistance({ q, r }, peak) < 5) { valid = false; break; }
-                        }
-                    }
-                    attempts++;
-                }
-                if (valid) {
-                    hillPeaks.push({ q, r });
-                    const radius = 1;
-                    for (let dr = -radius; dr <= radius; dr++) {
-                        for (let dq = -radius; dq <= radius; dq++) {
-                            const nq = q + dq,
-                                nr = r + dr;
-                            if (inMap(nq, nr) && hexDistance({ q, r }, { q: nq, r: nr }) <= radius) {
-                                elevation[nr][nq] = Math.max(elevation[nr][nq], 0.65 + (radius - hexDistance({ q, r },
-                                    { q: nq, r: nr })) * 0.05);
-                            }
+            for (let i = 0; i < 4; i++) {
+                const lakeQ = 3 + Math.floor(Math.random() * (w - 6));
+                const lakeR = 3 + Math.floor(Math.random() * (h - 6));
+                const radius = 1 + Math.floor(Math.random() * 2);
+                for (let dr = -radius; dr <= radius; dr++) {
+                    for (let dq = -radius; dq <= radius; dq++) {
+                        const nq = lakeQ + dq,
+                            nr = lakeR + dr;
+                        if (inMap(nq, nr) && hexDistance({ q: lakeQ, r: lakeR }, { q: nq, r: nr }) <= radius) {
+                            elevation[nr][nq] = Math.min(elevation[nr][nq], 0.1);
                         }
                     }
                 }
@@ -2920,11 +3123,11 @@
                 for (let q = 0; q < w; q++) {
                     const elev = elevation[r][q];
                     let terrain = 'plains';
-                    if (elev < 0.20) terrain = 'water';
-                    else if (elev < 0.40) terrain = 'forest';
-                    else if (elev < 0.60) terrain = 'plains';
-                    else if (elev < 0.75) terrain = 'desert';
-                    else if (elev < 0.88) terrain = 'hill';
+                    if (elev < 0.15) terrain = 'water';
+                    else if (elev < 0.35) terrain = 'forest';
+                    else if (elev < 0.55) terrain = 'plains';
+                    else if (elev < 0.70) terrain = 'desert';
+                    else if (elev < 0.85) terrain = 'hill';
                     else terrain = 'mountain';
 
                     if (r === 0 || r === h - 1 || q === 0 || q === w - 1) {
@@ -2932,40 +3135,7 @@
                     }
                     G.map[r][q] = { q, r, terrain, owner: null, city: null, unit: null, harbor: null, explored: false,
                         visible: false, isRiver: false, resource: null, mine: false, quarry: false, fishing: false,
-                        farm: false, wonderIcon: null };
-                }
-            }
-
-            for (let r = 0; r < h; r++) {
-                for (let q = 0; q < w; q++) {
-                    if (G.map[r][q].terrain === 'mountain' && Math.random() < 0.1) {
-                        let currentQ = q,
-                            currentR = r;
-                        let steps = 0;
-                        while (steps < 20) {
-                            let lowestElev = elevation[currentR][currentQ];
-                            let nextQ = currentQ,
-                                nextR = currentR;
-                            const neighbors = hexNeighbors(currentQ, currentR);
-                            for (const n of neighbors) {
-                                if (!inMap(n.q, n.r)) continue;
-                                if (elevation[n.r][n.q] < lowestElev) {
-                                    lowestElev = elevation[n.r][n.q];
-                                    nextQ = n.q;
-                                    nextR = n.r;
-                                }
-                            }
-                            if (nextQ === currentQ && nextR === currentR) break;
-                            currentQ = nextQ;
-                            currentR = nextR;
-                            steps++;
-                            if (elevation[currentR][currentQ] < 0.2) break;
-                            if (elevation[currentR][currentQ] < 0.4) {
-                                G.map[currentR][currentQ].terrain = 'water';
-                                G.map[currentR][currentQ].isRiver = true;
-                            }
-                        }
-                    }
+                        farm: false, sawpit: false, wonderIcon: null };
                 }
             }
 
@@ -3045,7 +3215,7 @@
                     const tile = G.map[tilePos.r]?.[tilePos.q];
                     if (!tile) continue;
                     if (tile.city || tile.unit || tile.harbor || tile.resource || tile.mine || tile.quarry || tile.fishing ||
-                        tile.farm || tile.wonderIcon) continue;
+                        tile.farm || tile.sawpit || tile.wonderIcon) continue;
                     if (tile.terrain === 'water') continue;
                     candidates.push(tile);
                 }
@@ -3372,7 +3542,7 @@
             const tile = G.map[r]?.[q];
             if (!tile) return false;
             if (isNaval) {
-                return true; // allow any terrain (disembark will handle land)
+                return true;
             } else {
                 if (tile.terrain === 'water') return false;
                 return true;
@@ -3478,8 +3648,11 @@
             const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
                     r: harbor.r }) <= 2);
             if (city) {
-                const discount = getCityUnitDiscount(city);
-                goldCost = Math.ceil(goldCost * (1 - discount));
+                // Apply ship discount (sawpit) separately
+                const shipDiscount = getCityShipDiscount(city);
+                const unitDiscount = getCityUnitDiscount(city);
+                const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                goldCost = Math.ceil(goldCost * (1 - totalDiscount));
             }
             if (player.gold < goldCost) { showAlert('Not enough gold', 'You need ' + goldCost + ' gold.'); return false; }
             const unit = spawnUnit(player.id, harbor.q, harbor.r, unitType);
@@ -3529,23 +3702,25 @@
             return true;
         }
 
-        // ─── MINE / QUARRY ──────────────────────────────────────────
-        function canBuildMine(unit) {
-            if (!unit) return false;
-            if (unit.hasMoved) return false;
-            const tile = G.map[unit.r]?.[unit.q];
-            if (!tile) return false;
+        // ─── MINE / QUARRY (now tile-based with productivity cost) ──
+        function buildMineOnTile(tile, city) {
+            if (!tile || !city) return false;
             if (tile.resource !== '🪙') return false;
             if (tile.mine) return false;
-            return true;
-        }
-
-        function buildMine(unit) {
-            if (!canBuildMine(unit)) return false;
-            const tile = G.map[unit.r]?.[unit.q];
+            if (city.stockpile < 5) {
+                showAlert('Not enough productivity', 'This settlement needs 5 productivity to build a mine.');
+                return false;
+            }
+            // Check if tile is influenced by this city
+            const influence = getCityInfluence(city);
+            let isInfluenced = false;
+            for (const t of influence) {
+                if (t.q === tile.q && t.r === tile.r) { isInfluenced = true; break; }
+            }
+            if (!isInfluenced) return false;
+            city.stockpile -= 5;
             tile.mine = true;
             tile.resource = null;
-            unit.hasMoved = true;
             queueMessage('⛏️ Mine built! +2 gold per turn.');
             updateVisibility();
             updateUI();
@@ -3554,22 +3729,23 @@
             return true;
         }
 
-        function canBuildQuarry(unit) {
-            if (!unit) return false;
-            if (unit.hasMoved) return false;
-            const tile = G.map[unit.r]?.[unit.q];
-            if (!tile) return false;
+        function buildQuarryOnTile(tile, city) {
+            if (!tile || !city) return false;
             if (tile.resource !== '🪨') return false;
             if (tile.quarry) return false;
-            return true;
-        }
-
-        function buildQuarry(unit) {
-            if (!canBuildQuarry(unit)) return false;
-            const tile = G.map[unit.r]?.[unit.q];
+            if (city.stockpile < 5) {
+                showAlert('Not enough productivity', 'This settlement needs 5 productivity to build a quarry.');
+                return false;
+            }
+            const influence = getCityInfluence(city);
+            let isInfluenced = false;
+            for (const t of influence) {
+                if (t.q === tile.q && t.r === tile.r) { isInfluenced = true; break; }
+            }
+            if (!isInfluenced) return false;
+            city.stockpile -= 5;
             tile.quarry = true;
             tile.resource = null;
-            unit.hasMoved = true;
             queueMessage('🪨 Quarry built! Unit production costs reduced by 20% in the controlling city.');
             updateVisibility();
             updateUI();
@@ -3578,7 +3754,7 @@
             return true;
         }
 
-        // ─── FISHING / FARM ──────────────────────────────────────────
+        // ─── FISHING / FARM (with productivity cost) ──────────────
         function canLaunchFishing(tile, playerId) {
             if (!tile) return false;
             if (tile.resource !== '🐟') return false;
@@ -3598,6 +3774,16 @@
 
         function launchFishing(tile) {
             if (!canLaunchFishing(tile, G.playerTribeId)) return false;
+            const city = getCityForTile(tile, G.playerTribeId);
+            if (!city) {
+                showAlert('No city controls this tile', 'You need a city to control this area.');
+                return false;
+            }
+            if (city.stockpile < 2) {
+                showAlert('Not enough productivity', 'This settlement needs 2 productivity to launch fishing boats.');
+                return false;
+            }
+            city.stockpile -= 2;
             tile.fishing = true;
             tile.resource = null;
             queueMessage('🎣 Fishing boats launched! Settlement improvements and unit production costs reduced.');
@@ -3627,9 +3813,59 @@
 
         function buildFarm(tile) {
             if (!canBuildFarm(tile, G.playerTribeId)) return false;
+            const city = getCityForTile(tile, G.playerTribeId);
+            if (!city) {
+                showAlert('No city controls this tile', 'You need a city to control this area.');
+                return false;
+            }
+            if (city.stockpile < 2) {
+                showAlert('Not enough productivity', 'This settlement needs 2 productivity to build a farm.');
+                return false;
+            }
+            city.stockpile -= 2;
             tile.farm = true;
             tile.resource = null;
             queueMessage('🌾 Farm built! Settlement improvements and unit production costs reduced.');
+            updateVisibility();
+            updateUI();
+            render();
+            saveGame();
+            return true;
+        }
+
+        // ─── SAWPIT ──────────────────────────────────────────────────
+        function canBuildSawpit(tile, playerId) {
+            if (!tile) return false;
+            if (tile.resource !== '🪵') return false;
+            if (tile.sawpit) return false;
+            const playerTribe = getTribe(playerId);
+            if (!playerTribe) return false;
+            for (const city of playerTribe.cities) {
+                const tiles = getCityInfluence(city);
+                for (const t of tiles) {
+                    if (t.q === tile.q && t.r === tile.r) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function buildSawpit(tile) {
+            if (!canBuildSawpit(tile, G.playerTribeId)) return false;
+            const city = getCityForTile(tile, G.playerTribeId);
+            if (!city) {
+                showAlert('No city controls this tile', 'You need a city to control this area.');
+                return false;
+            }
+            if (city.stockpile < 2) {
+                showAlert('Not enough productivity', 'This settlement needs 2 productivity to build a sawpit.');
+                return false;
+            }
+            city.stockpile -= 2;
+            tile.sawpit = true;
+            tile.resource = null;
+            queueMessage('🪵 Sawpit built! Ship costs reduced by 25%, improvements and units by 10%.');
             updateVisibility();
             updateUI();
             render();
@@ -3667,6 +3903,7 @@
 
         function buildHarborOnTile(tile) {
             if (!canBuildHarborOnTile(tile, G.playerTribeId)) return false;
+            // No productivity cost for harbor (gold cost is in harbor production)
             const harbor = { id: G.harborIdCounter++, q: tile.q, r: tile.r, owner: G.playerTribeId, production: 0,
                 project: null };
             G.harbors.push(harbor);
@@ -3679,7 +3916,7 @@
             return true;
         }
 
-        // ─── HARBOR FUNCTIONS (legacy) ─────────────────────────────
+        // ─── HARBOR FUNCTIONS ─────────────────────────────────────
         function canBuildRaft(unit) {
             const tribe = getTribe(unit.tribeId);
             if (!tribe) return false;
@@ -3814,8 +4051,11 @@
                 const city = G.cities.find(c => c.owner === tribe.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
                         r: harbor.r }) <= 2);
                 if (city) {
-                    const discount = getCityUnitDiscount(city);
-                    cost = Math.ceil(cost * (1 - discount));
+                    // Apply ship discount and unit discount
+                    const shipDiscount = getCityShipDiscount(city);
+                    const unitDiscount = getCityUnitDiscount(city);
+                    const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                    cost = Math.ceil(cost * (1 - totalDiscount));
                 }
             }
             if (cost && harbor.production >= cost) {
@@ -3893,7 +4133,6 @@
                     break;
                 }
             }
-            // Check if old tribe has any cities left
             if (oldTribe && oldTribe.cities.length === 0) {
                 eliminateTribe(oldOwnerId, newOwnerId);
             }
@@ -4052,6 +4291,7 @@
                     if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
                     if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                     if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
+                    if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
                 }
                 cost = Math.ceil(cost * (1 - discount));
                 progressTarget = () => {
@@ -4082,6 +4322,7 @@
                     return;
                 }
                 cost = getTechCost(techId);
+                // Tech cost is not reduced by improvements (research is separate)
                 if (!tribe.researchProgress) tribe.researchProgress = {};
                 progressTarget = () => {
                     if (city.progress >= cost) {
@@ -4140,18 +4381,167 @@
             applyStockpileToProject(city);
         }
 
-        // ─── AI TURN ──────────────────────────────────────────────
+        // ─── AI TURN (unchanged, but now AI can also build improvements? not yet) ──
         function processAITribe(tribe) {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('ai-turn-overlay');
                 const title = document.getElementById('ai-turn-title');
                 const sub = document.getElementById('ai-turn-sub');
                 const icon = document.getElementById('ai-turn-icon');
-                icon.textContent = tribe.icon;
+                const iconKey = `tribe_${tribe.id}`;
+                const iconImg = images[iconKey];
+                if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                    icon.innerHTML = `<img src="${iconImg.src}" alt="${tribe.name}" />`;
+                } else {
+                    icon.innerHTML = tribe.icon;
+                }
                 title.textContent = `${tribe.name}'s Turn`;
-                sub.textContent = 'Processing units...';
+                sub.textContent = 'Strategic planning...';
                 overlay.classList.add('active');
 
+                const personality = getAIPersonality(tribe.id);
+                const enemyTribes = G.aliveTribes.filter(t => t.id !== tribe.id);
+                const myCities = tribe.cities.length;
+                const enemyCities = enemyTribes.reduce((acc, t) => acc + t.cities.length, 0);
+                const myUnits = tribe.units.filter(u => u.active).length;
+                const enemyUnits = enemyTribes.reduce((acc, t) => acc + t.units.filter(u => u.active).length, 0);
+                const myTiles = getTribeControlledTiles(tribe.id);
+                const enemyTiles = enemyTribes.reduce((acc, t) => acc + getTribeControlledTiles(t.id), 0);
+
+                let strategy = { attack: false, defend: false, expand: false, targetTribeId: null };
+
+                if (G.gameMode === 'conquest') {
+                    if (myUnits > enemyUnits * 0.8 && myCities >= enemyCities * 0.6) {
+                        strategy.attack = true;
+                        let weakest = null;
+                        let weakestPower = Infinity;
+                        for (const e of enemyTribes) {
+                            const power = e.cities.length + e.units.length;
+                            if (power < weakestPower) {
+                                weakestPower = power;
+                                weakest = e;
+                            }
+                        }
+                        if (weakest) strategy.targetTribeId = weakest.id;
+                    } else {
+                        strategy.defend = true;
+                        strategy.expand = true;
+                    }
+                } else if (G.gameMode === 'sandsoftime') {
+                    const remainingTurns = G.maxTurns - G.turn;
+                    if (remainingTurns < 10) {
+                        strategy.attack = true;
+                        let nearest = null;
+                        let nearestDist = Infinity;
+                        for (const e of enemyTribes) {
+                            for (const city of e.cities) {
+                                for (const myCity of tribe.cities) {
+                                    const d = hexDistance({ q: myCity.q, r: myCity.r }, { q: city.q, r: city.r });
+                                    if (d < nearestDist) {
+                                        nearestDist = d;
+                                        nearest = e;
+                                    }
+                                }
+                            }
+                        }
+                        if (nearest) strategy.targetTribeId = nearest.id;
+                    } else {
+                        strategy.expand = true;
+                        if (myTiles > enemyTiles) {
+                            strategy.defend = true;
+                        } else {
+                            strategy.attack = true;
+                            let nearest = null;
+                            let nearestDist = Infinity;
+                            for (const e of enemyTribes) {
+                                for (const city of e.cities) {
+                                    for (const myCity of tribe.cities) {
+                                        const d = hexDistance({ q: myCity.q, r: myCity.r }, { q: city.q, r: city.r });
+                                        if (d < nearestDist) {
+                                            nearestDist = d;
+                                            nearest = e;
+                                        }
+                                    }
+                                }
+                            }
+                            if (nearest) strategy.targetTribeId = nearest.id;
+                        }
+                    }
+                } else {
+                    if (myUnits > enemyUnits * 0.9) {
+                        strategy.attack = true;
+                        let weakest = null;
+                        let weakestPower = Infinity;
+                        for (const e of enemyTribes) {
+                            const power = e.cities.length + e.units.length;
+                            if (power < weakestPower) {
+                                weakestPower = power;
+                                weakest = e;
+                            }
+                        }
+                        if (weakest) strategy.targetTribeId = weakest.id;
+                    } else {
+                        strategy.defend = true;
+                        strategy.expand = true;
+                    }
+                }
+
+                // Research
+                const availableTechs = getAvailableTechs(tribe);
+                if (availableTechs.length > 0) {
+                    let techToResearch = null;
+                    for (const pref of personality.researchPriority) {
+                        if (availableTechs.some(t => t.id === pref) && !tribe.techs.includes(pref)) {
+                            techToResearch = pref;
+                            break;
+                        }
+                    }
+                    if (!techToResearch) {
+                        const cheapest = availableTechs.reduce((a, b) => a.cost < b.cost ? a : b);
+                        techToResearch = cheapest.id;
+                    }
+                    const idleCity = tribe.cities.find(c => !c.project);
+                    if (idleCity && techToResearch) {
+                        setCityProject(idleCity, 'tech', techToResearch);
+                    }
+                }
+
+                // Unit production
+                const availableUnits = getAvailableUnits(tribe);
+                const unitsToBuild = personality.unitPreference.filter(type => availableUnits[type]);
+                for (const city of tribe.cities) {
+                    if (!city.project && unitsToBuild.length > 0) {
+                        const chosenType = unitsToBuild[Math.floor(Math.random() * unitsToBuild.length)];
+                        if (availableUnits[chosenType]) {
+                            setCityProject(city, 'unit', chosenType);
+                        }
+                    }
+                }
+
+                // Attack target
+                let attackTarget = null;
+                if (strategy.attack && strategy.targetTribeId) {
+                    const targetTribe = getTribe(strategy.targetTribeId);
+                    if (targetTribe) {
+                        let closestCity = null;
+                        let closestDist = Infinity;
+                        for (const unit of tribe.units) {
+                            if (!unit.active) continue;
+                            for (const city of targetTribe.cities) {
+                                const d = hexDistance({ q: unit.q, r: unit.r }, { q: city.q, r: city.r });
+                                if (d < closestDist) {
+                                    closestDist = d;
+                                    closestCity = city;
+                                }
+                            }
+                        }
+                        if (closestCity) {
+                            attackTarget = closestCity;
+                        }
+                    }
+                }
+
+                // Execute unit actions
                 const units = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved);
                 if (units.length === 0) {
                     setTimeout(() => {
@@ -4170,22 +4560,97 @@
                         return;
                     }
                     const unit = units[unitIndex];
-                    sub.textContent = `Moving ${unit.name} (${unitIndex+1}/${units.length})...`;
-                    processAIAttack(unit, tribe);
-                    setTimeout(() => {
-                        unitIndex++;
-                        processNextUnit();
-                    }, 400);
+                    sub.textContent = `${unit.name} (${unitIndex+1}/${units.length})...`;
+
+                    let targets = [];
+                    const enemies = G.units.filter(u => u.tribeId !== tribe.id && u.active);
+                    for (const e of enemies) {
+                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
+                        targets.push({ type: 'unit', target: e, dist: dist });
+                    }
+                    const enemyCities = G.cities.filter(c => c.owner !== tribe.id && !c.isNeutral);
+                    for (const c of enemyCities) {
+                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+                        targets.push({ type: 'city', target: c, dist: dist });
+                    }
+                    const neutralVillages = G.cities.filter(c => c.isNeutral);
+                    for (const c of neutralVillages) {
+                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+                        targets.push({ type: 'neutral', target: c, dist: dist });
+                    }
+
+                    targets.sort((a, b) => a.dist - b.dist);
+
+                    if (attackTarget) {
+                        const distToTarget = hexDistance({ q: unit.q, r: unit.r }, { q: attackTarget.q, r: attackTarget.r });
+                        if (distToTarget <= unit.move + unit.attackRange) {
+                            const path = findPath(unit.q, unit.r, attackTarget.q, attackTarget.r, unit, tribe.id);
+                            if (path && path.length > 1) {
+                                const step = path[Math.min(path.length - 1, unit.move)];
+                                const tile = G.map[step.r]?.[step.q];
+                                if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
+                                    G.map[unit.r][unit.q].unit = null;
+                                    unit.q = step.q;
+                                    unit.r = step.r;
+                                    G.map[unit.r][unit.q].unit = unit;
+                                    unit.hasMoved = true;
+                                    if (unit.isNaval && tile.terrain !== 'water') {
+                                        disembarkNavalUnit(unit);
+                                    }
+                                    if (tile.city && tile.city.id === attackTarget.id) {
+                                        captureCity(tile.city, unit.tribeId);
+                                    }
+                                }
+                            }
+                            unitIndex++;
+                            setTimeout(processNextUnit, 200);
+                            return;
+                        }
+                    }
+
+                    if (targets.length > 0) {
+                        const t = targets[0];
+                        if (t.dist <= unit.attackRange && t.type === 'unit') {
+                            performAttack(unit, t.target);
+                        } else if (t.dist <= unit.move + 1) {
+                            const targetPos = t.type === 'unit' ? { q: t.target.q, r: t.target.r } : { q: t.target.q,
+                                r: t.target.r };
+                            const path = findPath(unit.q, unit.r, targetPos.q, targetPos.r, unit, tribe.id);
+                            if (path && path.length > 1) {
+                                const step = path[Math.min(path.length - 1, unit.move)];
+                                const tile = G.map[step.r]?.[step.q];
+                                if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
+                                    G.map[unit.r][unit.q].unit = null;
+                                    unit.q = step.q;
+                                    unit.r = step.r;
+                                    G.map[unit.r][unit.q].unit = unit;
+                                    unit.hasMoved = true;
+                                    if (unit.isNaval && tile.terrain !== 'water') {
+                                        disembarkNavalUnit(unit);
+                                    }
+                                    if (tile.city) {
+                                        if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
+                                        else if (tile.city.owner !== unit.tribeId) captureCity(tile.city, unit
+                                            .tribeId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    unitIndex++;
+                    setTimeout(processNextUnit, 200);
                 }
+
                 setTimeout(processNextUnit, 300);
             });
         }
 
         async function runAI() {
-            if (G.gameOver || G.animating || G.aiProcessing) return;
-            G.aiProcessing = true;
+            if (G.gameOver || G.animating || G.aiTurnLock) return;
+            G.aiTurnLock = true;
             const aiTribes = G.aliveTribes.filter(t => !t.isPlayer);
-            if (aiTribes.length === 0) { G.aiProcessing = false; return; }
+            if (aiTribes.length === 0) { G.aiTurnLock = false; return; }
 
             for (const tribe of aiTribes) {
                 if (G.gameOver) break;
@@ -4194,99 +4659,9 @@
                 if (G.gameOver) break;
             }
 
-            G.aiProcessing = false;
+            G.aiTurnLock = false;
             if (!G.gameOver) {
                 finishTurn();
-            }
-        }
-
-        function processAIAttack(unit, tribe) {
-            if (unit.hasMoved || !unit.active) return;
-            let targets = [];
-            const enemies = G.units.filter(u => u.tribeId !== tribe.id && u.active);
-            for (const e of enemies) {
-                const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
-                targets.push({ type: 'unit', target: e, dist: dist });
-            }
-            const neutralCities = G.cities.filter(c => c.isNeutral);
-            for (const c of neutralCities) {
-                const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                targets.push({ type: 'neutral', target: c, dist: dist });
-            }
-            const enemyCities = G.cities.filter(c => c.owner !== tribe.id && !c.isNeutral);
-            for (const c of enemyCities) {
-                const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                targets.push({ type: 'city', target: c, dist: dist });
-            }
-            targets.sort((a, b) => a.dist - b.dist);
-            if (targets.length > 0 && targets[0].dist <= unit.move + unit.attackRange) {
-                const t = targets[0];
-                if (t.type === 'unit') {
-                    const enemy = t.target;
-                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: enemy.q, r: enemy.r });
-                    if (dist <= unit.attackRange) {
-                        performAttack(unit, enemy);
-                    } else {
-                        const path = findPath(unit.q, unit.r, enemy.q, enemy.r, unit, tribe.id);
-                        if (path && path.length > 1) {
-                            const step = path[1];
-                            const tile = G.map[step.r]?.[step.q];
-                            if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                                G.map[unit.r][unit.q].unit = null;
-                                unit.q = step.q;
-                                unit.r = step.r;
-                                G.map[unit.r][unit.q].unit = unit;
-                                unit.hasMoved = true;
-                                if (unit.isNaval && tile.terrain !== 'water') {
-                                    disembarkNavalUnit(unit);
-                                }
-                            }
-                        }
-                    }
-                } else if (t.type === 'neutral' || t.type === 'city') {
-                    const city = t.target;
-                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: city.q, r: city.r });
-                    if (dist === 1) {
-                        const tile = G.map[city.r]?.[city.q];
-                        if (tile && !tile.unit) {
-                            if (city.isNeutral) captureNeutralVillage(city, tribe.id);
-                            else captureCity(city, tribe.id);
-                        }
-                    } else {
-                        const path = findPath(unit.q, unit.r, city.q, city.r, unit, tribe.id);
-                        if (path && path.length > 1) {
-                            const step = path[1];
-                            const tile = G.map[step.r]?.[step.q];
-                            if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                                G.map[unit.r][unit.q].unit = null;
-                                unit.q = step.q;
-                                unit.r = step.r;
-                                G.map[unit.r][unit.q].unit = unit;
-                                unit.hasMoved = true;
-                                if (unit.isNaval && tile.terrain !== 'water') {
-                                    disembarkNavalUnit(unit);
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if (targets.length > 0) {
-                const t = targets[0];
-                const path = findPath(unit.q, unit.r, t.target.q || t.target.q, t.target.r || t.target.r, unit, tribe.id);
-                if (path && path.length > 1) {
-                    const step = path[Math.min(path.length - 1, unit.move)];
-                    const tile = G.map[step.r]?.[step.q];
-                    if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                        G.map[unit.r][unit.q].unit = null;
-                        unit.q = step.q;
-                        unit.r = step.r;
-                        G.map[unit.r][unit.q].unit = unit;
-                        unit.hasMoved = true;
-                        if (unit.isNaval && tile.terrain !== 'water') {
-                            disembarkNavalUnit(unit);
-                        }
-                    }
-                }
             }
         }
 
@@ -4389,7 +4764,7 @@
             saveGame();
         }
 
-        // ─── THE FIXED tryMoveUnit FUNCTION ───────────────────────────
+        // ─── MOVEMENT & ATTACK HELPERS ──────────────────────────
         function tryMoveUnit() {
             if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return false;
             const hex = G.selectedHex;
@@ -4406,24 +4781,20 @@
 
             const isLand = tile.terrain !== 'water';
 
-            // Move unit
             G.map[unit.r][unit.q].unit = null;
             unit.q = hex.q;
             unit.r = hex.r;
             G.map[unit.r][unit.q].unit = unit;
             unit.hasMoved = true;
 
-            // ─── CAPTURE CITY LOGIC (FIXED) ─────────────────────────────
             if (tile.city) {
                 if (tile.city.isNeutral) {
                     captureNeutralVillage(tile.city, unit.tribeId);
                 } else if (tile.city.owner !== unit.tribeId) {
-                    // Capture regardless of tile.unit (now our moving unit)
                     captureCity(tile.city, unit.tribeId);
                 }
             }
 
-            // If naval and on land, disembark
             if (unit.isNaval && isLand) {
                 disembarkNavalUnit(unit);
             }
@@ -4437,7 +4808,6 @@
             return true;
         }
 
-        // ─── OTHER MOVEMENT HELPERS ──────────────────────────────────
         function tryAttackUnit() {
             if (G.gameOver || G.turnPhase !== 'player' || !G.selectedUnit) return;
             const hex = G.selectedHex;
@@ -4513,8 +4883,10 @@
                             .q, r: harbor.r }) <= 2);
                     let cost = def.cost;
                     if (city) {
-                        const discount = getCityUnitDiscount(city);
-                        cost = Math.ceil(cost * (1 - discount));
+                        const shipDiscount = getCityShipDiscount(city);
+                        const unitDiscount = getCityUnitDiscount(city);
+                        const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                        cost = Math.ceil(cost * (1 - totalDiscount));
                     }
                     html +=
                         `<button style="padding:10px;background:rgba(20,12,8,0.7);border:1px solid #3a281e;border-radius:6px;color:var(--cream);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
@@ -4529,8 +4901,10 @@
                     const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor
                             .q, r: harbor.r }) <= 2);
                     if (city) {
-                        const discount = getCityUnitDiscount(city);
-                        goldCost = Math.ceil(goldCost * (1 - discount));
+                        const shipDiscount = getCityShipDiscount(city);
+                        const unitDiscount = getCityUnitDiscount(city);
+                        const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                        goldCost = Math.ceil(goldCost * (1 - totalDiscount));
                     }
                     html +=
                         `<button style="padding:10px;background:rgba(255,215,0,0.08);border:1px solid var(--vivid-gold);border-radius:6px;color:var(--vivid-gold);cursor:pointer;font-family:inherit;font-size:clamp(0.8rem,2vw,0.9rem);min-height:44px;touch-action:manipulation;" 
@@ -4587,6 +4961,7 @@
                             if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
                             if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                             if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
+                            if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
                         }
                         costDisplay = Math.ceil(cost * (1 - discount));
                     }
@@ -4657,6 +5032,7 @@
                         if (tileData && tileData.quarry) { discount = Math.max(discount, 0.2); }
                         if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                         if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
+                        if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
                     }
                     const reducedCost = Math.ceil(cost * (1 - discount));
                     const goldCost = Math.ceil(cost * 2 * (1 - discount));
@@ -4787,9 +5163,17 @@
             data.forEach((item, index) => {
                 const tribe = item.tribe;
                 const isPlayer = tribe.isPlayer;
+                const iconKey = `tribe_${tribe.id}`;
+                const iconImg = images[iconKey];
+                let iconHtml = '';
+                if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                    iconHtml = `<img src="${iconImg.src}" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:4px;" />`;
+                } else {
+                    iconHtml = tribe.icon;
+                }
                 html += `<tr style="border-bottom:1px solid #2a1a10;${isPlayer ? 'background:rgba(212,175,55,0.08);' : ''}">
               <td style="padding:4px;">${index + 1}</td>
-              <td style="padding:4px;">${isPlayer ? '⭐ ' : ''}${tribe.icon} ${tribe.name}</td>
+              <td style="padding:4px;">${isPlayer ? '⭐ ' : ''}${iconHtml} ${tribe.name}</td>
               <td style="text-align:center;padding:4px;">${item.cities}</td>
               <td style="text-align:center;padding:4px;">${item.tiles}</td>
             </tr>`;
@@ -4889,6 +5273,7 @@
             const quarryBtn = popup.querySelector('[data-action="build-quarry"]');
             const fishBtn = popup.querySelector('[data-action="launch-fishing"]');
             const farmBtn = popup.querySelector('[data-action="build-farm"]');
+            const sawpitBtn = popup.querySelector('[data-action="build-sawpit"]');
             const harborBtn = popup.querySelector('[data-action="build-harbor-from-tile"]');
 
             const resourceTile = G.selectedResourceTile;
@@ -4897,19 +5282,28 @@
                     player.id);
                 const isFood = resourceTile.resource === '🌾' && !resourceTile.farm && canBuildFarm(resourceTile, player
                 .id);
+                const isWood = resourceTile.resource === '🪵' && !resourceTile.sawpit && canBuildSawpit(resourceTile,
+                    player.id);
+                const isGold = resourceTile.resource === '🪙' && !resourceTile.mine;
+                const isStone = resourceTile.resource === '🪨' && !resourceTile.quarry;
 
                 fishBtn.style.display = isFish ? 'flex' : 'none';
                 farmBtn.style.display = isFood ? 'flex' : 'none';
+                sawpitBtn.style.display = isWood ? 'flex' : 'none';
+                mineBtn.style.display = isGold ? 'flex' : 'none';
+                quarryBtn.style.display = isStone ? 'flex' : 'none';
                 harborBtn.style.display = 'none';
 
                 popup.querySelectorAll('button').forEach(b => {
                     const action = b.dataset.action;
-                    if (action !== 'launch-fishing' && action !== 'build-farm') {
+                    if (action !== 'launch-fishing' && action !== 'build-farm' && action !== 'build-sawpit' &&
+                        action !== 'build-mine' && action !== 'build-quarry') {
                         b.style.display = 'none';
                     }
                 });
                 const dividers = popup.querySelectorAll('.popup-divider');
-                dividers.forEach(d => d.style.display = (isFish || isFood) ? 'block' : 'none');
+                const anyVisible = isFish || isFood || isWood || isGold || isStone;
+                dividers.forEach(d => d.style.display = anyVisible ? 'block' : 'none');
                 return;
             }
 
@@ -4919,6 +5313,7 @@
                 harborBtn.style.display = canBuild ? 'flex' : 'none';
                 fishBtn.style.display = 'none';
                 farmBtn.style.display = 'none';
+                sawpitBtn.style.display = 'none';
                 mineBtn.style.display = 'none';
                 quarryBtn.style.display = 'none';
                 popup.querySelectorAll('button').forEach(b => {
@@ -4932,17 +5327,17 @@
                 return;
             }
 
+            // Default: hide all resource buttons
             fishBtn.style.display = 'none';
             farmBtn.style.display = 'none';
+            sawpitBtn.style.display = 'none';
+            mineBtn.style.display = 'none';
+            quarryBtn.style.display = 'none';
             harborBtn.style.display = 'none';
 
+            // Unit actions (no mine/quarry here anymore)
             if (unit && unit.tribeId === player.id && !unit.hasMoved) {
-                const tile = G.map[unit.r]?.[unit.q];
-                mineBtn.style.display = canBuildMine(unit) ? 'flex' : 'none';
-                quarryBtn.style.display = canBuildQuarry(unit) ? 'flex' : 'none';
-            } else {
-                mineBtn.style.display = 'none';
-                quarryBtn.style.display = 'none';
+                // We removed mine/quarry from unit actions
             }
 
             if (!unit && G.selectedCity) {
@@ -4960,8 +5355,7 @@
                     upgradeBtn.disabled = city.level >= 4 || player.gold < cost;
                 }
                 popup.querySelectorAll('button').forEach(b => {
-                    if (b.dataset.action !== 'manage-city' && b.dataset.action !== 'upgrade-city' &&
-                        b.dataset.action !== 'build-mine' && b.dataset.action !== 'build-quarry') {
+                    if (b.dataset.action !== 'manage-city' && b.dataset.action !== 'upgrade-city') {
                         b.style.display = 'none';
                     }
                 });
@@ -4975,10 +5369,11 @@
                 return;
             }
 
+            // Show default unit actions
             popup.querySelectorAll('button').forEach(b => {
                 if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry' ||
                     b.dataset.action === 'launch-fishing' || b.dataset.action === 'build-farm' ||
-                    b.dataset.action === 'build-harbor-from-tile') return;
+                    b.dataset.action === 'build-sawpit' || b.dataset.action === 'build-harbor-from-tile') return;
                 b.style.display = 'flex';
             });
             const dividers = popup.querySelectorAll('.popup-divider');
@@ -5099,20 +5494,28 @@
                     }
                     hideActionPopup();
                 } else if (action === 'build-mine') {
-                    if (G.selectedUnit) {
-                        if (buildMine(G.selectedUnit)) {
-                            updateVisibility();
-                            updateUI();
-                            render();
+                    if (G.selectedResourceTile) {
+                        const city = getCityForTile(G.selectedResourceTile, G.playerTribeId);
+                        if (city) {
+                            if (buildMineOnTile(G.selectedResourceTile, city)) {
+                                G.selectedResourceTile = null;
+                                updateVisibility();
+                                updateUI();
+                                render();
+                            }
                         }
                     }
                     hideActionPopup();
                 } else if (action === 'build-quarry') {
-                    if (G.selectedUnit) {
-                        if (buildQuarry(G.selectedUnit)) {
-                            updateVisibility();
-                            updateUI();
-                            render();
+                    if (G.selectedResourceTile) {
+                        const city = getCityForTile(G.selectedResourceTile, G.playerTribeId);
+                        if (city) {
+                            if (buildQuarryOnTile(G.selectedResourceTile, city)) {
+                                G.selectedResourceTile = null;
+                                updateVisibility();
+                                updateUI();
+                                render();
+                            }
                         }
                     }
                     hideActionPopup();
@@ -5129,6 +5532,16 @@
                 } else if (action === 'build-farm') {
                     if (G.selectedResourceTile) {
                         if (buildFarm(G.selectedResourceTile)) {
+                            G.selectedResourceTile = null;
+                            updateVisibility();
+                            updateUI();
+                            render();
+                        }
+                    }
+                    hideActionPopup();
+                } else if (action === 'build-sawpit') {
+                    if (G.selectedResourceTile) {
+                        if (buildSawpit(G.selectedResourceTile)) {
                             G.selectedResourceTile = null;
                             updateVisibility();
                             updateUI();
@@ -5414,7 +5827,8 @@
                     // ─── Draw elements on visible tiles ───
                     if (isVisible) {
                         // ─── Resource icon ───
-                        if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm) {
+                        if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm && !tile.sawpit && !
+                            tile.mine && !tile.quarry) {
                             const resKey = RESOURCE_MAP[tile.resource];
                             const resImg = resKey ? images[resKey] : null;
                             if (resImg && resImg.complete && resImg.naturalWidth > 0) {
@@ -5471,6 +5885,25 @@
                             }
                         }
 
+                        // ─── Sawpit icon ───
+                        if (tile.sawpit) {
+                            const sawpitImg = images['sawpit'];
+                            const sSize = size * 0.9;
+                            if (sawpitImg && sawpitImg.complete && sawpitImg.naturalWidth > 0) {
+                                ctx.save();
+                                ctx.drawImage(sawpitImg, cx - sSize / 2, cy + size * 0.1 - sSize / 2, sSize, sSize);
+                                ctx.restore();
+                            } else {
+                                ctx.save();
+                                ctx.font = `${size * 0.8}px sans-serif`;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = '#8d6e63';
+                                ctx.fillText('🪵', cx, cy + size * 0.1);
+                                ctx.restore();
+                            }
+                        }
+
                         // ─── Mine / Quarry icon ───
                         if (tile.mine) {
                             const mineImg = images['mine'];
@@ -5509,14 +5942,14 @@
                             const iconKey = WONDER_ICON_MAP[wonderId];
                             if (iconKey && images[iconKey]) {
                                 const img = images[iconKey];
-                                const wSize = size * 0.6;
+                                const wSize = size * 1.2;
                                 if (img && img.complete && img.naturalWidth > 0) {
                                     ctx.save();
                                     ctx.drawImage(img, cx - wSize / 2, cy + size * 0.1 - wSize / 2, wSize, wSize);
                                     ctx.restore();
                                 } else {
                                     ctx.save();
-                                    ctx.font = `${size * 0.6}px sans-serif`;
+                                    ctx.font = `${size * 1.0}px sans-serif`;
                                     ctx.textAlign = 'center';
                                     ctx.textBaseline = 'middle';
                                     ctx.fillStyle = '#ffd700';
@@ -5641,6 +6074,8 @@
                                                     0.2); }
                                                 if (tileData && tileData.farm) { discount = Math.max(discount,
                                                     0.2); }
+                                                if (tileData && tileData.sawpit) { discount = Math.max(discount,
+                                                    0.1); }
                                             }
                                             cost = Math.ceil(cost * (1 - discount));
                                         }
@@ -5676,10 +6111,10 @@
                             ctx.stroke();
                         }
 
-                        // ─── Harbor ─── (50% larger)
+                        // ─── Harbor ───
                         if (hasHarbor) {
                             const harborImg = images['harbor'];
-                            const hSize = size * 1.8; // 50% larger than previous 1.2
+                            const hSize = size * 1.8;
                             if (harborImg && harborImg.complete && harborImg.naturalWidth > 0) {
                                 ctx.save();
                                 ctx.globalAlpha = 0.9;
@@ -5706,8 +6141,10 @@
                                     const city = G.cities.find(c => c.owner === harbor.owner && hexDistance({ q: c.q,
                                             r: c.r }, { q: harbor.q, r: harbor.r }) <= 2);
                                     if (city) {
-                                        const discount = getCityUnitDiscount(city);
-                                        cost = Math.ceil(cost * (1 - discount));
+                                        const shipDiscount = getCityShipDiscount(city);
+                                        const unitDiscount = getCityUnitDiscount(city);
+                                        const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                                        cost = Math.ceil(cost * (1 - totalDiscount));
                                     }
                                 }
                                 if (cost > 0) {
@@ -5878,13 +6315,37 @@
             }
             ctx.restore();
 
+            // ─── Popover messages with background ────────────────────
             if (G.eliminationMessages.length > 0) {
                 const msg = G.eliminationMessages[G.eliminationMessages.length - 1];
-                ctx.fillStyle = 'rgba(255,200,100,0.9)';
-                ctx.font = '18px Afacad, sans-serif';
+                const fontSize = 20;
+                ctx.font = `${fontSize}px Afacad, sans-serif`;
+                const metrics = ctx.measureText(msg);
+                const textWidth = metrics.width;
+                const padding = 20;
+                const boxWidth = textWidth + padding * 2;
+                const boxHeight = fontSize + padding * 1.5;
+                const x = (w - boxWidth) / 2;
+                const y = 50;
+
+                ctx.save();
+                // Background
+                ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = 'rgba(12, 10, 16, 0.85)';
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.roundRect(x, y, boxWidth, boxHeight, 12);
+                ctx.fill();
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+                // Text
+                ctx.fillStyle = 'rgba(255,200,100,0.95)';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.fillText(msg, w / 2, 60);
+                ctx.textBaseline = 'middle';
+                ctx.fillText(msg, w / 2, y + boxHeight / 2);
+                ctx.restore();
             }
 
             if (G.gameOver) {
@@ -6065,6 +6526,27 @@
                 // fall through
             }
 
+            // --- Resource tile (wood, gold, stone, fish, food) ---
+            if (tile && tile.visible && !tile.unit && !tile.city && !tile.harbor) {
+                // Check for resource tiles
+                const isFish = tile.resource === '🐟' && !tile.fishing && canLaunchFishing(tile, player.id);
+                const isFood = tile.resource === '🌾' && !tile.farm && canBuildFarm(tile, player.id);
+                const isWood = tile.resource === '🪵' && !tile.sawpit && canBuildSawpit(tile, player.id);
+                const isGold = tile.resource === '🪙' && !tile.mine;
+                const isStone = tile.resource === '🪨' && !tile.quarry;
+                if (isFish || isFood || isWood || isGold || isStone) {
+                    G.selectedResourceTile = tile;
+                    G.selectedUnit = null;
+                    G.selectedCity = null;
+                    G.selectedHarbor = null;
+                    G.selectedWaterTile = null;
+                    showActionPopup(sx, sy);
+                    updateUI();
+                    render();
+                    return;
+                }
+            }
+
             // --- Water tile (harbor) ---
             if (tile && tile.visible && tile.terrain === 'water' && !tile.harbor && !tile.resource) {
                 if (canBuildHarborOnTile(tile, player.id)) {
@@ -6073,23 +6555,6 @@
                     G.selectedCity = null;
                     G.selectedHarbor = null;
                     G.selectedResourceTile = null;
-                    showActionPopup(sx, sy);
-                    updateUI();
-                    render();
-                    return;
-                }
-            }
-
-            // --- Resource tile (fish/food) ---
-            if (tile && tile.visible && !tile.unit && !tile.city && !tile.harbor) {
-                const isFish = tile.resource === '🐟' && !tile.fishing && canLaunchFishing(tile, player.id);
-                const isFood = tile.resource === '🌾' && !tile.farm && canBuildFarm(tile, player.id);
-                if (isFish || isFood) {
-                    G.selectedResourceTile = tile;
-                    G.selectedUnit = null;
-                    G.selectedCity = null;
-                    G.selectedHarbor = null;
-                    G.selectedWaterTile = null;
                     showActionPopup(sx, sy);
                     updateUI();
                     render();
@@ -6328,7 +6793,15 @@
                 if (t) {
                     const span = document.createElement('span');
                     span.className = 'opp-tag';
-                    span.textContent = `${t.icon} ${t.name}`;
+                    const iconKey = `tribe_${id}`;
+                    const iconImg = images[iconKey];
+                    let iconHtml = '';
+                    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                        iconHtml = `<img src="${iconImg.src}" alt="${t.name}" />`;
+                    } else {
+                        iconHtml = t.icon;
+                    }
+                    span.innerHTML = `${iconHtml} ${t.name}`;
                     container.appendChild(span);
                 }
             }
@@ -6337,6 +6810,7 @@
             updateCampaignSummary();
         }
 
+        // ─── ENHANCED HOW TO PLAY ──────────────────────────────────
         function showHowToPlay() {
             const overlay = document.getElementById('modal-overlay');
             document.getElementById('modal-title').textContent = '📖 How to Play';
@@ -6370,11 +6844,19 @@
               <p><strong>🔹 Wonders</strong><br>
               When a wonder is completed, a special icon appears on a nearby tile within the city's influence.</p>
               <br>
-              <p><strong>🔹 Healing & Invigorate</strong><br>
-              Units that do not move or attack heal 5 HP per turn. Generals can <strong>Invigorate</strong> troops within 3 hexes.</p>
-              <br>
               <p><strong>🔹 Resources & Improvements</strong><br>
-              Gold, stone, fish, and food resources can be improved. Fishing and farming provide a 20% discount on city upgrades and unit production.</p>
+              Resources (gold, food, wood, stone, fish) appear on the map. You can improve them:</p>
+              <ul style="margin-left: 20px; color: #b8957a; list-style: disc;">
+                <li><strong>Mine (⛏️):</strong> Built on gold deposits. Costs 5 productivity. Gives +2 gold per turn to the controlling city.</li>
+                <li><strong>Quarry (🪨):</strong> Built on stone deposits. Costs 5 productivity. Reduces unit production cost by 20% in the controlling city.</li>
+                <li><strong>Farm (🌾):</strong> Built on food resources. Costs 2 productivity. Reduces cost of city upgrades and unit production by 20% in that city.</li>
+                <li><strong>Fishing Boats (🎣):</strong> Launched on fish tiles. Costs 2 productivity. Also provides a 20% discount on city upgrades and unit production.</li>
+                <li><strong>Sawpit (🪵):</strong> Built on wood resources. Costs 2 productivity. Reduces shipbuilding cost by 25%, and city upgrades & unit production by 10%.</li>
+              </ul>
+              <p style="margin-top: 6px;">These improvements stack – having multiple improvements in the same city gives cumulative discounts.</p>
+              <br>
+              <p><strong>🔹 Healing & Invigorate</strong><br>
+              Units that do not move or attack heal 5 HP per turn. Generals can <strong>Invigorate</strong> troops within 3 hexes, healing them or boosting their attack/defense.</p>
               <br>
               <p><strong>🔹 Fog of War & Territory</strong><br>
               Explored areas stay dimly visible. Controlled territory is shown with a thick coloured border.</p>
@@ -6416,6 +6898,7 @@
             G.unitIdCounter = 0;
             G.cityIdCounter = 0;
             G.harborIdCounter = 0;
+            G.aiTurnLock = false;
             G.aiActive = false;
             G.turnPhase = 'player';
             G.playerGold = 80;
@@ -6437,6 +6920,39 @@
 
         function setupNewGame() {
             G.gameMode = selectedMode;
+            if (selectedMode === 'oba') {
+                G.maxTurns = 999;
+                G.difficulty = 'hard';
+                const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
+                const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+                G.opponents = TRIBES_DATA.filter(t => t.id !== playerId).map(t => t.id);
+                const tribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
+                G.playerTribeId = tribeId;
+                G.turn = 0;
+                G.units = [];
+                G.cities = [];
+                G.harbors = [];
+                G.unitIdCounter = 0;
+                G.cityIdCounter = 0;
+                G.harborIdCounter = 0;
+                G.gameOver = false;
+                G.winner = null;
+                G.turnPhase = 'player';
+                G.playerGold = 80;
+                G.eliminationMessages = [];
+                resetSettlementNames();
+                generateMap();
+                initTribes(G.playerTribeId, G.opponents);
+                updateVisibility();
+                camera.zoom = 1.0;
+                centerCameraOnPlayerCity();
+                updateUI();
+                render();
+                showScreen('game-screen');
+                saveGame();
+                return;
+            }
+
             if (selectedMode === 'custom') {
                 G.maxTurns = parseInt(document.getElementById('custom-turns').value) || 50;
                 const oppCount = parseInt(document.getElementById('custom-opponents').value) || 5;
@@ -6446,12 +6962,6 @@
                 const avail = TRIBES_DATA.filter(t => t.id !== playerId);
                 const shuffled = avail.sort(() => Math.random() - 0.5);
                 G.opponents = shuffled.slice(0, Math.min(oppCount, shuffled.length)).map(t => t.id);
-            } else if (selectedMode === 'oba') {
-                G.maxTurns = 999;
-                G.difficulty = 'hard';
-                const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
-                const playerId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
-                G.opponents = TRIBES_DATA.filter(t => t.id !== playerId).map(t => t.id);
             } else if (selectedMode === 'sandsoftime') {
                 G.maxTurns = 40;
                 G.difficulty = 'normal';
@@ -6508,7 +7018,7 @@
                 let iconHtml = '';
                 if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
                     iconHtml =
-                        `<img src="${iconImg.src}" style="width:36px;height:36px;display:block;margin:0 auto;border-radius:4px;" />`;
+                        `<img src="${iconImg.src}" class="tribe-icon-img" alt="${t.name}" />`;
                 } else {
                     iconHtml = `<span class="tribe-icon">${t.icon}</span>`;
                 }
@@ -6525,6 +7035,7 @@
 
         // ─── MAIN INIT ──────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
+            console.log(`Oba v${GAME_VERSION} – Beta (sawpit, productivity costs, AI fixed)`);
             const textLogo = document.getElementById('menu-text-logo');
             if (textLogo) textLogo.style.display = 'block';
 
@@ -6623,7 +7134,7 @@
 
                 setupPopupDismissal();
 
-                console.log('Oba v16 – City capture fixed, harbor 50% larger, wonder icons placed on map.');
+                console.log('Oba v0.19 – Sawpit, productivity costs for improvements, AI moves all units.');
             });
         });
     </script>
