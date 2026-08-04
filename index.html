@@ -1438,7 +1438,7 @@
                 <div class="placeholder"></div>
             </div>
             <div class="ng-tribe-grid" id="tribe-grid"></div>
-            <button class="ng-start-btn" onclick="goToStep('step-opponents')">Next →</button>
+            <button class="ng-start-btn" id="tribe-next-btn" onclick="goToStep('step-opponents')">Next →</button>
         </div>
 
         <!-- Step 3: Opponents & Options -->
@@ -1530,8 +1530,6 @@
                     <button data-action="invigorate" class="invigorate-btn"><span class="action-icon">✨</span><span class="action-label">Invigorate</span><span class="action-shortcut">I</span></button>
                     <div class="popup-divider"></div>
                     <button data-action="build-raft"><span class="action-icon">🪵</span><span class="action-label">Build Raft</span></button>
-                    <!-- Removed build-mine and build-quarry from unit actions -->
-                    <!-- New tile-based actions -->
                     <button data-action="build-sawpit" class="sawpit-btn" style="display:none;"><span class="action-icon">🪵</span><span class="action-label">Build Sawpit</span></button>
                     <button data-action="build-mine" class="mine-btn" style="display:none;"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
                     <button data-action="build-quarry" class="quarry-btn" style="display:none;"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
@@ -1572,7 +1570,7 @@
     <!-- ════════════════════════════════════════════════════════════════ -->
     <script>
         // ─── GAME VERSION ──────────────────────────────────────────────
-        const GAME_VERSION = '0.19.0';
+        const GAME_VERSION = '0.19.1';
 
         // ─── ASSET PATHS ──────────────────────────────────────────────
         const TRIBE_IDS = ['zulu', 'ashanti', 'yoruba', 'maasai', 'berber', 'hausa', 'dogon', 'songhai', 'oromo', 'tutsi', 'swahili',
@@ -1605,7 +1603,7 @@
         ASSET_PATHS['resource_fish'] = 'resource_fish.png';
         ASSET_PATHS['fishing'] = 'fishing.png';
         ASSET_PATHS['farm'] = 'farm.png';
-        ASSET_PATHS['sawpit'] = 'sawpit.png'; // new
+        ASSET_PATHS['sawpit'] = 'sawpit.png';
         ASSET_PATHS['wonder_pyramids'] = 'wonder_pyramids.png';
         ASSET_PATHS['wonder_great_zimbabwe'] = 'wonder_great_zimbabwe.png';
         ASSET_PATHS['wonder_timbuktu'] = 'wonder_timbuktu.png';
@@ -3168,10 +3166,13 @@
                 }
             }
 
-            const numVillages = Math.floor(Math.random() * 6) + 5;
+            // Neutral villages – number based on tribes, minimum distance 3
+            const totalTribes = G.tribes ? G.tribes.length : 6; // fallback
+            const numVillages = Math.max(3, Math.floor(totalTribes * 1.5) + 2);
             let placed = 0,
                 attempts = 0;
-            while (placed < numVillages && attempts < 300) {
+            const villagePositions = [];
+            while (placed < numVillages && attempts < 500) {
                 attempts++;
                 const q = 2 + Math.floor(Math.random() * (w - 4));
                 const r = 2 + Math.floor(Math.random() * (h - 4));
@@ -3179,11 +3180,13 @@
                 if (!tile) continue;
                 if (tile.terrain === 'water' || tile.terrain === 'mountain' || tile.terrain === 'desert') continue;
                 if (tile.city) continue;
+                // Check distance from existing villages
                 let tooClose = false;
-                for (const c of G.cities) {
-                    if (c.isNeutral && hexDistance({ q, r }, { q: c.q, r: c.r }) < 4) { tooClose = true; break; }
+                for (const pos of villagePositions) {
+                    if (hexDistance({ q, r }, pos) < 3) { tooClose = true; break; }
                 }
                 if (tooClose) continue;
+                // Also check distance from player/AI start positions (not placed yet, so we can't check)
                 const city = {
                     id: G.cityIdCounter++,
                     q,
@@ -3202,6 +3205,7 @@
                 G.cities.push(city);
                 tile.city = city;
                 placed++;
+                villagePositions.push({ q, r });
             }
             G.neutralVillages = placed;
         }
@@ -3648,7 +3652,6 @@
             const city = G.cities.find(c => c.owner === player.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
                     r: harbor.r }) <= 2);
             if (city) {
-                // Apply ship discount (sawpit) separately
                 const shipDiscount = getCityShipDiscount(city);
                 const unitDiscount = getCityUnitDiscount(city);
                 const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
@@ -3702,23 +3705,37 @@
             return true;
         }
 
+        // ─── RESOURCE DEDUCTION HELPER ──────────────────────────────
+        function deductCityResources(city, amount) {
+            // Returns true if enough resources (stockpile + progress) to deduct amount
+            // Deducts from stockpile first, then progress
+            if (city.stockpile + city.progress < amount) return false;
+            let remaining = amount;
+            let takenFromStockpile = Math.min(city.stockpile, remaining);
+            city.stockpile -= takenFromStockpile;
+            remaining -= takenFromStockpile;
+            if (remaining > 0) {
+                city.progress -= remaining;
+            }
+            return true;
+        }
+
         // ─── MINE / QUARRY (now tile-based with productivity cost) ──
         function buildMineOnTile(tile, city) {
             if (!tile || !city) return false;
             if (tile.resource !== '🪙') return false;
             if (tile.mine) return false;
-            if (city.stockpile < 5) {
-                showAlert('Not enough productivity', 'This settlement needs 5 productivity to build a mine.');
+            const cost = 5;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 5 productivity (stockpile + project progress) to build a mine.');
                 return false;
             }
-            // Check if tile is influenced by this city
             const influence = getCityInfluence(city);
             let isInfluenced = false;
             for (const t of influence) {
                 if (t.q === tile.q && t.r === tile.r) { isInfluenced = true; break; }
             }
             if (!isInfluenced) return false;
-            city.stockpile -= 5;
             tile.mine = true;
             tile.resource = null;
             queueMessage('⛏️ Mine built! +2 gold per turn.');
@@ -3733,8 +3750,9 @@
             if (!tile || !city) return false;
             if (tile.resource !== '🪨') return false;
             if (tile.quarry) return false;
-            if (city.stockpile < 5) {
-                showAlert('Not enough productivity', 'This settlement needs 5 productivity to build a quarry.');
+            const cost = 5;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 5 productivity (stockpile + project progress) to build a quarry.');
                 return false;
             }
             const influence = getCityInfluence(city);
@@ -3743,7 +3761,6 @@
                 if (t.q === tile.q && t.r === tile.r) { isInfluenced = true; break; }
             }
             if (!isInfluenced) return false;
-            city.stockpile -= 5;
             tile.quarry = true;
             tile.resource = null;
             queueMessage('🪨 Quarry built! Unit production costs reduced by 20% in the controlling city.');
@@ -3779,11 +3796,11 @@
                 showAlert('No city controls this tile', 'You need a city to control this area.');
                 return false;
             }
-            if (city.stockpile < 2) {
-                showAlert('Not enough productivity', 'This settlement needs 2 productivity to launch fishing boats.');
+            const cost = 2;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 2 productivity (stockpile + project progress) to launch fishing.');
                 return false;
             }
-            city.stockpile -= 2;
             tile.fishing = true;
             tile.resource = null;
             queueMessage('🎣 Fishing boats launched! Settlement improvements and unit production costs reduced.');
@@ -3818,11 +3835,11 @@
                 showAlert('No city controls this tile', 'You need a city to control this area.');
                 return false;
             }
-            if (city.stockpile < 2) {
-                showAlert('Not enough productivity', 'This settlement needs 2 productivity to build a farm.');
+            const cost = 2;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 2 productivity (stockpile + project progress) to build a farm.');
                 return false;
             }
-            city.stockpile -= 2;
             tile.farm = true;
             tile.resource = null;
             queueMessage('🌾 Farm built! Settlement improvements and unit production costs reduced.');
@@ -3858,11 +3875,11 @@
                 showAlert('No city controls this tile', 'You need a city to control this area.');
                 return false;
             }
-            if (city.stockpile < 2) {
-                showAlert('Not enough productivity', 'This settlement needs 2 productivity to build a sawpit.');
+            const cost = 2;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 2 productivity (stockpile + project progress) to build a sawpit.');
                 return false;
             }
-            city.stockpile -= 2;
             tile.sawpit = true;
             tile.resource = null;
             queueMessage('🪵 Sawpit built! Ship costs reduced by 25%, improvements and units by 10%.');
@@ -3903,7 +3920,6 @@
 
         function buildHarborOnTile(tile) {
             if (!canBuildHarborOnTile(tile, G.playerTribeId)) return false;
-            // No productivity cost for harbor (gold cost is in harbor production)
             const harbor = { id: G.harborIdCounter++, q: tile.q, r: tile.r, owner: G.playerTribeId, production: 0,
                 project: null };
             G.harbors.push(harbor);
@@ -4051,7 +4067,6 @@
                 const city = G.cities.find(c => c.owner === tribe.id && hexDistance({ q: c.q, r: c.r }, { q: harbor.q,
                         r: harbor.r }) <= 2);
                 if (city) {
-                    // Apply ship discount and unit discount
                     const shipDiscount = getCityShipDiscount(city);
                     const unitDiscount = getCityUnitDiscount(city);
                     const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
@@ -4322,7 +4337,6 @@
                     return;
                 }
                 cost = getTechCost(techId);
-                // Tech cost is not reduced by improvements (research is separate)
                 if (!tribe.researchProgress) tribe.researchProgress = {};
                 progressTarget = () => {
                     if (city.progress >= cost) {
@@ -4381,7 +4395,7 @@
             applyStockpileToProject(city);
         }
 
-        // ─── AI TURN (unchanged, but now AI can also build improvements? not yet) ──
+        // ─── AI TURN ──────────────────────────────────────────────────
         function processAITribe(tribe) {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('ai-turn-overlay');
@@ -5334,11 +5348,6 @@
             mineBtn.style.display = 'none';
             quarryBtn.style.display = 'none';
             harborBtn.style.display = 'none';
-
-            // Unit actions (no mine/quarry here anymore)
-            if (unit && unit.tribeId === player.id && !unit.hasMoved) {
-                // We removed mine/quarry from unit actions
-            }
 
             if (!unit && G.selectedCity) {
                 const city = G.selectedCity;
@@ -6329,7 +6338,6 @@
                 const y = 50;
 
                 ctx.save();
-                // Background
                 ctx.shadowColor = 'rgba(0,0,0,0.9)';
                 ctx.shadowBlur = 20;
                 ctx.fillStyle = 'rgba(12, 10, 16, 0.85)';
@@ -6340,7 +6348,6 @@
                 ctx.fill();
                 ctx.stroke();
                 ctx.shadowBlur = 0;
-                // Text
                 ctx.fillStyle = 'rgba(255,200,100,0.95)';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -6528,7 +6535,6 @@
 
             // --- Resource tile (wood, gold, stone, fish, food) ---
             if (tile && tile.visible && !tile.unit && !tile.city && !tile.harbor) {
-                // Check for resource tiles
                 const isFish = tile.resource === '🐟' && !tile.fishing && canLaunchFishing(tile, player.id);
                 const isFood = tile.resource === '🌾' && !tile.farm && canBuildFarm(tile, player.id);
                 const isWood = tile.resource === '🪵' && !tile.sawpit && canBuildSawpit(tile, player.id);
@@ -6738,8 +6744,24 @@
         }
 
         function goToStep(stepId) {
+            // Oba mode: skip opponent selection and start directly
+            if (stepId === 'step-opponents' && selectedMode === 'oba') {
+                setupNewGame();
+                return;
+            }
             document.querySelectorAll('.ng-step').forEach(el => el.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
+            // If we are going to step-tribe, update the next button text based on mode
+            if (stepId === 'step-tribe') {
+                const nextBtn = document.getElementById('tribe-next-btn');
+                if (selectedMode === 'oba') {
+                    nextBtn.textContent = '⚔ Begin Campaign ⚔';
+                    nextBtn.onclick = () => { setupNewGame(); };
+                } else {
+                    nextBtn.textContent = 'Next →';
+                    nextBtn.onclick = () => { goToStep('step-opponents'); };
+                }
+            }
             if (stepId === 'step-opponents') {
                 updateCampaignSummary();
             }
@@ -6753,6 +6775,18 @@
             selectedMode = btn.dataset.mode;
             const customOpts = document.getElementById('custom-options');
             customOpts.classList.toggle('show', selectedMode === 'custom');
+            // Update the tribe step next button if we're already on that step
+            const activeStep = document.querySelector('.ng-step.active');
+            if (activeStep && activeStep.id === 'step-tribe') {
+                const nextBtn = document.getElementById('tribe-next-btn');
+                if (selectedMode === 'oba') {
+                    nextBtn.textContent = '⚔ Begin Campaign ⚔';
+                    nextBtn.onclick = () => { setupNewGame(); };
+                } else {
+                    nextBtn.textContent = 'Next →';
+                    nextBtn.onclick = () => { goToStep('step-opponents'); };
+                }
+            }
         }
 
         function updateCampaignSummary() {
@@ -6941,6 +6975,9 @@
                 G.playerGold = 80;
                 G.eliminationMessages = [];
                 resetSettlementNames();
+                // Scale map based on number of tribes
+                const numTribes = G.opponents.length + 1;
+                scaleMapSize(numTribes);
                 generateMap();
                 initTribes(G.playerTribeId, G.opponents);
                 updateVisibility();
@@ -6995,6 +7032,11 @@
             G.playerGold = 80;
             G.eliminationMessages = [];
             resetSettlementNames();
+
+            // Scale map based on number of tribes
+            const numTribes = G.opponents.length + 1;
+            scaleMapSize(numTribes);
+
             generateMap();
             initTribes(G.playerTribeId, G.opponents);
             updateVisibility();
@@ -7004,6 +7046,23 @@
             render();
             showScreen('game-screen');
             saveGame();
+        }
+
+        function scaleMapSize(numTribes) {
+            // Base map size for ~6 tribes, scale proportionally
+            const baseTribes = 6;
+            const baseWidth = 20;
+            const baseHeight = 14;
+            // Use square root scaling: total hexes ~ numTribes * 40
+            const totalHexes = Math.max(200, numTribes * 40);
+            const aspect = baseWidth / baseHeight; // ~1.43
+            let h = Math.floor(Math.sqrt(totalHexes / aspect));
+            let w = Math.floor(aspect * h);
+            // Clamp to reasonable range
+            w = Math.max(14, Math.min(30, w));
+            h = Math.max(10, Math.min(20, h));
+            G.mapWidth = w;
+            G.mapHeight = h;
         }
 
         function populateTribeGrid() {
@@ -7035,7 +7094,7 @@
 
         // ─── MAIN INIT ──────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
-            console.log(`Oba v${GAME_VERSION} – Beta (sawpit, productivity costs, AI fixed)`);
+            console.log(`Oba v${GAME_VERSION} – Productivity cost from stockpile/progress, Oba skip, map scaling`);
             const textLogo = document.getElementById('menu-text-logo');
             if (textLogo) textLogo.style.display = 'block';
 
@@ -7134,7 +7193,7 @@
 
                 setupPopupDismissal();
 
-                console.log('Oba v0.19 – Sawpit, productivity costs for improvements, AI moves all units.');
+                console.log('Oba v0.19.1 – Productivity cost from stockpile/progress, Oba skip, map scaling.');
             });
         });
     </script>
