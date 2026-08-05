@@ -167,9 +167,6 @@ Naval units are built in **Harbors** (requires **Sailing**) and can move on wate
   - Galley → Ranged
   - Warship → Elite
 
-**Unit Sprites**: Each tribe has its own set of unit PNGs, e.g. `zulu_foot.png`, `ashanti_galley.png`, etc.  
-If a specific sprite is missing, the game uses the tribe icon as a fallback.
-
 ### Unit Stats & Costs
 
 - **Movement**: Number of hexes a unit can move per turn.
@@ -439,60 +436,6 @@ When you click a unit, city, harbor, or resource tile, a popup appears with rele
 ### Custom
 - Configure turn limit (10–200), number of opponents (1–11), and difficulty (Easy/Normal/Hard).
 - Other settings as per custom.
-
----
-
-## Images & Assets
-
-All game images are PNG files located in the same folder as the game. Below is a complete list:
-
-| File                   | Description                                  |
-|------------------------|----------------------------------------------|
-| `logo_oba.png`         | Main menu logo                               |
-| `menu_background.png`  | Background for menu and wizard               |
-| `fog.png`              | Fog‑of‑war overlay                           |
-| `veteran.png`          | Veteran unit icon                            |
-| `legendary.png`        | Legendary unit icon                          |
-| `library.png`          | Library building icon                        |
-| `university.png`       | University building icon                     |
-| `mine.png`             | Mine improvement icon                        |
-| `quarry.png`           | Quarry improvement icon                      |
-| `farm.png`             | Farm improvement icon                        |
-| `fishing.png`          | Fishing boats improvement icon               |
-| `sawpit.png`           | Sawpit improvement icon                      |
-| `harbor.png`           | Harbor building icon                         |
-| `resource_gold.png`    | Gold resource icon                           |
-| `resource_food.png`    | Food resource icon                           |
-| `resource_wood.png`    | Wood resource icon                           |
-| `resource_stone.png`   | Stone resource icon                          |
-| `resource_fish.png`    | Fish resource icon                           |
-| `hex_plains.png`       | Plains terrain tile                          |
-| `hex_forest.png`       | Forest terrain tile                          |
-| `hex_mountain.png`     | Mountain terrain tile                        |
-| `hex_water.png`        | Water terrain tile                           |
-| `hex_hill.png`         | Hill terrain tile                            |
-| `hex_desert.png`       | Desert terrain tile                          |
-| `settlement_village.png`| Village settlement (level 1)                |
-| `settlement_town.png`  | Town settlement (level 2)                    |
-| `settlement_city.png`  | City settlement (level 3)                    |
-| `settlement_capital.png`| Capital settlement (level 4)                |
-| `wonder_pyramids.png`  | Pyramids of Giza wonder icon                 |
-| `wonder_great_zimbabwe.png`| Great Zimbabwe wonder icon              |
-| `wonder_timbuktu.png`  | University of Timbuktu wonder icon           |
-| `wonder_obelisks.png`  | Axum Obelisks wonder icon                    |
-| `tribe_zulu.png`       | Zulu tribe icon                              |
-| `tribe_ashanti.png`    | Ashanti tribe icon                           |
-| `tribe_yoruba.png`     | Yoruba tribe icon                            |
-| `tribe_maasai.png`     | Maasai tribe icon                            |
-| `tribe_berber.png`     | Berber tribe icon                            |
-| `tribe_hausa.png`      | Hausa tribe icon                             |
-| `tribe_dogon.png`      | Dogon tribe icon                             |
-| `tribe_songhai.png`    | Songhai tribe icon                           |
-| `tribe_oromo.png`      | Oromo tribe icon                             |
-| `tribe_tutsi.png`      | Tutsi tribe icon                             |
-| `tribe_swahili.png`    | Swahili tribe icon                           |
-| `tribe_nubian.png`     | Nubian tribe icon                            |
-| `[tribe]_[unit].png`   | Unit sprites – e.g., `zulu_foot.png`, `ashanti_galley.png`, etc. |
 
 ---
 
