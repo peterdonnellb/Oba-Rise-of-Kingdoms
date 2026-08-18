@@ -145,7 +145,7 @@
             text-transform: uppercase;
             margin-bottom: 1rem;
             opacity: 0.85;
-            font-weight: 300;
+            font-weight: 700;
             text-align: center;
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
             flex-shrink: 0;
@@ -1324,7 +1324,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(4px);
             display: none;
             align-items: center;
@@ -1369,6 +1369,59 @@
             background: rgba(0, 0, 0, 0.5);
             padding: 4px;
             border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        /* ─── TOOLTIP ─── */
+        #tooltip {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(12, 10, 16, 0.92);
+            border: 1px solid var(--coastal-gold);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: var(--cream);
+            max-width: 280px;
+            z-index: 300;
+            display: none;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+            line-height: 1.4;
+            white-space: nowrap;
+            width: auto;
+        }
+        #tooltip.show {
+            display: block;
+        }
+        
+        /* ─── AUDIO CONTROLS ─── */
+        #audio-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 500;
+            background: rgba(20, 18, 24, 0.8);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            color: var(--cream-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        #audio-toggle:hover {
+            background: rgba(201, 162, 39, 0.15);
+            border-color: var(--coastal-gold);
+        }
+        #audio-toggle:active {
+            transform: scale(0.92);
         }
     </style>
 </head>
@@ -1555,6 +1608,11 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- TOOLTIP -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div id="tooltip"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
     <!-- MODAL -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <div class="modal-overlay" id="modal-overlay">
@@ -1566,11 +1624,139 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- AUDIO TOGGLE -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <button id="audio-toggle" onclick="toggleAudio()" title="Toggle Music">🔊</button>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
     <!-- SCRIPTS -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <script>
+        // ─── AUDIO SYSTEM ──────────────────────────────────────────────
+        let audioCtx = null;
+        let menuAudioBuffer = null;
+        let battleAudioBuffer = null;
+        let currentAudioSource = null;
+        let audioEnabled = true;
+        let audioGainNode = null;
+        let currentScreen = 'menu-screen';
+        
+        function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioGainNode = audioCtx.createGain();
+                audioGainNode.gain.value = 0.4;
+                audioGainNode.connect(audioCtx.destination);
+                loadMenuAudio();
+                loadBattleAudio();
+            } catch (e) {
+                console.warn('Audio not supported:', e);
+                audioEnabled = false;
+                document.getElementById('audio-toggle').style.display = 'none';
+            }
+        }
+        
+        function loadMenuAudio() {
+            if (!audioCtx) return;
+            fetch('menu.mp3')
+                .then(response => response.arrayBuffer())
+                .then(buffer => audioCtx.decodeAudioData(buffer))
+                .then(decoded => {
+                    menuAudioBuffer = decoded;
+                    if (currentScreen === 'menu-screen' && audioEnabled) {
+                        playMenuMusic();
+                    }
+                })
+                .catch(() => console.log('menu.mp3 not found'));
+        }
+        
+        function loadBattleAudio() {
+            if (!audioCtx) return;
+            fetch('battle.mp3')
+                .then(response => response.arrayBuffer())
+                .then(buffer => audioCtx.decodeAudioData(buffer))
+                .then(decoded => {
+                    battleAudioBuffer = decoded;
+                    if (currentScreen === 'game-screen' && audioEnabled) {
+                        playBattleMusic();
+                    }
+                })
+                .catch(() => console.log('battle.mp3 not found'));
+        }
+        
+        function playMenuMusic() {
+            if (!audioEnabled || !audioCtx || !menuAudioBuffer) return;
+            stopAudio();
+            const source = audioCtx.createBufferSource();
+            source.buffer = menuAudioBuffer;
+            source.loop = true;
+            source.connect(audioGainNode);
+            source.start(0);
+            currentAudioSource = source;
+        }
+        
+        function playBattleMusic() {
+            if (!audioEnabled || !audioCtx || !battleAudioBuffer) return;
+            stopAudio();
+            const source = audioCtx.createBufferSource();
+            source.buffer = battleAudioBuffer;
+            source.loop = true;
+            source.connect(audioGainNode);
+            source.start(0);
+            currentAudioSource = source;
+        }
+        
+        function stopAudio() {
+            if (currentAudioSource) {
+                try {
+                    currentAudioSource.stop();
+                } catch (e) {}
+                currentAudioSource = null;
+            }
+        }
+        
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('audio-toggle');
+            if (audioEnabled) {
+                btn.textContent = '🔊';
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                // Resume music based on current screen
+                if (currentScreen === 'menu-screen') {
+                    playMenuMusic();
+                } else if (currentScreen === 'game-screen') {
+                    playBattleMusic();
+                }
+            } else {
+                btn.textContent = '🔇';
+                stopAudio();
+                if (audioCtx) {
+                    audioCtx.suspend();
+                }
+            }
+        }
+        
+        // ─── OVERRIDE showScreen for audio ────────────────────────────
+        const originalShowScreen = window.showScreen;
+        window.showScreen = function(id) {
+            currentScreen = id;
+            if (originalShowScreen) originalShowScreen(id);
+            
+            if (audioEnabled && audioCtx) {
+                if (id === 'menu-screen') {
+                    playMenuMusic();
+                } else if (id === 'game-screen') {
+                    playBattleMusic();
+                } else {
+                    stopAudio();
+                }
+            }
+        };
+        
         // ─── GAME VERSION ──────────────────────────────────────────────
-        const GAME_VERSION = '0.19.1';
+        const GAME_VERSION = '0.21.0';
 
         // ─── ASSET PATHS ──────────────────────────────────────────────
         const TRIBE_IDS = ['zulu', 'ashanti', 'yoruba', 'maasai', 'berber', 'hausa', 'dogon', 'songhai', 'oromo', 'tutsi', 'swahili',
@@ -2587,6 +2773,9 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
+        // ─── TOOLTIP ──────────────────────────────────────────────────
+        const tooltip = document.getElementById('tooltip');
+
         // ─── MESSAGE AUTO-DISMISS ────────────────────────────────────
         let messageTimeout = null;
 
@@ -2925,7 +3114,6 @@
         function getCityForTile(tile, tribeId) {
             const tribe = getTribe(tribeId);
             if (!tribe) return null;
-            // Find the first city that influences this tile
             for (const city of tribe.cities) {
                 const influence = getCityInfluence(city);
                 for (const t of influence) {
@@ -3180,13 +3368,11 @@
                 if (!tile) continue;
                 if (tile.terrain === 'water' || tile.terrain === 'mountain' || tile.terrain === 'desert') continue;
                 if (tile.city) continue;
-                // Check distance from existing villages
                 let tooClose = false;
                 for (const pos of villagePositions) {
                     if (hexDistance({ q, r }, pos) < 3) { tooClose = true; break; }
                 }
                 if (tooClose) continue;
-                // Also check distance from player/AI start positions (not placed yet, so we can't check)
                 const city = {
                     id: G.cityIdCounter++,
                     q,
@@ -3568,13 +3754,19 @@
             return 1;
         }
 
+        // ─── FIXED: findPath with increased visited limit ────────────
         function findPath(startQ, startR, endQ, endR, unit, tribeId) {
             const queue = [{ q: startQ, r: startR, path: [{ q: startQ, r: startR }] }];
             const visited = new Set();
             visited.add(hexKey(startQ, startR));
-            while (queue.length > 0) {
+            let iterations = 0;
+            const MAX_VISITED = 2000; // Increased from 500
+
+            while (queue.length > 0 && iterations < MAX_VISITED) {
+                iterations++;
                 const current = queue.shift();
                 if (current.q === endQ && current.r === endR) return current.path;
+
                 const neighbors = hexNeighbors(current.q, current.r);
                 for (const n of neighbors) {
                     const key = hexKey(n.q, n.r);
@@ -3583,6 +3775,7 @@
                     const tile = G.map[n.r]?.[n.q];
                     if (!tile) continue;
                     if (tile.unit && tile.unit.tribeId !== tribeId) {
+                        // Can't step on enemy unit unless it's the target and in attack range
                         if (n.q === endQ && n.r === endR && hexDistance({ q: startQ, r: startR }, { q: endQ, r: endR }) <=
                             unit.attackRange) {} else {
                             continue;
@@ -3603,6 +3796,7 @@
                     queue.push({ q: n.q, r: n.r, path: newPath });
                 }
             }
+            console.warn('findPath: visited limit reached, returning null');
             return null;
         }
 
@@ -3707,8 +3901,6 @@
 
         // ─── RESOURCE DEDUCTION HELPER ──────────────────────────────
         function deductCityResources(city, amount) {
-            // Returns true if enough resources (stockpile + progress) to deduct amount
-            // Deducts from stockpile first, then progress
             if (city.stockpile + city.progress < amount) return false;
             let remaining = amount;
             let takenFromStockpile = Math.min(city.stockpile, remaining);
@@ -4395,311 +4587,56 @@
             applyStockpileToProject(city);
         }
 
-        // ─── AI TURN ──────────────────────────────────────────────────
-        function processAITribe(tribe) {
-            return new Promise((resolve) => {
-                const overlay = document.getElementById('ai-turn-overlay');
-                const title = document.getElementById('ai-turn-title');
-                const sub = document.getElementById('ai-turn-sub');
-                const icon = document.getElementById('ai-turn-icon');
-                const iconKey = `tribe_${tribe.id}`;
-                const iconImg = images[iconKey];
-                if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
-                    icon.innerHTML = `<img src="${iconImg.src}" alt="${tribe.name}" />`;
-                } else {
-                    icon.innerHTML = tribe.icon;
-                }
-                title.textContent = `${tribe.name}'s Turn`;
-                sub.textContent = 'Strategic planning...';
-                overlay.classList.add('active');
+        // ─── SAFETY TIMEOUT (forces turn finish if stuck) ──────────────
+        let _turnSafetyTimer = null;
 
-                const personality = getAIPersonality(tribe.id);
-                const enemyTribes = G.aliveTribes.filter(t => t.id !== tribe.id);
-                const myCities = tribe.cities.length;
-                const enemyCities = enemyTribes.reduce((acc, t) => acc + t.cities.length, 0);
-                const myUnits = tribe.units.filter(u => u.active).length;
-                const enemyUnits = enemyTribes.reduce((acc, t) => acc + t.units.filter(u => u.active).length, 0);
-                const myTiles = getTribeControlledTiles(tribe.id);
-                const enemyTiles = enemyTribes.reduce((acc, t) => acc + getTribeControlledTiles(t.id), 0);
-
-                let strategy = { attack: false, defend: false, expand: false, targetTribeId: null };
-
-                if (G.gameMode === 'conquest') {
-                    if (myUnits > enemyUnits * 0.8 && myCities >= enemyCities * 0.6) {
-                        strategy.attack = true;
-                        let weakest = null;
-                        let weakestPower = Infinity;
-                        for (const e of enemyTribes) {
-                            const power = e.cities.length + e.units.length;
-                            if (power < weakestPower) {
-                                weakestPower = power;
-                                weakest = e;
-                            }
-                        }
-                        if (weakest) strategy.targetTribeId = weakest.id;
-                    } else {
-                        strategy.defend = true;
-                        strategy.expand = true;
-                    }
-                } else if (G.gameMode === 'sandsoftime') {
-                    const remainingTurns = G.maxTurns - G.turn;
-                    if (remainingTurns < 10) {
-                        strategy.attack = true;
-                        let nearest = null;
-                        let nearestDist = Infinity;
-                        for (const e of enemyTribes) {
-                            for (const city of e.cities) {
-                                for (const myCity of tribe.cities) {
-                                    const d = hexDistance({ q: myCity.q, r: myCity.r }, { q: city.q, r: city.r });
-                                    if (d < nearestDist) {
-                                        nearestDist = d;
-                                        nearest = e;
-                                    }
-                                }
-                            }
-                        }
-                        if (nearest) strategy.targetTribeId = nearest.id;
-                    } else {
-                        strategy.expand = true;
-                        if (myTiles > enemyTiles) {
-                            strategy.defend = true;
-                        } else {
-                            strategy.attack = true;
-                            let nearest = null;
-                            let nearestDist = Infinity;
-                            for (const e of enemyTribes) {
-                                for (const city of e.cities) {
-                                    for (const myCity of tribe.cities) {
-                                        const d = hexDistance({ q: myCity.q, r: myCity.r }, { q: city.q, r: city.r });
-                                        if (d < nearestDist) {
-                                            nearestDist = d;
-                                            nearest = e;
-                                        }
-                                    }
-                                }
-                            }
-                            if (nearest) strategy.targetTribeId = nearest.id;
-                        }
-                    }
-                } else {
-                    if (myUnits > enemyUnits * 0.9) {
-                        strategy.attack = true;
-                        let weakest = null;
-                        let weakestPower = Infinity;
-                        for (const e of enemyTribes) {
-                            const power = e.cities.length + e.units.length;
-                            if (power < weakestPower) {
-                                weakestPower = power;
-                                weakest = e;
-                            }
-                        }
-                        if (weakest) strategy.targetTribeId = weakest.id;
-                    } else {
-                        strategy.defend = true;
-                        strategy.expand = true;
-                    }
-                }
-
-                // Research
-                const availableTechs = getAvailableTechs(tribe);
-                if (availableTechs.length > 0) {
-                    let techToResearch = null;
-                    for (const pref of personality.researchPriority) {
-                        if (availableTechs.some(t => t.id === pref) && !tribe.techs.includes(pref)) {
-                            techToResearch = pref;
-                            break;
-                        }
-                    }
-                    if (!techToResearch) {
-                        const cheapest = availableTechs.reduce((a, b) => a.cost < b.cost ? a : b);
-                        techToResearch = cheapest.id;
-                    }
-                    const idleCity = tribe.cities.find(c => !c.project);
-                    if (idleCity && techToResearch) {
-                        setCityProject(idleCity, 'tech', techToResearch);
-                    }
-                }
-
-                // Unit production
-                const availableUnits = getAvailableUnits(tribe);
-                const unitsToBuild = personality.unitPreference.filter(type => availableUnits[type]);
-                for (const city of tribe.cities) {
-                    if (!city.project && unitsToBuild.length > 0) {
-                        const chosenType = unitsToBuild[Math.floor(Math.random() * unitsToBuild.length)];
-                        if (availableUnits[chosenType]) {
-                            setCityProject(city, 'unit', chosenType);
-                        }
-                    }
-                }
-
-                // Attack target
-                let attackTarget = null;
-                if (strategy.attack && strategy.targetTribeId) {
-                    const targetTribe = getTribe(strategy.targetTribeId);
-                    if (targetTribe) {
-                        let closestCity = null;
-                        let closestDist = Infinity;
-                        for (const unit of tribe.units) {
-                            if (!unit.active) continue;
-                            for (const city of targetTribe.cities) {
-                                const d = hexDistance({ q: unit.q, r: unit.r }, { q: city.q, r: city.r });
-                                if (d < closestDist) {
-                                    closestDist = d;
-                                    closestCity = city;
-                                }
-                            }
-                        }
-                        if (closestCity) {
-                            attackTarget = closestCity;
-                        }
-                    }
-                }
-
-                // Execute unit actions
-                const units = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved);
-                if (units.length === 0) {
-                    setTimeout(() => {
-                        overlay.classList.remove('active');
-                        resolve();
-                    }, 300);
-                    return;
-                }
-
-                let unitIndex = 0;
-
-                function processNextUnit() {
-                    if (unitIndex >= units.length) {
-                        overlay.classList.remove('active');
-                        resolve();
-                        return;
-                    }
-                    const unit = units[unitIndex];
-                    sub.textContent = `${unit.name} (${unitIndex+1}/${units.length})...`;
-
-                    let targets = [];
-                    const enemies = G.units.filter(u => u.tribeId !== tribe.id && u.active);
-                    for (const e of enemies) {
-                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
-                        targets.push({ type: 'unit', target: e, dist: dist });
-                    }
-                    const enemyCities = G.cities.filter(c => c.owner !== tribe.id && !c.isNeutral);
-                    for (const c of enemyCities) {
-                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                        targets.push({ type: 'city', target: c, dist: dist });
-                    }
-                    const neutralVillages = G.cities.filter(c => c.isNeutral);
-                    for (const c of neutralVillages) {
-                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                        targets.push({ type: 'neutral', target: c, dist: dist });
-                    }
-
-                    targets.sort((a, b) => a.dist - b.dist);
-
-                    if (attackTarget) {
-                        const distToTarget = hexDistance({ q: unit.q, r: unit.r }, { q: attackTarget.q, r: attackTarget.r });
-                        if (distToTarget <= unit.move + unit.attackRange) {
-                            const path = findPath(unit.q, unit.r, attackTarget.q, attackTarget.r, unit, tribe.id);
-                            if (path && path.length > 1) {
-                                const step = path[Math.min(path.length - 1, unit.move)];
-                                const tile = G.map[step.r]?.[step.q];
-                                if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                                    G.map[unit.r][unit.q].unit = null;
-                                    unit.q = step.q;
-                                    unit.r = step.r;
-                                    G.map[unit.r][unit.q].unit = unit;
-                                    unit.hasMoved = true;
-                                    if (unit.isNaval && tile.terrain !== 'water') {
-                                        disembarkNavalUnit(unit);
-                                    }
-                                    if (tile.city && tile.city.id === attackTarget.id) {
-                                        captureCity(tile.city, unit.tribeId);
-                                    }
-                                }
-                            }
-                            unitIndex++;
-                            setTimeout(processNextUnit, 200);
-                            return;
-                        }
-                    }
-
-                    if (targets.length > 0) {
-                        const t = targets[0];
-                        if (t.dist <= unit.attackRange && t.type === 'unit') {
-                            performAttack(unit, t.target);
-                        } else if (t.dist <= unit.move + 1) {
-                            const targetPos = t.type === 'unit' ? { q: t.target.q, r: t.target.r } : { q: t.target.q,
-                                r: t.target.r };
-                            const path = findPath(unit.q, unit.r, targetPos.q, targetPos.r, unit, tribe.id);
-                            if (path && path.length > 1) {
-                                const step = path[Math.min(path.length - 1, unit.move)];
-                                const tile = G.map[step.r]?.[step.q];
-                                if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                                    G.map[unit.r][unit.q].unit = null;
-                                    unit.q = step.q;
-                                    unit.r = step.r;
-                                    G.map[unit.r][unit.q].unit = unit;
-                                    unit.hasMoved = true;
-                                    if (unit.isNaval && tile.terrain !== 'water') {
-                                        disembarkNavalUnit(unit);
-                                    }
-                                    if (tile.city) {
-                                        if (tile.city.isNeutral) captureNeutralVillage(tile.city, unit.tribeId);
-                                        else if (tile.city.owner !== unit.tribeId) captureCity(tile.city, unit
-                                            .tribeId);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    unitIndex++;
-                    setTimeout(processNextUnit, 200);
-                }
-
-                setTimeout(processNextUnit, 300);
-            });
-        }
-
-        async function runAI() {
-            if (G.gameOver || G.animating || G.aiTurnLock) return;
-            G.aiTurnLock = true;
-            const aiTribes = G.aliveTribes.filter(t => !t.isPlayer);
-            if (aiTribes.length === 0) { G.aiTurnLock = false; return; }
-
-            for (const tribe of aiTribes) {
-                if (G.gameOver) break;
-                await processAITribe(tribe);
-                checkWinConditions();
-                if (G.gameOver) break;
-            }
-
-            G.aiTurnLock = false;
-            if (!G.gameOver) {
-                finishTurn();
+        function clearTurnSafety() {
+            if (_turnSafetyTimer) {
+                clearTimeout(_turnSafetyTimer);
+                _turnSafetyTimer = null;
             }
         }
 
-        // ─── TURN MANAGEMENT ─────────────────────────────────────
+        // ─── TURN MANAGEMENT ────────────────────────────────────────────
         function endTurn() {
-            if (G.gameOver || G.animating || G.turnPhase === 'ai') return;
-            G.turnPhase = 'ai';
+            if (G.gameOver || G.animating || G.turnPhase === 'ai') {
+                console.warn('endTurn blocked: gameOver=%s, animating=%s, phase=%s',
+                    G.gameOver, G.animating, G.turnPhase);
+                return;
+            }
 
+            console.log('▶️ End Turn started');
+            G.turnPhase = 'ai';
+            clearTurnSafety();
+
+            // Safety: force finish after 25 seconds (if AI hangs)
+            _turnSafetyTimer = setTimeout(() => {
+                console.warn('⏰ TURN SAFETY TIMEOUT – forcing finish');
+                if (!G.gameOver) {
+                    finishTurn(true); // force finish
+                }
+                clearTurnSafety();
+            }, 25000);
+
+            // Reset unit states & heal
             for (const u of G.units) {
                 clearBoostedStats(u);
                 if (!u.hasMoved && !u.hasAttacked && !u.isRaft) {
-                    const healAmt = 5;
-                    u.hp = Math.min(u.maxHp, u.hp + healAmt);
+                    u.hp = Math.min(u.maxHp, u.hp + 5);
                 }
             }
-
             for (const u of G.units) {
                 u.hasMoved = false;
                 u.hasAttacked = false;
                 u.hasHealed = false;
                 u.hasUsedAbility = false;
             }
+
+            // City & harbor production
             for (const city of G.cities) processCityProduction(city);
             for (const harbor of G.harbors) processHarborProduction(harbor);
+
+            // Player income & research
             const player = G.tribes.find(t => t.isPlayer);
             if (player) {
                 let income = getTribeYield(player.id);
@@ -4716,6 +4653,7 @@
                 if (player.techs && player.techs.includes('trade')) income += 2 * player.cities.length;
                 player.gold += income;
                 G.playerGold = player.gold;
+
                 let researchIncome = player.cities.length + 2;
                 if (player.wonders && player.wonders.includes('timbuktu')) researchIncome += 4;
                 if (player.techs && player.techs.includes('philosophy')) researchIncome = Math.floor(researchIncome * 1.2);
@@ -4730,6 +4668,8 @@
                     }
                 }
             }
+
+            // AI income
             for (const t of G.aliveTribes) {
                 if (!t.isPlayer) {
                     let income = getTribeYield(t.id);
@@ -4760,22 +4700,383 @@
                     }
                 }
             }
+
             G.turn++;
             updateVisibility();
             updateUI();
             G.animating = true;
+
             setTimeout(() => {
                 G.animating = false;
+                console.log('▶️ Running AI...');
                 runAI();
             }, 300);
         }
 
-        function finishTurn() {
+        // ─── IMPROVED AI with fallback strategies ─────────────────────
+        async function runAI() {
+            if (G.aiTurnLock) {
+                console.warn('runAI: lock was already true – resetting stale lock');
+                G.aiTurnLock = false;
+            }
+            if (G.gameOver) {
+                console.warn('runAI: game is over – finishing');
+                return;
+            }
+
+            G.aiTurnLock = true;
+            const aiTribes = G.aliveTribes.filter(t => !t.isPlayer);
+            console.log(`🤖 AI tribes: ${aiTribes.length}`);
+
+            try {
+                if (aiTribes.length === 0) {
+                    console.log('No AI tribes – finishing turn');
+                    finishTurn();
+                    return;
+                }
+
+                for (const tribe of aiTribes) {
+                    if (G.gameOver) break;
+                    console.log(`🤖 Processing tribe ${tribe.name}...`);
+                    try {
+                        await processAITribe(tribe);
+                    } catch (err) {
+                        console.error(`❌ AI error for tribe ${tribe.name}:`, err);
+                    }
+                    checkWinConditions();
+                    if (G.gameOver) break;
+                }
+            } catch (err) {
+                console.error('❌ AI processing error:', err);
+            } finally {
+                G.aiTurnLock = false;
+                clearTurnSafety();
+                if (!G.gameOver) {
+                    console.log('✅ AI done – finishing turn');
+                    finishTurn();
+                } else {
+                    console.log('Game over – no finish');
+                }
+            }
+        }
+
+        // ─── IMPROVED AI PROCESSING with fallback strategies ──────────
+        function processAITribe(tribe) {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('ai-turn-overlay');
+                const title = document.getElementById('ai-turn-title');
+                const sub = document.getElementById('ai-turn-sub');
+                const icon = document.getElementById('ai-turn-icon');
+
+                const iconKey = `tribe_${tribe.id}`;
+                const iconImg = images[iconKey];
+                if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                    icon.innerHTML = `<img src="${iconImg.src}" alt="${tribe.name}" />`;
+                } else {
+                    icon.innerHTML = tribe.icon;
+                }
+                title.textContent = `${tribe.name}'s Turn`;
+                sub.textContent = 'Strategic planning...';
+                overlay.classList.add('active');
+                console.log(`   Showing overlay for ${tribe.name}`);
+
+                let resolved = false;
+                const safeResolve = () => {
+                    if (resolved) return;
+                    resolved = true;
+                    overlay.classList.remove('active');
+                    console.log(`✅ AI ${tribe.name} turn finished`);
+                    resolve();
+                };
+
+                const timeout = setTimeout(() => {
+                    console.warn(`⏰ AI ${tribe.name} timed out – forcing resolve`);
+                    safeResolve();
+                }, 20000);
+
+                (async () => {
+                    try {
+                        const personality = getAIPersonality(tribe.id);
+                        const enemyTribes = G.aliveTribes.filter(t => t.id !== tribe.id);
+                        const myCities = tribe.cities.length;
+                        const enemyCities = enemyTribes.reduce((acc, t) => acc + t.cities.length, 0);
+                        const myUnits = tribe.units.filter(u => u.active).length;
+                        const enemyUnits = enemyTribes.reduce((acc, t) => acc + t.units.filter(u => u.active).length, 0);
+                        const myTiles = getTribeControlledTiles(tribe.id);
+                        const enemyTiles = enemyTribes.reduce((acc, t) => acc + getTribeControlledTiles(t.id), 0);
+
+                        // ---- Strategy ----
+                        let strategy = { attack: false, defend: false, expand: false, targetTribeId: null };
+                        // Always be aggressive if we have more units, otherwise defend/expand
+                        if (myUnits > enemyUnits * 0.7 && myCities >= enemyCities * 0.5) {
+                            strategy.attack = true;
+                            let weakest = null;
+                            let weakestPower = Infinity;
+                            for (const e of enemyTribes) {
+                                const power = e.cities.length + e.units.length;
+                                if (power < weakestPower) { weakestPower = power;
+                                    weakest = e; }
+                            }
+                            if (weakest) strategy.targetTribeId = weakest.id;
+                        } else {
+                            strategy.defend = true;
+                            strategy.expand = true;
+                        }
+
+                        // ---- Research ----
+                        const availableTechs = getAvailableTechs(tribe);
+                        if (availableTechs.length > 0) {
+                            let techToResearch = null;
+                            for (const pref of personality.researchPriority) {
+                                if (availableTechs.some(t => t.id === pref) && !tribe.techs.includes(pref)) {
+                                    techToResearch = pref;
+                                    break;
+                                }
+                            }
+                            if (!techToResearch) {
+                                const cheapest = availableTechs.reduce((a, b) => a.cost < b.cost ? a : b);
+                                techToResearch = cheapest.id;
+                            }
+                            const idleCity = tribe.cities.find(c => !c.project);
+                            if (idleCity && techToResearch) setCityProject(idleCity, 'tech', techToResearch);
+                        }
+
+                        // ---- Unit production ----
+                        const availableUnits = getAvailableUnits(tribe);
+                        const unitsToBuild = personality.unitPreference.filter(type => availableUnits[type]);
+                        for (const city of tribe.cities) {
+                            if (!city.project && unitsToBuild.length > 0) {
+                                const chosenType = unitsToBuild[Math.floor(Math.random() * unitsToBuild.length)];
+                                if (availableUnits[chosenType]) setCityProject(city, 'unit', chosenType);
+                            }
+                        }
+
+                        // ---- Attack target (city) ----
+                        let attackTarget = null;
+                        if (strategy.attack && strategy.targetTribeId) {
+                            const targetTribe = getTribe(strategy.targetTribeId);
+                            if (targetTribe) {
+                                let closestCity = null, closestDist = Infinity;
+                                for (const unit of tribe.units) {
+                                    if (!unit.active) continue;
+                                    for (const city of targetTribe.cities) {
+                                        const d = hexDistance({ q: unit.q, r: unit.r }, { q: city.q, r: city.r });
+                                        if (d < closestDist) { closestDist = d;
+                                            closestCity = city; }
+                                    }
+                                }
+                                if (closestCity) attackTarget = closestCity;
+                            }
+                        }
+
+                        // ---- Get all enemy units and cities for targeting ----
+                        const allEnemyUnits = G.units.filter(u => u.tribeId !== tribe.id && u.active && u.hp > 0);
+                        const allEnemyCities = G.cities.filter(c => c.owner !== tribe.id && !c.isNeutral);
+                        const neutralVillages = G.cities.filter(c => c.isNeutral);
+
+                        // ---- Execute unit actions ----
+                        let units = G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved);
+                        console.log(`   ${tribe.name} has ${units.length} units to move`);
+
+                        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+                        for (let i = 0; i < units.length; i++) {
+                            const unit = units[i];
+                            if (!unit.active || unit.hp <= 0 || !G.units.includes(unit)) {
+                                console.log(`   Unit ${unit.name} was removed, skipping`);
+                                continue;
+                            }
+
+                            sub.textContent = `${unit.name} (${i+1}/${units.length})...`;
+
+                            try {
+                                // ---- Build target list ----
+                                let targets = [];
+                                
+                                // Enemy units
+                                for (const e of allEnemyUnits) {
+                                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
+                                    targets.push({ type: 'unit', target: e, dist: dist });
+                                }
+                                
+                                // Enemy cities
+                                for (const c of allEnemyCities) {
+                                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+                                    targets.push({ type: 'city', target: c, dist: dist });
+                                }
+                                
+                                // Neutral villages
+                                for (const c of neutralVillages) {
+                                    const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+                                    targets.push({ type: 'neutral', target: c, dist: dist });
+                                }
+
+                                // Sort by distance
+                                targets.sort((a, b) => a.dist - b.dist);
+
+                                // ---- If no targets, find any enemy/neutral city or settlement ----
+                                if (targets.length === 0) {
+                                    let fallbackTarget = null;
+                                    let fallbackDist = Infinity;
+                                    for (const c of G.cities) {
+                                        if (c.owner === tribe.id) continue;
+                                        const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
+                                        if (dist < fallbackDist) {
+                                            fallbackDist = dist;
+                                            fallbackTarget = c;
+                                        }
+                                    }
+                                    if (fallbackTarget) {
+                                        targets.push({ type: 'city', target: fallbackTarget, dist: fallbackDist });
+                                    }
+                                }
+
+                                // ---- Prioritise attackTarget if set ----
+                                let chosenTarget = null;
+                                if (attackTarget) {
+                                    const distToTarget = hexDistance({ q: unit.q, r: unit.r }, { q: attackTarget.q, r: attackTarget.r });
+                                    if (distToTarget <= unit.move + unit.attackRange + 3) {
+                                        chosenTarget = { type: 'city', target: attackTarget, dist: distToTarget };
+                                    }
+                                }
+
+                                // ---- If no chosen target, pick closest enemy unit or city ----
+                                if (!chosenTarget) {
+                                    // Prefer enemy units (highest priority), then enemy cities, then neutral
+                                    const enemyUnitTargets = targets.filter(t => t.type === 'unit');
+                                    const enemyCityTargets = targets.filter(t => t.type === 'city');
+                                    const neutralTargets = targets.filter(t => t.type === 'neutral');
+                                    
+                                    if (enemyUnitTargets.length > 0) {
+                                        chosenTarget = enemyUnitTargets[0];
+                                    } else if (enemyCityTargets.length > 0) {
+                                        chosenTarget = enemyCityTargets[0];
+                                    } else if (neutralTargets.length > 0) {
+                                        chosenTarget = neutralTargets[0];
+                                    } else if (targets.length > 0) {
+                                        chosenTarget = targets[0];
+                                    }
+                                }
+
+                                if (chosenTarget) {
+                                    const t = chosenTarget;
+                                    
+                                    // ---- If target is a unit and in attack range ----
+                                    if (t.type === 'unit' && t.dist <= unit.attackRange) {
+                                        console.log(`   ${unit.name} attacks ${t.target.name}`);
+                                        performAttack(unit, t.target);
+                                    } 
+                                    // ---- Otherwise try to move towards target ----
+                                    else if (t.dist <= unit.move + 2) {
+                                        const targetPos = t.type === 'unit' ? { q: t.target.q, r: t.target.r } : { q: t.target.q, r: t.target.r };
+                                        const path = findPath(unit.q, unit.r, targetPos.q, targetPos.r, unit, tribe.id);
+                                        
+                                        if (path && path.length > 1) {
+                                            // Move as far as possible within movement range
+                                            const maxSteps = Math.min(path.length - 1, unit.move);
+                                            const step = path[maxSteps];
+                                            const tile = G.map[step.r]?.[step.q];
+                                            
+                                            if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
+                                                // Move
+                                                G.map[unit.r][unit.q].unit = null;
+                                                unit.q = step.q;
+                                                unit.r = step.r;
+                                                G.map[unit.r][unit.q].unit = unit;
+                                                unit.hasMoved = true;
+
+                                                // ---- Naval disembark ----
+                                                if (unit.isNaval && tile.terrain !== 'water') {
+                                                    disembarkNavalUnit(unit);
+                                                }
+
+                                                // ---- City capture ----
+                                                if (tile.city) {
+                                                    if (tile.city.isNeutral) {
+                                                        console.log(`   ${unit.name} captured neutral village ${tile.city.name}`);
+                                                        captureNeutralVillage(tile.city, unit.tribeId);
+                                                    } else if (tile.city.owner !== unit.tribeId) {
+                                                        console.log(`   ${unit.name} captured city ${tile.city.name}`);
+                                                        captureCity(tile.city, unit.tribeId);
+                                                    }
+                                                }
+                                            } else {
+                                                console.log(`   ${unit.name} couldn't move to target tile (blocked)`);
+                                            }
+                                        } else {
+                                            console.log(`   ${unit.name} couldn't find path to target`);
+                                        }
+                                    } else {
+                                        console.log(`   ${unit.name} is too far from target (${t.dist})`);
+                                    }
+                                } else {
+                                    console.log(`   ${unit.name} has no targets`);
+                                }
+
+                                await sleep(150);
+                            } catch (err) {
+                                console.error(`   Error processing unit ${unit.name}:`, err);
+                                unit.hasMoved = true;
+                            }
+                        }
+
+                        // ---- Defensive repositioning: move units near cities back if under attack ----
+                        // (simplified: just ensure units are not standing on water unless naval)
+                        for (const unit of G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved)) {
+                            const tile = G.map[unit.r]?.[unit.q];
+                            if (unit.isNaval && tile && tile.terrain !== 'water') {
+                                // Try to move to nearest water
+                                const neighbors = hexNeighbors(unit.q, unit.r);
+                                let moved = false;
+                                for (const n of neighbors) {
+                                    if (inMap(n.q, n.r)) {
+                                        const nTile = G.map[n.r]?.[n.q];
+                                        if (nTile && nTile.terrain === 'water' && !nTile.unit) {
+                                            G.map[unit.r][unit.q].unit = null;
+                                            unit.q = n.q;
+                                            unit.r = n.r;
+                                            G.map[unit.r][unit.q].unit = unit;
+                                            unit.hasMoved = true;
+                                            moved = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!moved) {
+                                    // If no water nearby, just skip
+                                    unit.hasMoved = true;
+                                }
+                            }
+                        }
+
+                        clearTimeout(timeout);
+                        safeResolve();
+
+                    } catch (err) {
+                        console.error(`❌ AI processing error for ${tribe.name}:`, err);
+                        clearTimeout(timeout);
+                        safeResolve();
+                    }
+                })();
+            });
+        }
+
+        // ─── FIXED: finishTurn – ensures UI updates and unlocks phase ──
+        function finishTurn(force = false) {
+            if (G.turnPhase === 'player' && !force) {
+                console.warn('finishTurn called but phase already player');
+                return;
+            }
+            console.log('✅ finishTurn called' + (force ? ' (force)' : ''));
             G.turnPhase = 'player';
+            G.aiTurnLock = false;
+            document.getElementById('ai-turn-overlay').classList.remove('active');
+            clearTurnSafety();
             updateVisibility();
             updateUI();
             render();
             saveGame();
+            console.log('✅ Turn finished, phase = player');
         }
 
         // ─── MOVEMENT & ATTACK HELPERS ──────────────────────────
@@ -5572,7 +5873,125 @@
             });
         });
 
-        // ─── RENDER ──────────────────────────────────────────────────
+        // ─── TOOLTIP LOGIC ───────────────────────────────────────────
+        let lastTooltipTile = null;
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const sx = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const sy = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const hex = getHexFromScreen(sx, sy);
+            if (!inMap(hex.q, hex.r)) {
+                tooltip.classList.remove('show');
+                lastTooltipTile = null;
+                return;
+            }
+            const tile = G.map[hex.r]?.[hex.q];
+            if (!tile) {
+                tooltip.classList.remove('show');
+                lastTooltipTile = null;
+                return;
+            }
+
+            // Check if same tile as last tooltip
+            const key = hexKey(hex.q, hex.r);
+            if (lastTooltipTile === key) {
+                // Tooltip already shown for this tile
+                return;
+            }
+            lastTooltipTile = key;
+
+            let tooltipText = '';
+            let show = false;
+
+            if (tile.unit) {
+                const unit = tile.unit;
+                const tribe = G.tribes.find(t => t.id === unit.tribeId);
+                const tribeName = tribe ? tribe.name : 'Unknown';
+                const atkVal = unit.atk + (unit.boostedAtk || 0);
+                const defVal = unit.def + (unit.boostedDef || 0);
+                const hpPct = Math.round(unit.hp / unit.maxHp * 100);
+                tooltipText =
+                    `${unit.name} (${tribeName})
+                    ⚔ ${atkVal}  🛡 ${defVal}  👣 ${unit.move}  ❤️ ${unit.hp}/${unit.maxHp} (${hpPct}%)
+                    ${unit.boosted ? '⚡ Boosted' : ''}
+                    ${unit.veteranLevel === 1 ? '★ Veteran' : unit.veteranLevel === 2 ? '⭐ Legendary' : ''}
+                    ${unit.isNaval ? '⛵ Naval' : ''}`;
+                show = true;
+            } else if (tile.city) {
+                const city = tile.city;
+                const tribe = G.tribes.find(t => t.id === city.owner);
+                const tribeName = tribe ? tribe.name : 'Neutral';
+                const levelNames = ['Village', 'Town', 'City', 'Metropolis'];
+                const levelName = levelNames[Math.min(city.level - 1, 3)];
+                tooltipText =
+                    `${city.name} (${levelName})
+                    ${tribeName}
+                    Level ${city.level}
+                    Stockpile: ${city.stockpile}
+                    ${city.hasLibrary ? '📚 Library' : ''}
+                    ${city.hasUniversity ? '🏛️ University' : ''}
+                    ${city.project ? '🔨 Building: ' + city.project.id : ''}`;
+                show = true;
+            } else if (tile.mine) {
+                tooltipText = '⛏️ Gold Mine (+2 gold/turn)';
+                show = true;
+            } else if (tile.quarry) {
+                tooltipText = '🪨 Quarry (-20% unit cost)';
+                show = true;
+            } else if (tile.farm) {
+                tooltipText = '🌾 Farm (-20% upgrade & unit cost)';
+                show = true;
+            } else if (tile.fishing) {
+                tooltipText = '🎣 Fishing Boats (-20% upgrade & unit cost)';
+                show = true;
+            } else if (tile.sawpit) {
+                tooltipText = '🪵 Sawpit (-25% ship cost, -10% other)';
+                show = true;
+            } else if (tile.harbor) {
+                const harbor = tile.harbor;
+                const tribe = G.tribes.find(t => t.id === harbor.owner);
+                const tribeName = tribe ? tribe.name : 'Unknown';
+                tooltipText =
+                    `⛵ Harbor (${tribeName})
+                    Production: ${harbor.production}
+                    ${harbor.project ? 'Building: ' + harbor.project.id : ''}`;
+                show = true;
+            } else if (tile.resource) {
+                const resName = {
+                    '🪙': 'Gold',
+                    '🌾': 'Food',
+                    '🪵': 'Wood',
+                    '🪨': 'Stone',
+                    '🐟': 'Fish'
+                } [tile.resource] || 'Resource';
+                tooltipText = `${tile.resource} ${resName} deposit`;
+                show = true;
+            } else if (tile.wonderIcon) {
+                const wonder = WONDERS.find(w => w.id === tile.wonderIcon);
+                const name = wonder ? wonder.name : 'Wonder';
+                tooltipText = `🏛️ ${name}`;
+                show = true;
+            }
+
+            if (show) {
+                tooltip.textContent = tooltipText;
+                tooltip.style.left = (e.clientX + 12) + 'px';
+                tooltip.style.top = (e.clientY + 12) + 'px';
+                tooltip.classList.add('show');
+                tooltip.style.width = 'auto';
+            } else {
+                tooltip.classList.remove('show');
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('show');
+            lastTooltipTile = null;
+        });
+
+        // ─── RENDER (with wonders as background images) ──────────
         function render() {
             const rect = canvas.parentElement.getBoundingClientRect();
             canvas.width = rect.width;
@@ -5645,62 +6064,108 @@
 
             for (let r = 0; r < G.mapHeight; r++) {
                 for (let q = 0; q < G.mapWidth; q++) {
-                    const tile = G.map[r]?.[q];
-                    if (!tile) continue;
-                    const pos = hexToPixel(q, r, size);
-                    const cx = pos.x,
-                        cy = pos.y;
+                    try {
+                        const tile = G.map[r]?.[q];
+                        if (!tile) continue;
+                        const pos = hexToPixel(q, r, size);
+                        const cx = pos.x,
+                            cy = pos.y;
 
-                    const isVisible = tile.visible;
-                    const isExplored = tile.explored;
+                        const isVisible = tile.visible;
+                        const isExplored = tile.explored;
 
-                    const pts = hexPolygonShortened(cx, cy, size * 0.98);
-                    const hexPath = new Path2D();
-                    hexPath.moveTo(pts[0].x, pts[0].y);
-                    for (let i = 1; i < pts.length; i++) hexPath.lineTo(pts[i].x, pts[i].y);
-                    hexPath.closePath();
+                        const pts = hexPolygonShortened(cx, cy, size * 0.98);
+                        const hexPath = new Path2D();
+                        hexPath.moveTo(pts[0].x, pts[0].y);
+                        for (let i = 1; i < pts.length; i++) hexPath.lineTo(pts[i].x, pts[i].y);
+                        hexPath.closePath();
 
-                    if (!isExplored) {
-                        if (fogImg && fogImg.complete && fogImg.naturalWidth > 0) {
-                            ctx.save();
-                            ctx.clip(hexPath);
-                            let minX = Infinity,
-                                maxX = -Infinity,
-                                minY = Infinity,
-                                maxY = -Infinity;
-                            for (const p of pts) {
-                                if (p.x < minX) minX = p.x;
-                                if (p.x > maxX) maxX = p.x;
-                                if (p.y < minY) minY = p.y;
-                                if (p.y > maxY) maxY = p.y;
+                        // ─── Determine background image ───────────────────
+                        let bgImageKey = null;
+                        const hasCity = tile.city !== null && tile.city !== undefined;
+                        const city = tile.city;
+                        const hasHarbor = tile.harbor !== null && tile.harbor !== undefined;
+                        const harbor = tile.harbor;
+
+                        // Check for wonder icon first - replaces background
+                        if (tile.wonderIcon) {
+                            const wonderId = tile.wonderIcon;
+                            const iconKey = WONDER_ICON_MAP[wonderId];
+                            if (iconKey && images[iconKey] && images[iconKey].complete && images[iconKey].naturalWidth > 0) {
+                                bgImageKey = iconKey;
                             }
-                            ctx.drawImage(fogImg, minX, minY, maxX - minX, maxY - minY);
-                            ctx.restore();
+                        } else if (hasCity && city) {
+                            if (city.level === 1) bgImageKey = 'settlement_village';
+                            else if (city.level === 2) bgImageKey = 'settlement_town';
+                            else if (city.level === 3) bgImageKey = 'settlement_city';
+                            else if (city.level >= 4) bgImageKey = 'settlement_capital';
+                        } else if (tile.sawpit) {
+                            bgImageKey = 'sawpit';
+                        } else if (tile.farm) {
+                            bgImageKey = 'farm';
+                        } else if (tile.quarry) {
+                            bgImageKey = 'quarry';
+                        } else if (tile.mine) {
+                            bgImageKey = 'mine';
+                        } else if (hasHarbor) {
+                            bgImageKey = 'harbor';
+                        } else if (tile.fishing) {
+                            bgImageKey = 'fishing';
                         } else {
-                            ctx.fillStyle = '#0a0f1a';
-                            ctx.fill(hexPath);
+                            switch (tile.terrain) {
+                                case 'plains':
+                                    bgImageKey = 'hex_plains';
+                                    break;
+                                case 'forest':
+                                    bgImageKey = 'hex_forest';
+                                    break;
+                                case 'mountain':
+                                    bgImageKey = 'hex_mountain';
+                                    break;
+                                case 'water':
+                                    bgImageKey = 'hex_water';
+                                    break;
+                                case 'hill':
+                                    bgImageKey = 'hex_hill';
+                                    break;
+                                case 'desert':
+                                    bgImageKey = 'hex_desert';
+                                    break;
+                                default:
+                                    bgImageKey = 'hex_plains';
+                            }
                         }
-                        ctx.strokeStyle = 'rgba(60,50,40,0.3)';
-                        ctx.lineWidth = 1.0 / camera.zoom;
-                        ctx.stroke(hexPath);
-                        continue;
-                    }
 
-                    const hasCity = tile.city !== null && tile.city !== undefined;
-                    const city = tile.city;
-                    const hasHarbor = tile.harbor !== null && tile.harbor !== undefined;
-                    const harbor = tile.harbor;
+                        // ─── Draw background ───────────────────────────────
+                        if (!isExplored) {
+                            if (fogImg && fogImg.complete && fogImg.naturalWidth > 0) {
+                                ctx.save();
+                                ctx.clip(hexPath);
+                                let minX = Infinity,
+                                    maxX = -Infinity,
+                                    minY = Infinity,
+                                    maxY = -Infinity;
+                                for (const p of pts) {
+                                    if (p.x < minX) minX = p.x;
+                                    if (p.x > maxX) maxX = p.x;
+                                    if (p.y < minY) minY = p.y;
+                                    if (p.y > maxY) maxY = p.y;
+                                }
+                                ctx.drawImage(fogImg, minX, minY, maxX - minX, maxY - minY);
+                                ctx.restore();
+                            } else {
+                                ctx.fillStyle = '#0a0f1a';
+                                ctx.fill(hexPath);
+                            }
+                            ctx.strokeStyle = 'rgba(60,50,40,0.3)';
+                            ctx.lineWidth = 1.0 / camera.zoom;
+                            ctx.stroke(hexPath);
+                            continue;
+                        }
 
-                    // ─── Terrain background ────────────────────────────
-                    if (isVisible && !hasCity && !hasHarbor) {
-                        let terrainKey = 'hex_plains';
-                        if (tile.terrain === 'forest') terrainKey = 'hex_forest';
-                        else if (tile.terrain === 'mountain') terrainKey = 'hex_mountain';
-                        else if (tile.terrain === 'water') terrainKey = 'hex_water';
-                        else if (tile.terrain === 'hill') terrainKey = 'hex_hill';
-                        else if (tile.terrain === 'desert') terrainKey = 'hex_desert';
-                        const img = images[terrainKey];
-                        if (img && img.complete && img.naturalWidth > 0) {
+                        // Draw background image
+                        if (bgImageKey && images[bgImageKey] && images[bgImageKey].complete && images[bgImageKey]
+                            .naturalWidth > 0) {
                             ctx.save();
                             ctx.clip(hexPath);
                             let minX = Infinity,
@@ -5713,7 +6178,7 @@
                                 if (p.y < minY) minY = p.y;
                                 if (p.y > maxY) maxY = p.y;
                             }
-                            ctx.drawImage(img, minX, minY, maxX - minX, maxY - minY);
+                            ctx.drawImage(images[bgImageKey], minX, minY, maxX - minX, maxY - minY);
                             ctx.restore();
                         } else {
                             let color = '#2a1a10';
@@ -5746,585 +6211,430 @@
                             ctx.fillStyle = color;
                             ctx.fill(hexPath);
                         }
-                        if (tile.isRiver) {
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.3, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(64,164,223,0.25)';
-                            ctx.fill();
-                            ctx.restore();
-                        }
-                    } else if (isVisible && (hasCity || hasHarbor)) {
-                        let bgColor = '#3a2a1a';
-                        if (hasCity && city && !city.isNeutral && city.owner) {
-                            const tribe = G.tribes.find(t => t.id === city.owner);
-                            if (tribe) bgColor = tribe.color;
-                        } else if (hasHarbor && harbor.owner) {
-                            bgColor = '#1a3a5a';
-                        }
-                        ctx.fillStyle = bgColor;
-                        ctx.fill(hexPath);
-                        if (tile.isRiver) {
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.3, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(64,164,223,0.2)';
-                            ctx.fill();
-                            ctx.restore();
-                        }
-                    } else {
-                        let color = '#1a2a1a';
-                        ctx.fillStyle = color;
-                        ctx.fill(hexPath);
-                    }
 
-                    // ─── Influence border ───
-                    const key = hexKey(q, r);
-                    const influenceColor = influenceMap[key];
-                    if (influenceColor && (isVisible || tile.owner === player.id)) {
-                        ctx.save();
-                        ctx.strokeStyle = influenceColor;
-                        ctx.lineWidth = 5 / camera.zoom;
-                        ctx.stroke(hexPath);
-                        ctx.restore();
-                    }
-
-                    // ─── Border ───
-                    let borderColor = '#d0c4b8';
-                    let borderWidth = 1.0 / camera.zoom;
-                    if (isVisible && tile.owner) {
-                        const tribe = G.tribes.find(t => t.id === tile.owner);
-                        if (tribe) {
-                            borderColor = tribe.color;
-                            borderWidth = 2.5 / camera.zoom;
-                        }
-                    }
-                    ctx.strokeStyle = borderColor;
-                    ctx.lineWidth = borderWidth;
-                    ctx.stroke(hexPath);
-
-                    // ─── Reachable/attackable highlights ───
-                    if (isVisible) {
-                        const isReachable = reachableTiles.some(t => t.q === q && t.r === r);
-                        const isAttackable = attackableTiles.some(t => t.q === q && t.r === r);
-                        if (isReachable || isAttackable) {
+                        // ─── Influence border ───
+                        const key = hexKey(q, r);
+                        const influenceColor = influenceMap[key];
+                        if (influenceColor && (isVisible || tile.owner === player.id)) {
                             ctx.save();
-                            ctx.clip(hexPath);
-                            ctx.fillStyle = isAttackable ? 'rgba(255,0,0,0.3)' : 'rgba(0,255,0,0.25)';
-                            ctx.fillRect(pts[0].x, pts[0].y, pts[2].x - pts[0].x, pts[3].y - pts[0].y);
-                            ctx.restore();
-                            ctx.strokeStyle = isAttackable ? '#ff0000' : '#00ff00';
-                            ctx.lineWidth = 2.0 / camera.zoom;
+                            ctx.strokeStyle = influenceColor;
+                            ctx.lineWidth = 5 / camera.zoom;
                             ctx.stroke(hexPath);
-                        }
-                    }
-
-                    // ─── City influence ring ───
-                    if (isVisible && hasCity) {
-                        const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
-                        if (radius > 0) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * (0.85 + radius * 0.3), 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(255,215,0,0.15)';
-                            ctx.lineWidth = 1.5 / camera.zoom;
-                            ctx.setLineDash([3 / camera.zoom, 5 / camera.zoom]);
-                            ctx.stroke();
-                            ctx.setLineDash([]);
-                        }
-                    }
-
-                    // ─── Draw elements on visible tiles ───
-                    if (isVisible) {
-                        // ─── Resource icon ───
-                        if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm && !tile.sawpit && !
-                            tile.mine && !tile.quarry) {
-                            const resKey = RESOURCE_MAP[tile.resource];
-                            const resImg = resKey ? images[resKey] : null;
-                            if (resImg && resImg.complete && resImg.naturalWidth > 0) {
-                                const rSize = size * 0.4;
-                                ctx.drawImage(resImg, cx - rSize / 2, cy + size * 0.2 - rSize / 2, rSize, rSize);
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.35}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'bottom';
-                                ctx.shadowColor = 'rgba(0,0,0,0.7)';
-                                ctx.shadowBlur = 4;
-                                ctx.fillStyle = '#f0e6d3';
-                                ctx.fillText(tile.resource, cx, cy + size * 0.42);
-                                ctx.restore();
-                            }
-                        }
-
-                        // ─── Fishing icon ───
-                        if (tile.fishing) {
-                            const fishImg = images['fishing'];
-                            const fSize = size * 0.9;
-                            if (fishImg && fishImg.complete && fishImg.naturalWidth > 0) {
-                                ctx.save();
-                                ctx.drawImage(fishImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
-                                ctx.restore();
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.8}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#00bcd4';
-                                ctx.fillText('🎣', cx, cy + size * 0.1);
-                                ctx.restore();
-                            }
-                        }
-
-                        // ─── Farm icon ───
-                        if (tile.farm) {
-                            const farmImg = images['farm'];
-                            const fSize = size * 0.9;
-                            if (farmImg && farmImg.complete && farmImg.naturalWidth > 0) {
-                                ctx.save();
-                                ctx.drawImage(farmImg, cx - fSize / 2, cy + size * 0.1 - fSize / 2, fSize, fSize);
-                                ctx.restore();
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.8}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#4caf50';
-                                ctx.fillText('🌾', cx, cy + size * 0.1);
-                                ctx.restore();
-                            }
-                        }
-
-                        // ─── Sawpit icon ───
-                        if (tile.sawpit) {
-                            const sawpitImg = images['sawpit'];
-                            const sSize = size * 0.9;
-                            if (sawpitImg && sawpitImg.complete && sawpitImg.naturalWidth > 0) {
-                                ctx.save();
-                                ctx.drawImage(sawpitImg, cx - sSize / 2, cy + size * 0.1 - sSize / 2, sSize, sSize);
-                                ctx.restore();
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.8}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#8d6e63';
-                                ctx.fillText('🪵', cx, cy + size * 0.1);
-                                ctx.restore();
-                            }
-                        }
-
-                        // ─── Mine / Quarry icon ───
-                        if (tile.mine) {
-                            const mineImg = images['mine'];
-                            if (mineImg && mineImg.complete && mineImg.naturalWidth > 0) {
-                                const mSize = size * 0.45;
-                                ctx.drawImage(mineImg, cx - mSize / 2, cy + size * 0.1 - mSize / 2, mSize, mSize);
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.4}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#f1c40f';
-                                ctx.fillText('⛏️', cx, cy + size * 0.1);
-                                ctx.restore();
-                            }
-                        }
-                        if (tile.quarry) {
-                            const quarryImg = images['quarry'];
-                            if (quarryImg && quarryImg.complete && quarryImg.naturalWidth > 0) {
-                                const qSize = size * 0.45;
-                                ctx.drawImage(quarryImg, cx - qSize / 2, cy + size * 0.1 - qSize / 2, qSize, qSize);
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 0.4}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#95a5a6';
-                                ctx.fillText('🪨', cx, cy + size * 0.1);
-                                ctx.restore();
-                            }
-                        }
-
-                        // ─── Wonder Icon ───
-                        if (tile.wonderIcon) {
-                            const wonderId = tile.wonderIcon;
-                            const iconKey = WONDER_ICON_MAP[wonderId];
-                            if (iconKey && images[iconKey]) {
-                                const img = images[iconKey];
-                                const wSize = size * 1.2;
-                                if (img && img.complete && img.naturalWidth > 0) {
-                                    ctx.save();
-                                    ctx.drawImage(img, cx - wSize / 2, cy + size * 0.1 - wSize / 2, wSize, wSize);
-                                    ctx.restore();
-                                } else {
-                                    ctx.save();
-                                    ctx.font = `${size * 1.0}px sans-serif`;
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    ctx.fillStyle = '#ffd700';
-                                    ctx.fillText('🏛️', cx, cy + size * 0.1);
-                                    ctx.restore();
-                                }
-                            }
-                        }
-
-                        // ─── City ───
-                        if (hasCity) {
-                            let settlementKey = 'settlement_village';
-                            if (city.level === 2) settlementKey = 'settlement_town';
-                            else if (city.level === 3) settlementKey = 'settlement_city';
-                            else if (city.level >= 4) settlementKey = 'settlement_capital';
-                            const sImg = images[settlementKey];
-                            const cs = size * 1.3;
-                            if (sImg && sImg.complete && sImg.naturalWidth > 0) {
-                                ctx.drawImage(sImg, cx - cs / 2, cy - cs / 2 - size * 0.05, cs, cs);
-                            } else {
-                                ctx.font = `${size * 0.8}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                const icon = city.isNeutral ? '🏚️' : city.level === 1 ? '🏘️' : city.level === 2 ? '🏙️' :
-                                    city.level >= 3 ? '🏛️' : '🏙️';
-                                ctx.fillStyle = '#f0e6d3';
-                                ctx.fillText(icon, cx, cy - size * 0.05);
-                            }
-                            if (city.hasLibrary) {
-                                const libImg = images['library'];
-                                if (libImg && libImg.complete && libImg.naturalWidth > 0) {
-                                    const lSize = size * 0.25;
-                                    ctx.drawImage(libImg, cx + size * 0.35 - lSize / 2, cy - size * 0.4 - lSize / 2, lSize,
-                                        lSize);
-                                } else {
-                                    ctx.save();
-                                    ctx.font = `${size * 0.25}px sans-serif`;
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    ctx.fillStyle = '#4fc3f7';
-                                    ctx.fillText('📚', cx + size * 0.35, cy - size * 0.4);
-                                    ctx.restore();
-                                }
-                            }
-                            if (city.hasUniversity) {
-                                const uniImg = images['university'];
-                                if (uniImg && uniImg.complete && uniImg.naturalWidth > 0) {
-                                    const uSize = size * 0.3;
-                                    ctx.drawImage(uniImg, cx - size * 0.35 - uSize / 2, cy - size * 0.4 - uSize / 2, uSize,
-                                        uSize);
-                                } else {
-                                    ctx.save();
-                                    ctx.font = `${size * 0.3}px sans-serif`;
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    ctx.fillStyle = '#ab47bc';
-                                    ctx.fillText('🏛️', cx - size * 0.35, cy - size * 0.4);
-                                    ctx.restore();
-                                }
-                            }
-                            if (city.name) {
-                                ctx.save();
-                                ctx.font = `${size * 0.2}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'bottom';
-                                ctx.fillStyle = 'rgba(240,230,211,0.6)';
-                                ctx.fillText(city.name, cx, cy + size * 0.55);
-                                ctx.restore();
-                            }
-                            if (!city.isNeutral && city.owner) {
-                                const tribe = G.tribes.find(t => t.id === city.owner);
-                                if (tribe) {
-                                    const iconSize = size * 0.3;
-                                    const ix = cx - iconSize / 2;
-                                    const iy = cy + size * 0.6 - iconSize / 2;
-                                    const iconKey = `tribe_${tribe.id}`;
-                                    const iconImg = images[iconKey];
-                                    if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
-                                        ctx.save();
-                                        ctx.beginPath();
-                                        ctx.arc(ix + iconSize / 2, iy + iconSize / 2, iconSize / 2 + 4, 0, Math.PI * 2);
-                                        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                                        ctx.fill();
-                                        ctx.drawImage(iconImg, ix, iy, iconSize, iconSize);
-                                        ctx.restore();
-                                    } else {
-                                        ctx.save();
-                                        ctx.textAlign = 'center';
-                                        ctx.textBaseline = 'middle';
-                                        ctx.font = `${iconSize * 0.9}px sans-serif`;
-                                        ctx.shadowColor = 'rgba(0,0,0,0.9)';
-                                        ctx.shadowBlur = 6;
-                                        ctx.fillStyle = '#ffffff';
-                                        ctx.fillText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
-                                        ctx.shadowBlur = 0;
-                                        ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-                                        ctx.lineWidth = 2.5;
-                                        ctx.strokeText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
-                                        ctx.fillStyle = '#ffffff';
-                                        ctx.fillText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
-                                        ctx.restore();
-                                    }
-                                }
-                            }
-                            if (city.project) {
-                                let cost = 0;
-                                let ringColor = '#ffd700';
-                                let progressVal = city.progress;
-                                if (city.project.type === 'unit') {
-                                    const tribeData = TRIBES_DATA.find(t => t.id === city.owner);
-                                    if (tribeData) {
-                                        const unitDef = tribeData.units[city.project.id];
-                                        if (unitDef) {
-                                            cost = unitDef.cost;
-                                            let discount = 0;
-                                            const influence = getCityInfluence(city);
-                                            for (const tileInf of influence) {
-                                                const tileData = G.map[tileInf.r]?.[tileInf.q];
-                                                if (tileData && tileData.quarry) { discount = Math.max(discount,
-                                                    0.2); }
-                                                if (tileData && tileData.fishing) { discount = Math.max(discount,
-                                                    0.2); }
-                                                if (tileData && tileData.farm) { discount = Math.max(discount,
-                                                    0.2); }
-                                                if (tileData && tileData.sawpit) { discount = Math.max(discount,
-                                                    0.1); }
-                                            }
-                                            cost = Math.ceil(cost * (1 - discount));
-                                        }
-                                    }
-                                    ringColor = '#ffd700';
-                                } else if (city.project.type === 'tech') {
-                                    cost = getTechCost(city.project.id);
-                                    const cityTribe = getTribe(city.owner);
-                                    progressVal = cityTribe ? cityTribe.researchProgress[city.project.id] || 0 : 0;
-                                    ringColor = '#4fc3f7';
-                                } else if (city.project.type === 'wonder') {
-                                    cost = getWonderCost(city.project.id);
-                                    const discount = getCityImprovementDiscount(city);
-                                    cost = Math.ceil(cost * (1 - discount));
-                                    ringColor = '#ab47bc';
-                                }
-                                if (cost > 0 && progressVal > 0) {
-                                    const pct = Math.min(1, progressVal / cost);
-                                    ctx.beginPath();
-                                    ctx.arc(cx, cy + size * 0.4, size * 0.2, -Math.PI / 2, -Math.PI / 2 + pct * 2 * Math
-                                        .PI);
-                                    ctx.strokeStyle = ringColor;
-                                    ctx.lineWidth = 3.0 / camera.zoom;
-                                    ctx.stroke();
-                                }
-                            }
-                            ctx.beginPath();
-                            ctx.arc(cx, cy + size * 0.4, size * 0.2, 0, Math.PI * 2);
-                            ctx.fillStyle = 'rgba(255,215,0,0.12)';
-                            ctx.fill();
-                            ctx.strokeStyle = 'rgba(255,215,0,0.25)';
-                            ctx.lineWidth = 1.5 / camera.zoom;
-                            ctx.stroke();
-                        }
-
-                        // ─── Harbor ───
-                        if (hasHarbor) {
-                            const harborImg = images['harbor'];
-                            const hSize = size * 1.8;
-                            if (harborImg && harborImg.complete && harborImg.naturalWidth > 0) {
-                                ctx.save();
-                                ctx.globalAlpha = 0.9;
-                                ctx.drawImage(harborImg, cx - hSize / 2, cy - hSize / 2 - size * 0.02, hSize, hSize);
-                                ctx.restore();
-                            } else {
-                                ctx.save();
-                                ctx.font = `${size * 1.2}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                                ctx.shadowBlur = 15 / camera.zoom;
-                                ctx.fillStyle = '#f0e6d3';
-                                ctx.fillText('⚓', cx, cy - size * 0.02);
-                                ctx.shadowBlur = 0;
-                                ctx.restore();
-                            }
-                            if (harbor.project) {
-                                const tribeData = TRIBES_DATA.find(t => t.id === harbor.owner);
-                                let cost = 0;
-                                if (tribeData) {
-                                    const unitDef = tribeData.units[harbor.project.id];
-                                    if (unitDef) cost = unitDef.cost;
-                                    const city = G.cities.find(c => c.owner === harbor.owner && hexDistance({ q: c.q,
-                                            r: c.r }, { q: harbor.q, r: harbor.r }) <= 2);
-                                    if (city) {
-                                        const shipDiscount = getCityShipDiscount(city);
-                                        const unitDiscount = getCityUnitDiscount(city);
-                                        const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
-                                        cost = Math.ceil(cost * (1 - totalDiscount));
-                                    }
-                                }
-                                if (cost > 0) {
-                                    const pct = Math.min(1, harbor.production / cost);
-                                    ctx.beginPath();
-                                    ctx.arc(cx, cy + size * 0.4, size * 0.18, -Math.PI / 2, -Math.PI / 2 + pct * 2 * Math
-                                        .PI);
-                                    ctx.strokeStyle = '#00bcd4';
-                                    ctx.lineWidth = 2.5 / camera.zoom;
-                                    ctx.stroke();
-                                }
-                            }
-                        }
-
-                        // ─── Unit ───
-                        if (tile.unit) {
-                            const unit = tile.unit;
-                            const tribe = G.tribes.find(t => t.id === unit.tribeId);
-                            const unitKey = tribe ? `${tribe.id}_${unit.type}` : 'unit_foot';
-                            const img = images[unitKey];
-                            const us = size * 0.7;
-
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.arc(cx, cy - size * 0.05, us * 0.6, 0, Math.PI * 2);
-                            const tribeColor = tribe ? tribe.color : '#ffffff';
-                            ctx.fillStyle = tribeColor + '59';
-                            ctx.fill();
                             ctx.restore();
+                        }
 
-                            if (unit.boosted) {
+                        // ─── Border ───
+                        let borderColor = '#d0c4b8';
+                        let borderWidth = 1.0 / camera.zoom;
+                        if (isVisible && tile.owner) {
+                            const tribe = G.tribes.find(t => t.id === tile.owner);
+                            if (tribe) {
+                                borderColor = tribe.color;
+                                borderWidth = 2.5 / camera.zoom;
+                            }
+                        }
+                        ctx.strokeStyle = borderColor;
+                        ctx.lineWidth = borderWidth;
+                        ctx.stroke(hexPath);
+
+                        // ─── Reachable/attackable highlights ───
+                        if (isVisible) {
+                            const isReachable = reachableTiles.some(t => t.q === q && t.r === r);
+                            const isAttackable = attackableTiles.some(t => t.q === q && t.r === r);
+                            if (isReachable || isAttackable) {
                                 ctx.save();
+                                ctx.clip(hexPath);
+                                ctx.fillStyle = isAttackable ? 'rgba(255,0,0,0.3)' : 'rgba(0,255,0,0.25)';
+                                ctx.fillRect(pts[0].x, pts[0].y, pts[2].x - pts[0].x, pts[3].y - pts[0].y);
+                                ctx.restore();
+                                ctx.strokeStyle = isAttackable ? '#ff0000' : '#00ff00';
+                                ctx.lineWidth = 2.0 / camera.zoom;
+                                ctx.stroke(hexPath);
+                            }
+                        }
+
+                        // ─── City influence ring ───
+                        if (isVisible && hasCity) {
+                            const radius = city.level === 1 ? 0 : city.level === 2 ? 1 : city.level >= 3 ? 2 : 0;
+                            if (radius > 0) {
                                 ctx.beginPath();
-                                ctx.arc(cx, cy - size * 0.05, us * 0.75, 0, Math.PI * 2);
-                                ctx.strokeStyle = 'rgba(155,89,182,0.6)';
-                                ctx.lineWidth = 3 / camera.zoom;
-                                ctx.setLineDash([3 / camera.zoom, 4 / camera.zoom]);
+                                ctx.arc(cx, cy, size * (0.85 + radius * 0.3), 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+                                ctx.lineWidth = 1.5 / camera.zoom;
+                                ctx.setLineDash([3 / camera.zoom, 5 / camera.zoom]);
                                 ctx.stroke();
                                 ctx.setLineDash([]);
-                                ctx.restore();
+                            }
+                        }
+
+                        // ─── Draw elements on visible tiles ───
+                        if (isVisible) {
+                            // ─── Resource icon ─── (only if no city/improvement replacing it)
+                            if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm && !tile
+                                .sawpit && !tile.mine && !tile.quarry) {
+                                const resKey = RESOURCE_MAP[tile.resource];
+                                const resImg = resKey ? images[resKey] : null;
+                                if (resImg && resImg.complete && resImg.naturalWidth > 0) {
+                                    const rSize = size * 0.4;
+                                    ctx.drawImage(resImg, cx - rSize / 2, cy + size * 0.2 - rSize / 2, rSize, rSize);
+                                } else {
+                                    ctx.save();
+                                    ctx.font = `${size * 0.35}px sans-serif`;
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'bottom';
+                                    ctx.shadowColor = 'rgba(0,0,0,0.7)';
+                                    ctx.shadowBlur = 4;
+                                    ctx.fillStyle = '#f0e6d3';
+                                    ctx.fillText(tile.resource, cx, cy + size * 0.42);
+                                    ctx.restore();
+                                }
                             }
 
-                            if (unit.isNaval) {
+                            // ─── City extras (overlays) ───
+                            if (hasCity) {
+                                if (city.hasLibrary) {
+                                    const libImg = images['library'];
+                                    if (libImg && libImg.complete && libImg.naturalWidth > 0) {
+                                        const lSize = size * 0.25;
+                                        ctx.drawImage(libImg, cx + size * 0.35 - lSize / 2, cy - size * 0.4 - lSize / 2,
+                                            lSize, lSize);
+                                    } else {
+                                        ctx.save();
+                                        ctx.font = `${size * 0.25}px sans-serif`;
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillStyle = '#4fc3f7';
+                                        ctx.fillText('📚', cx + size * 0.35, cy - size * 0.4);
+                                        ctx.restore();
+                                    }
+                                }
+                                if (city.hasUniversity) {
+                                    const uniImg = images['university'];
+                                    if (uniImg && uniImg.complete && uniImg.naturalWidth > 0) {
+                                        const uSize = size * 0.3;
+                                        ctx.drawImage(uniImg, cx - size * 0.35 - uSize / 2, cy - size * 0.4 - uSize / 2,
+                                            uSize, uSize);
+                                    } else {
+                                        ctx.save();
+                                        ctx.font = `${size * 0.3}px sans-serif`;
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillStyle = '#ab47bc';
+                                        ctx.fillText('🏛️', cx - size * 0.35, cy - size * 0.4);
+                                        ctx.restore();
+                                    }
+                                }
+                                if (city.name) {
+                                    ctx.save();
+                                    ctx.font = `${size * 0.2}px sans-serif`;
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'bottom';
+                                    ctx.fillStyle = 'rgba(240,230,211,0.6)';
+                                    ctx.fillText(city.name, cx, cy + size * 0.55);
+                                    ctx.restore();
+                                }
+                                if (!city.isNeutral && city.owner) {
+                                    const tribe = G.tribes.find(t => t.id === city.owner);
+                                    if (tribe) {
+                                        const iconSize = size * 0.3;
+                                        const ix = cx - iconSize / 2;
+                                        const iy = cy + size * 0.6 - iconSize / 2;
+                                        const iconKey = `tribe_${tribe.id}`;
+                                        const iconImg = images[iconKey];
+                                        if (iconImg && iconImg.complete && iconImg.naturalWidth > 0) {
+                                            ctx.save();
+                                            ctx.beginPath();
+                                            ctx.arc(ix + iconSize / 2, iy + iconSize / 2, iconSize / 2 + 4, 0, Math.PI *
+                                                2);
+                                            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                                            ctx.fill();
+                                            ctx.drawImage(iconImg, ix, iy, iconSize, iconSize);
+                                            ctx.restore();
+                                        } else {
+                                            ctx.save();
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+                                            ctx.font = `${iconSize * 0.9}px sans-serif`;
+                                            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                                            ctx.shadowBlur = 6;
+                                            ctx.fillStyle = '#ffffff';
+                                            ctx.fillText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
+                                            ctx.shadowBlur = 0;
+                                            ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+                                            ctx.lineWidth = 2.5;
+                                            ctx.strokeText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
+                                            ctx.fillStyle = '#ffffff';
+                                            ctx.fillText(tribe.icon, ix + iconSize / 2, iy + iconSize / 2);
+                                            ctx.restore();
+                                        }
+                                    }
+                                }
+                                if (city.project) {
+                                    let cost = 0;
+                                    let ringColor = '#ffd700';
+                                    let progressVal = city.progress;
+                                    if (city.project.type === 'unit') {
+                                        const tribeData = TRIBES_DATA.find(t => t.id === city.owner);
+                                        if (tribeData) {
+                                            const unitDef = tribeData.units[city.project.id];
+                                            if (unitDef) {
+                                                cost = unitDef.cost;
+                                                let discount = 0;
+                                                const influence = getCityInfluence(city);
+                                                for (const tileInf of influence) {
+                                                    const tileData = G.map[tileInf.r]?.[tileInf.q];
+                                                    if (tileData && tileData.quarry) { discount = Math.max(
+                                                        discount, 0.2); }
+                                                    if (tileData && tileData.fishing) { discount = Math.max(
+                                                        discount, 0.2); }
+                                                    if (tileData && tileData.farm) { discount = Math.max(
+                                                        discount, 0.2); }
+                                                    if (tileData && tileData.sawpit) { discount = Math.max(
+                                                        discount, 0.1); }
+                                                }
+                                                cost = Math.ceil(cost * (1 - discount));
+                                            }
+                                        }
+                                        ringColor = '#ffd700';
+                                    } else if (city.project.type === 'tech') {
+                                        cost = getTechCost(city.project.id);
+                                        const cityTribe = getTribe(city.owner);
+                                        progressVal = cityTribe ? cityTribe.researchProgress[city.project.id] || 0 :
+                                            0;
+                                        ringColor = '#4fc3f7';
+                                    } else if (city.project.type === 'wonder') {
+                                        cost = getWonderCost(city.project.id);
+                                        const discount = getCityImprovementDiscount(city);
+                                        cost = Math.ceil(cost * (1 - discount));
+                                        ringColor = '#ab47bc';
+                                    }
+                                    if (cost > 0 && progressVal > 0) {
+                                        const pct = Math.min(1, progressVal / cost);
+                                        ctx.beginPath();
+                                        ctx.arc(cx, cy + size * 0.4, size * 0.2, -Math.PI / 2, -Math.PI / 2 + pct *
+                                            2 * Math.PI);
+                                        ctx.strokeStyle = ringColor;
+                                        ctx.lineWidth = 3.0 / camera.zoom;
+                                        ctx.stroke();
+                                    }
+                                }
+                                ctx.beginPath();
+                                ctx.arc(cx, cy + size * 0.4, size * 0.2, 0, Math.PI * 2);
+                                ctx.fillStyle = 'rgba(255,215,0,0.12)';
+                                ctx.fill();
+                                ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+                                ctx.lineWidth = 1.5 / camera.zoom;
+                                ctx.stroke();
+                            }
+
+                            // ─── Harbor extras (overlays) ───
+                            if (hasHarbor) {
+                                if (harbor.project) {
+                                    const tribeData = TRIBES_DATA.find(t => t.id === harbor.owner);
+                                    let cost = 0;
+                                    if (tribeData) {
+                                        const unitDef = tribeData.units[harbor.project.id];
+                                        if (unitDef) cost = unitDef.cost;
+                                        const city = G.cities.find(c => c.owner === harbor.owner && hexDistance({ q: c
+                                                    .q, r: c.r }, { q: harbor.q, r: harbor.r }) <= 2);
+                                        if (city) {
+                                            const shipDiscount = getCityShipDiscount(city);
+                                            const unitDiscount = getCityUnitDiscount(city);
+                                            const totalDiscount = Math.min(0.8, shipDiscount + unitDiscount);
+                                            cost = Math.ceil(cost * (1 - totalDiscount));
+                                        }
+                                    }
+                                    if (cost > 0) {
+                                        const pct = Math.min(1, harbor.production / cost);
+                                        ctx.beginPath();
+                                        ctx.arc(cx, cy + size * 0.4, size * 0.18, -Math.PI / 2, -Math.PI / 2 + pct *
+                                            2 * Math.PI);
+                                        ctx.strokeStyle = '#00bcd4';
+                                        ctx.lineWidth = 2.5 / camera.zoom;
+                                        ctx.stroke();
+                                    }
+                                }
+                            }
+
+                            // ─── Wonder icon overlay ─── (already handled as background, but add glow)
+                            if (tile.wonderIcon) {
                                 ctx.save();
-                                ctx.shadowColor = 'rgba(0,200,255,0.6)';
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                                ctx.shadowColor = 'rgba(255,215,0,0.3)';
                                 ctx.shadowBlur = 30 / camera.zoom;
                                 ctx.shadowOffsetX = 0;
                                 ctx.shadowOffsetY = 0;
-                            } else {
+                                ctx.strokeStyle = 'rgba(255,215,0,0.2)';
+                                ctx.lineWidth = 2 / camera.zoom;
+                                ctx.stroke();
+                                ctx.restore();
+                            }
+
+                            // ─── Unit ───
+                            if (tile.unit) {
+                                const unit = tile.unit;
+                                const tribe = G.tribes.find(t => t.id === unit.tribeId);
+                                const unitKey = tribe ? `${tribe.id}_${unit.type}` : 'unit_foot';
+                                const img = images[unitKey];
+                                const us = size * 0.7;
+
                                 ctx.save();
-                                ctx.shadowColor = 'rgba(255,220,100,0.7)';
-                                ctx.shadowBlur = 45 / camera.zoom;
-                            }
+                                ctx.beginPath();
+                                ctx.arc(cx, cy - size * 0.05, us * 0.6, 0, Math.PI * 2);
+                                const tribeColor = tribe ? tribe.color : '#ffffff';
+                                ctx.fillStyle = tribeColor + '59';
+                                ctx.fill();
+                                ctx.restore();
 
-                            if (img && img.complete && img.naturalWidth > 0) {
-                                ctx.drawImage(img, cx - us / 2, cy - us / 2 - size * 0.05, us, us);
-                            } else {
-                                const tData = TRIBES_DATA.find(t => t.id === unit.tribeId);
-                                const icon = tData ? tData.icon : '⚔️';
-                                ctx.font = `${size * 0.7}px sans-serif`;
-                                ctx.textAlign = 'center';
-                                ctx.textBaseline = 'middle';
-                                ctx.fillStyle = '#f0e6d3';
-                                ctx.fillText(icon, cx, cy - size * 0.05);
-                            }
-                            ctx.restore();
+                                if (unit.boosted) {
+                                    ctx.save();
+                                    ctx.beginPath();
+                                    ctx.arc(cx, cy - size * 0.05, us * 0.75, 0, Math.PI * 2);
+                                    ctx.strokeStyle = 'rgba(155,89,182,0.6)';
+                                    ctx.lineWidth = 3 / camera.zoom;
+                                    ctx.setLineDash([3 / camera.zoom, 4 / camera.zoom]);
+                                    ctx.stroke();
+                                    ctx.setLineDash([]);
+                                    ctx.restore();
+                                }
 
-                            if (unit.veteranLevel > 0) {
-                                const iconKey = unit.veteranLevel === 1 ? 'veteran' : 'legendary';
-                                const vImg = images[iconKey];
-                                const vSize = unit.veteranLevel === 1 ? size * 0.25 : size * 0.3;
-                                const vx = cx + us / 2 - vSize / 2;
-                                const vy = cy - size * 0.05 - us / 2 - vSize / 2;
-                                if (vImg && vImg.complete && vImg.naturalWidth > 0) {
-                                    ctx.drawImage(vImg, vx, vy, vSize, vSize);
+                                if (unit.isNaval) {
+                                    ctx.save();
+                                    ctx.shadowColor = 'rgba(0,200,255,0.6)';
+                                    ctx.shadowBlur = 30 / camera.zoom;
+                                    ctx.shadowOffsetX = 0;
+                                    ctx.shadowOffsetY = 0;
                                 } else {
                                     ctx.save();
-                                    ctx.font = `${vSize}px sans-serif`;
+                                    ctx.shadowColor = 'rgba(255,220,100,0.7)';
+                                    ctx.shadowBlur = 45 / camera.zoom;
+                                }
+
+                                if (img && img.complete && img.naturalWidth > 0) {
+                                    ctx.drawImage(img, cx - us / 2, cy - us / 2 - size * 0.05, us, us);
+                                } else {
+                                    const tData = TRIBES_DATA.find(t => t.id === unit.tribeId);
+                                    const icon = tData ? tData.icon : '⚔️';
+                                    ctx.font = `${size * 0.7}px sans-serif`;
                                     ctx.textAlign = 'center';
                                     ctx.textBaseline = 'middle';
-                                    ctx.fillStyle = unit.veteranLevel === 1 ? '#ffaa00' : '#ff4444';
-                                    ctx.shadowColor = 'rgba(0,0,0,0.9)';
-                                    ctx.shadowBlur = 6;
-                                    ctx.fillText(unit.veteranLevel === 1 ? '★' : '⭐', vx + vSize / 2, vy + vSize / 2);
-                                    ctx.restore();
+                                    ctx.fillStyle = '#f0e6d3';
+                                    ctx.fillText(icon, cx, cy - size * 0.05);
+                                }
+                                ctx.restore();
+
+                                if (unit.veteranLevel > 0) {
+                                    const iconKey = unit.veteranLevel === 1 ? 'veteran' : 'legendary';
+                                    const vImg = images[iconKey];
+                                    const vSize = unit.veteranLevel === 1 ? size * 0.25 : size * 0.3;
+                                    const vx = cx + us / 2 - vSize / 2;
+                                    const vy = cy - size * 0.05 - us / 2 - vSize / 2;
+                                    if (vImg && vImg.complete && vImg.naturalWidth > 0) {
+                                        ctx.drawImage(vImg, vx, vy, vSize, vSize);
+                                    } else {
+                                        ctx.save();
+                                        ctx.font = `${vSize}px sans-serif`;
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillStyle = unit.veteranLevel === 1 ? '#ffaa00' : '#ff4444';
+                                        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                                        ctx.shadowBlur = 6;
+                                        ctx.fillText(unit.veteranLevel === 1 ? '★' : '⭐', vx + vSize / 2, vy + vSize /
+                                            2);
+                                        ctx.restore();
+                                    }
+                                }
+
+                                const hpPct = unit.hp / unit.maxHp;
+                                const barW = size * 0.5,
+                                    barH = 5 / camera.zoom;
+                                const bx = cx - barW / 2,
+                                    by = cy + size * 0.42;
+                                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                                ctx.fillRect(bx, by, barW, barH);
+                                ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : hpPct > 0.25 ? '#ff9800' : '#e53935';
+                                ctx.fillRect(bx, by, barW * hpPct, barH);
+
+                                if (G.selectedUnit && G.selectedUnit.id === unit.id) {
+                                    ctx.beginPath();
+                                    ctx.arc(cx, cy, size * 0.6, 0, Math.PI * 2);
+                                    ctx.strokeStyle = '#ffd700';
+                                    ctx.lineWidth = 2.5 / camera.zoom;
+                                    ctx.setLineDash([4 / camera.zoom, 6 / camera.zoom]);
+                                    ctx.stroke();
+                                    ctx.setLineDash([]);
                                 }
                             }
 
-                            const hpPct = unit.hp / unit.maxHp;
-                            const barW = size * 0.5,
-                                barH = 5 / camera.zoom;
-                            const bx = cx - barW / 2,
-                                by = cy + size * 0.42;
-                            ctx.fillStyle = 'rgba(0,0,0,0.6)';
-                            ctx.fillRect(bx, by, barW, barH);
-                            ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : hpPct > 0.25 ? '#ff9800' : '#e53935';
-                            ctx.fillRect(bx, by, barW * hpPct, barH);
-
-                            if (G.selectedUnit && G.selectedUnit.id === unit.id) {
+                            // ─── Selection highlights ───
+                            if (G.selectedHex && G.selectedHex.q === q && G.selectedHex.r === r) {
                                 ctx.beginPath();
-                                ctx.arc(cx, cy, size * 0.6, 0, Math.PI * 2);
-                                ctx.strokeStyle = '#ffd700';
+                                ctx.arc(cx, cy, size * 0.45, 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(255,215,0,0.2)';
+                                ctx.lineWidth = 2 / camera.zoom;
+                                ctx.stroke();
+                            }
+
+                            if (G.selectedCity && G.selectedCity.q === q && G.selectedCity.r === r) {
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(0,255,200,0.4)';
+                                ctx.lineWidth = 2 / camera.zoom;
+                                ctx.stroke();
+                            }
+                            if (G.selectedHarbor && G.selectedHarbor.q === q && G.selectedHarbor.r === r) {
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(0,200,255,0.5)';
+                                ctx.lineWidth = 2 / camera.zoom;
+                                ctx.stroke();
+                            }
+                            if (G.selectedResourceTile && G.selectedResourceTile.q === q && G.selectedResourceTile.r ===
+                                r) {
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(0,255,100,0.5)';
                                 ctx.lineWidth = 2.5 / camera.zoom;
-                                ctx.setLineDash([4 / camera.zoom, 6 / camera.zoom]);
+                                ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
                                 ctx.stroke();
                                 ctx.setLineDash([]);
                             }
+                            if (G.selectedWaterTile && G.selectedWaterTile.q === q && G.selectedWaterTile.r === r) {
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                                ctx.strokeStyle = 'rgba(0,200,255,0.6)';
+                                ctx.lineWidth = 2.5 / camera.zoom;
+                                ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
+                                ctx.stroke();
+                                ctx.setLineDash([]);
+                            }
+                        } else {
+                            // Not visible, but explored – draw minimal
+                            if (tile.city) {
+                                ctx.font = `${size * 0.4}px sans-serif`;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = 'rgba(100,80,60,0.4)';
+                                ctx.fillText('🏚️', cx, cy);
+                            }
+                            if (tile.unit) {
+                                ctx.font = `${size * 0.4}px sans-serif`;
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = 'rgba(100,80,60,0.4)';
+                                ctx.fillText('⚔️', cx, cy);
+                            }
                         }
-
-                        // ─── Selection highlights ───
-                        if (G.selectedHex && G.selectedHex.q === q && G.selectedHex.r === r) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.45, 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(255,215,0,0.2)';
-                            ctx.lineWidth = 2 / camera.zoom;
-                            ctx.stroke();
-                        }
-
-                        if (G.selectedCity && G.selectedCity.q === q && G.selectedCity.r === r) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(0,255,200,0.4)';
-                            ctx.lineWidth = 2 / camera.zoom;
-                            ctx.stroke();
-                        }
-                        if (G.selectedHarbor && G.selectedHarbor.q === q && G.selectedHarbor.r === r) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.55, 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(0,200,255,0.5)';
-                            ctx.lineWidth = 2 / camera.zoom;
-                            ctx.stroke();
-                        }
-                        if (G.selectedResourceTile && G.selectedResourceTile.q === q && G.selectedResourceTile.r === r) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(0,255,100,0.5)';
-                            ctx.lineWidth = 2.5 / camera.zoom;
-                            ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
-                            ctx.stroke();
-                            ctx.setLineDash([]);
-                        }
-                        if (G.selectedWaterTile && G.selectedWaterTile.q === q && G.selectedWaterTile.r === r) {
-                            ctx.beginPath();
-                            ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
-                            ctx.strokeStyle = 'rgba(0,200,255,0.6)';
-                            ctx.lineWidth = 2.5 / camera.zoom;
-                            ctx.setLineDash([4 / camera.zoom, 4 / camera.zoom]);
-                            ctx.stroke();
-                            ctx.setLineDash([]);
-                        }
-                    } else {
-                        if (tile.city) {
-                            ctx.font = `${size * 0.4}px sans-serif`;
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.fillStyle = 'rgba(100,80,60,0.4)';
-                            ctx.fillText('🏚️', cx, cy);
-                        }
-                        if (tile.unit) {
-                            ctx.font = `${size * 0.4}px sans-serif`;
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.fillStyle = 'rgba(100,80,60,0.4)';
-                            ctx.fillText('⚔️', cx, cy);
-                        }
+                    } catch (e) {
+                        console.warn(`Error rendering tile (${q},${r}):`, e);
+                        // Continue to next tile
                     }
                 }
             }
             ctx.restore();
 
-            // ─── Popover messages with background ────────────────────
+            // ─── Popover messages ────────────────────────────────────
             if (G.eliminationMessages.length > 0) {
                 const msg = G.eliminationMessages[G.eliminationMessages.length - 1];
                 const fontSize = 20;
@@ -6744,14 +7054,12 @@
         }
 
         function goToStep(stepId) {
-            // Oba mode: skip opponent selection and start directly
             if (stepId === 'step-opponents' && selectedMode === 'oba') {
                 setupNewGame();
                 return;
             }
             document.querySelectorAll('.ng-step').forEach(el => el.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
-            // If we are going to step-tribe, update the next button text based on mode
             if (stepId === 'step-tribe') {
                 const nextBtn = document.getElementById('tribe-next-btn');
                 if (selectedMode === 'oba') {
@@ -6775,7 +7083,6 @@
             selectedMode = btn.dataset.mode;
             const customOpts = document.getElementById('custom-options');
             customOpts.classList.toggle('show', selectedMode === 'custom');
-            // Update the tribe step next button if we're already on that step
             const activeStep = document.querySelector('.ng-step.active');
             if (activeStep && activeStep.id === 'step-tribe') {
                 const nextBtn = document.getElementById('tribe-next-btn');
@@ -6975,7 +7282,6 @@
                 G.playerGold = 80;
                 G.eliminationMessages = [];
                 resetSettlementNames();
-                // Scale map based on number of tribes
                 const numTribes = G.opponents.length + 1;
                 scaleMapSize(numTribes);
                 generateMap();
@@ -7033,7 +7339,6 @@
             G.eliminationMessages = [];
             resetSettlementNames();
 
-            // Scale map based on number of tribes
             const numTribes = G.opponents.length + 1;
             scaleMapSize(numTribes);
 
@@ -7049,16 +7354,13 @@
         }
 
         function scaleMapSize(numTribes) {
-            // Base map size for ~6 tribes, scale proportionally
             const baseTribes = 6;
             const baseWidth = 20;
             const baseHeight = 14;
-            // Use square root scaling: total hexes ~ numTribes * 40
             const totalHexes = Math.max(200, numTribes * 40);
-            const aspect = baseWidth / baseHeight; // ~1.43
+            const aspect = baseWidth / baseHeight;
             let h = Math.floor(Math.sqrt(totalHexes / aspect));
             let w = Math.floor(aspect * h);
-            // Clamp to reasonable range
             w = Math.max(14, Math.min(30, w));
             h = Math.max(10, Math.min(20, h));
             G.mapWidth = w;
@@ -7094,7 +7396,7 @@
 
         // ─── MAIN INIT ──────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
-            console.log(`Oba v${GAME_VERSION} – Productivity cost from stockpile/progress, Oba skip, map scaling`);
+            console.log(`Oba v${GAME_VERSION} – AI improved, wonders as background, tooltip fix, audio support.`);
             const textLogo = document.getElementById('menu-text-logo');
             if (textLogo) textLogo.style.display = 'block';
 
@@ -7103,6 +7405,13 @@
                 loadBtn.disabled = false;
                 loadBtn.classList.remove('secondary');
                 loadBtn.classList.add('primary');
+            }
+
+            // Init audio
+            initAudio();
+            currentScreen = 'menu-screen';
+            if (audioEnabled) {
+                setTimeout(() => playMenuMusic(), 500);
             }
 
             showScreen('menu-screen');
@@ -7193,7 +7502,7 @@
 
                 setupPopupDismissal();
 
-                console.log('Oba v0.19.1 – Productivity cost from stockpile/progress, Oba skip, map scaling.');
+                console.log('Oba v0.21.0 – AI improved, wonders as background, tooltip fix, audio support.');
             });
         });
     </script>
