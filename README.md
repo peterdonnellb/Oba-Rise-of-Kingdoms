@@ -1,6 +1,6 @@
 # Oba – Rise of Kingdoms
 
-**Version 0.19.1** · *A 4X Turn-Based Strategy Game*
+**Version 0.23.0** · *A 4X Turn-Based Strategy Game*
 
 ![Oba Logo](logo_oba.png)
 
@@ -23,10 +23,12 @@
    - [Movement & Pathfinding](#movement--pathfinding)
    - [Combat](#combat)
    - [City Management](#city-management)
+   - [City Settlement Types](#city-settlement-types)
    - [Technology Tree](#technology-tree)
    - [Wonders](#wonders)
    - [Resources & Improvements](#resources--improvements)
      - [Mines](#mines)
+     - [Gem Mines](#gem-mines)
      - [Quarries](#quarries)
      - [Farms](#farms)
      - [Fishing Boats](#fishing-boats)
@@ -41,15 +43,17 @@
    - [Top Bar](#top-bar)
    - [Bottom Bar](#bottom-bar)
    - [Action Popup](#action-popup)
+   - [In-Game Menu (Mobile Style)](#in-game-menu-mobile-style)
    - [Modal Dialogs](#modal-dialogs)
 8. [Game Modes](#game-modes)
    - [Conquest](#conquest)
    - [Sands of Time](#sands-of-time)
    - [Oba](#oba)
    - [Custom](#custom)
-9. [Images & Assets](#images--assets)
-10. [Tips & Strategies](#tips--strategies)
-11. [Credits](#credits)
+9. [Audio & Music](#audio--music)
+10. [Images & Assets](#images--assets)
+11. [Tips & Strategies](#tips--strategies)
+12. [Credits](#credits)
 
 ---
 
@@ -63,7 +67,7 @@ The game features:
 - Over a dozen technologies and four world wonders.
 - City management, unit production, and tactical combat.
 - Multiple game modes: Conquest, Sands of Time, Oba (all tribes, hard AI), and Custom.
-- Persistent saving and loading.
+- Persistent saving and loading with auto-save every 3 turns.
 
 ---
 
@@ -79,7 +83,7 @@ Will you rise as the Oba, or will your name be lost to the desert winds?
 
 ## Tribes
 
-Each tribe has its own history, unit roster, colour, icon, and AI personality. Choose wisely – your tribe’s strengths shape your path to victory.
+Each tribe has its own history, unit roster, colour, icon, and AI personality. Choose wisely – your tribe's strengths shape your path to victory.
 
 ### Tribe List
 
@@ -192,19 +196,21 @@ Naval units are built in **Harbors** (requires **Sailing**) and can move on wate
 Each turn consists of:
 1. **Player Phase**: Move units, attack, use abilities, manage cities, research, etc.
 2. **End Turn** – All units heal 5 HP if they did not move/attack. Cities produce stockpile. Harbors produce ships. Gold income is calculated.
-3. **AI Phase** – All enemy tribes take their turns simultaneously (but processed sequentially).
+3. **AI Phase** – All enemy tribes take their turns simultaneously (but processed sequentially). AI units use improved pathfinding to move towards targets.
 4. **Turn Counter** increments.
+5. **Auto-Save** – The game automatically saves every 3 turns without showing a popup.
 
 ### Movement & Pathfinding
 
 - Click a unit to select it. A popup appears with available actions.
-- To **Move**, click a highlighted (green) hex within movement range. Pathfinding finds the shortest route.
+- To **Move**, click a highlighted (green) hex within movement range. The improved A*-style pathfinding finds the shortest route.
 - Terrain affects movement cost:
   - Plains/Desert: 1
   - Forest/Hill: 2
   - Mountain: 2 (but can be traversed)
   - Water: impassable for land units, passable for naval.
 - Units cannot move onto tiles occupied by enemy units (except to attack).
+- The AI uses the same pathfinding system and will move as far as possible toward its target within its movement range.
 
 ### Combat
 
@@ -219,7 +225,7 @@ Each turn consists of:
 ### City Management
 
 Cities are the heart of your empire. Each city:
-- Produces **stockpile** each turn (`level * 2` + bonuses from Great Zimbabwe).
+- Produces **stockpile** each turn (`level * 2` + bonuses from Great Zimbabwe + Gem Mine bonuses).
 - Can have a **project** (unit, tech, or wonder) that consumes stockpile and progress.
 - **Productivity** (stockpile) is used to complete projects.
 - Changing projects does not lose progress – stockpile and progress persist separately.
@@ -234,6 +240,20 @@ Cities are the heart of your empire. Each city:
   ![Library](library.png)
 - **Build University** (level 4, requires Library): +4 research per turn.  
   ![University](university.png)
+
+### City Settlement Types
+
+Cities are visually represented with different settlement graphics depending on their level and ownership:
+
+| Settlement Type    | Level | Graphic File              | Description                              |
+|--------------------|-------|---------------------------|------------------------------------------|
+| Neutral Village    | 1     | `settlement_neutral.png`  | Unclaimed settlement, can be captured    |
+| Village            | 1     | `settlement_village.png`  | Basic settlement, minimal influence      |
+| Town               | 2     | `settlement_town.png`     | Growing settlement, radius 1 influence   |
+| City               | 3     | `settlement_city.png`     | Developed city, radius 2 influence       |
+| Capital/Metropolis | 4+    | `settlement_capital.png`  | Maximum development, radius 2 influence  |
+
+Neutral villages appear on the map at game start and can be captured by moving a unit onto them.
 
 ### Technology Tree
 
@@ -260,7 +280,7 @@ Technologies are grouped into tiers (0–3). Each requires specific prerequisite
 
 ### Wonders
 
-Four great wonders can be built, each providing a powerful empire‑wide bonus. Building a wonder requires a city project; once complete, a wonder icon appears on a nearby tile.
+Four great wonders can be built, each providing a powerful empire‑wide bonus. Building a wonder requires a city project; once complete, a wonder icon appears on a nearby tile and replaces the tile's background image.
 
 | Wonder                     | Cost (prod) | Requirement | Bonus                                  |
 |----------------------------|-------------|-------------|----------------------------------------|
@@ -269,7 +289,7 @@ Four great wonders can be built, each providing a powerful empire‑wide bonus. 
 | University of Timbuktu     | 100         | Philosophy  | +4 research per turn                   |
 | Axum Obelisks              | 90          | Masonry     | +2 vision for all units                |
 
-Wonder icons:  
+Wonder icons (also used as background images for the tile):  
 ![Pyramids](wonder_pyramids.png)  
 ![Great Zimbabwe](wonder_great_zimbabwe.png)  
 ![Timbuktu](wonder_timbuktu.png)  
@@ -285,6 +305,13 @@ Resources appear on the map as icons. They can be improved by spending **product
 - **Cost**: 5 productivity.
 - **Effect**: +2 gold per turn for the controlling city.  
   ![Mine](mine.png)
+
+#### Gem Mines
+- **Location**: On gem resources (found on mountain tiles).  
+  ![Gem](resource_gem.png)
+- **Cost**: 6 productivity.
+- **Effect**: +3 production per turn for the controlling city, AND -15% discount on improvement and wonder costs in that city.  
+  ![Gem Mine](gem_mine.png)
 
 #### Quarries
 - **Location**: On stone resources.  
@@ -341,6 +368,7 @@ Both are visible on the city hex.
   ![Fog](fog.png)
 - Units and cities reveal tiles within their vision range.
 - Explored tiles remain visible but are dim if not currently seen.
+- Tooltips appear on hover over visible tiles showing unit info, city details, and improvement descriptions.
 
 ### Influence & Territory
 
@@ -367,6 +395,9 @@ The AI uses personalities (see table) to decide strategies. It:
 - Prioritises research and unit production based on its personality.
 - Attacks weakest enemies or expands based on game mode.
 - Adapts to the situation (defensive if outnumbered, aggressive if strong).
+- Uses improved A*-style pathfinding to move units toward targets.
+- Prioritises low-HP enemy units for attacks.
+- Checks attack opportunities before and after moving.
 - Difficulty levels (Easy, Normal, Hard) affect AI behaviour and bonuses (currently implemented but subtle).
 
 **Note**: In **Oba** mode, the AI is set to **Hard** by default, making it more aggressive and coordinated.
@@ -402,7 +433,30 @@ When you click a unit, city, harbor, or resource tile, a popup appears with rele
 - **Build Raft** (gold cost): Embark onto adjacent water.
 - **Manage City** (B): Opens city production modal.
 - **Upgrade City**: Upgrade the city (if on a city hex).
-- **Resource improvements** (Mine, Quarry, Farm, Fishing, Sawpit) appear when clicking a resource tile.
+- **Resource improvements** (Mine, Gem Mine, Quarry, Farm, Fishing, Sawpit) appear when clicking a resource tile.
+
+### In-Game Menu (Mobile Style)
+
+The in-game menu is a modern mobile-style overlay with the following sections:
+
+**Game Section:**
+- Displays current turn and gold.
+- Quick link to Rankings (📊)
+- Quick link to Technology Tree (📜)
+
+**Sound Section:**
+- Music toggle with visual indicator (🔊/🔇)
+- Volume slider (0-100%) with percentage display
+
+**Actions Section:**
+- Save Game (with confirmation popup)
+- Restart Game (with confirmation)
+- Quit to Menu (auto-saves without popup)
+
+**Quick Controls Reference:**
+- Shows keyboard shortcuts: M (Move), A (Attack), H (Heal), Space (Skip), E (End Turn)
+
+The menu slides up with a smooth animation and is fully responsive for mobile devices. A floating audio toggle button is positioned 5px above the End Turn button and hides when the menu is open.
 
 ### Modal Dialogs
 
@@ -410,7 +464,7 @@ When you click a unit, city, harbor, or resource tile, a popup appears with rele
 - **City Production**: Manage projects, view stockpile/progress, produce units, research techs, build wonders, upgrade city, build Library/University.
 - **Harbor Management**: Produce or buy naval units.
 - **Progress & Rankings**: See all tribes' city count and territory.
-- **Menu**: Resume, Main Menu, Restart.
+- **Menu**: Resume, Main Menu, Restart (with modern mobile style).
 - **How to Play**: Full tutorial.
 
 ---
@@ -439,17 +493,70 @@ When you click a unit, city, harbor, or resource tile, a popup appears with rele
 
 ---
 
+## Audio & Music
+
+The game features background music that automatically transitions between screens:
+
+- **Menu Music** (`menu.mp3`): Plays on the main menu.
+- **Battle Music** (`battle.mp3`): Plays during gameplay.
+
+**Audio Controls:**
+- Floating mute button (🔊/🔇) in the game screen, positioned above the End Turn button.
+- In-game menu provides a music toggle and a volume slider (0-100%).
+- Volume settings persist during the session.
+
+**Note**: Audio requires the `menu.mp3` and `battle.mp3` files to be present in the game directory.
+
+---
+
+## Images & Assets
+
+The game requires the following PNG files in the same directory as the HTML file:
+
+**Tribe Icons:**
+- `tribe_zulu.png`, `tribe_ashanti.png`, `tribe_yoruba.png`, `tribe_maasai.png`, `tribe_berber.png`, `tribe_hausa.png`, `tribe_dogon.png`, `tribe_songhai.png`, `tribe_oromo.png`, `tribe_tutsi.png`, `tribe_swahili.png`, `tribe_nubian.png`
+
+**Unit Sprites (per tribe):**
+- `{tribe}_scout.png`, `{tribe}_foot.png`, `{tribe}_mounted.png`, `{tribe}_shield.png`, `{tribe}_ranged.png`, `{tribe}_elite.png`, `{tribe}_tank.png`, `{tribe}_general.png`
+- `{tribe}_raft.png`, `{tribe}_galley.png`, `{tribe}_warship.png`
+
+**Terrain:**
+- `hex_plains.png`, `hex_forest.png`, `hex_mountain.png`, `hex_water.png`, `hex_hill.png`, `hex_desert.png`
+- `settlement_village.png`, `settlement_town.png`, `settlement_city.png`, `settlement_capital.png`, `settlement_neutral.png`
+- `fog.png`
+
+**Resources & Improvements:**
+- `resource_gold.png`, `resource_gem.png`, `resource_food.png`, `resource_wood.png`, `resource_stone.png`, `resource_fish.png`
+- `mine.png`, `gem_mine.png`, `quarry.png`, `farm.png`, `fishing.png`, `sawpit.png`, `harbor.png`
+
+**Wonders:**
+- `wonder_pyramids.png`, `wonder_great_zimbabwe.png`, `wonder_timbuktu.png`, `wonder_obelisks.png`
+
+**UI & Misc:**
+- `logo_oba.png`, `menu_background.png`
+- `veteran.png`, `legendary.png`
+- `library.png`, `university.png`
+- `ui_gold.png`, `ui_sword.png`, `ui_shield.png`, `ui_move.png`, `ui_health.png`
+
+**Audio:**
+- `menu.mp3`, `battle.mp3`
+
+---
+
 ## Tips & Strategies
 
 - **Early game**: Build a Scout to explore and reveal the map. Claim neutral villages quickly.
 - **Production**: Focus on city development; upgrade your capital to level 2 to expand influence.
 - **Research**: Prioritise Bronze Working and Masonry early for combat and city defense.
 - **Wonders**: Great Zimbabwe boosts production immensely – rush it if possible.
+- **Gem Mines**: Build Gem Mines on mountain resources for +3 production and -15% improvement/wonder costs.
 - **Naval**: If you have coastal cities, build Harbors and Galleys to control sea lanes and raid coastal enemies.
-- **Discount stacking**: Build Farms, Fishing Boats, and Sawpits in the same city to drastically reduce unit and upgrade costs.
+- **Discount stacking**: Build Farms, Fishing Boats, Sawpits, and Gem Mines in the same city to drastically reduce unit and upgrade costs.
 - **Generals**: Use your General's ability every turn for a significant tactical advantage.
 - **AI**: The AI tends to attack the weakest neighbour; keep a strong defensive unit in border cities.
 - **Oba mode**: Expect a challenging early game; expand quickly and form a solid front.
+- **Saving**: Use the in-game menu to save manually. Auto-save runs every 3 turns silently.
+- **Pathfinding**: The AI now uses improved pathfinding, so expect smarter enemy movements.
 
 ---
 
