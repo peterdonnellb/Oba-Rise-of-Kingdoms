@@ -1089,6 +1089,13 @@
         #action-popup button.mine-btn:hover:not(:disabled) {
             background: rgba(241, 196, 15, 0.12);
         }
+        #action-popup button.gem-btn {
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+        #action-popup button.gem-btn:hover:not(:disabled) {
+            background: rgba(155, 89, 182, 0.15);
+        }
         #action-popup button.quarry-btn {
             border-color: #95a5a6;
             color: #95a5a6;
@@ -1393,13 +1400,271 @@
         #tooltip.show {
             display: block;
         }
-        
-        /* ─── AUDIO CONTROLS ─── */
+
+        /* ─── IN-GAME MENU (Mobile Style) ───────────────────────── */
+        #game-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 250;
+            animation: fadeIn 0.25s ease;
+        }
+        #game-menu-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #game-menu-panel {
+            background: radial-gradient(ellipse at 50% 30%, #2a1a3a 0%, #0a0a12 100%);
+            border: 2px solid var(--coastal-gold);
+            border-radius: 24px;
+            padding: 20px 24px 28px 24px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 215, 0, 0.05);
+            animation: slideUp 0.3s ease;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #game-menu-panel::-webkit-scrollbar {
+            width: 3px;
+        }
+        #game-menu-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #game-menu-panel::-webkit-scrollbar-thumb {
+            background: var(--coastal-gold);
+            border-radius: 4px;
+        }
+
+        .game-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(201, 162, 39, 0.15);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+        .game-menu-title {
+            font-family: 'MedievalSharp', cursive;
+            font-size: clamp(1.3rem, 4vw, 1.6rem);
+            color: var(--antique-gold);
+            letter-spacing: 2px;
+        }
+        .game-menu-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #4a3528;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #b8957a;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .game-menu-close:active {
+            background: rgba(74, 53, 40, 0.3);
+            transform: scale(0.92);
+        }
+
+        .game-menu-section {
+            margin-bottom: 16px;
+        }
+        .game-menu-section-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #6b5a4a;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(42, 26, 16, 0.3);
+            padding-bottom: 4px;
+        }
+
+        .game-menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 8px;
+            border-radius: 10px;
+            background: rgba(20, 18, 24, 0.3);
+            margin-bottom: 4px;
+            transition: 0.2s;
+            min-height: 48px;
+        }
+        .game-menu-item:active {
+            background: rgba(74, 53, 40, 0.2);
+        }
+        .game-menu-item-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            color: var(--cream-muted);
+        }
+        .game-menu-item-label .icon {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .game-menu-item-action {
+            color: var(--coastal-gold);
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: 0.2s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+        .game-menu-item-action:active {
+            transform: scale(0.92);
+        }
+        .game-menu-item-action.danger {
+            color: #b85a4a;
+        }
+        .game-menu-item-action.primary {
+            color: var(--vivid-gold);
+        }
+
+        .game-menu-toggle {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            background: #2a1a10;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            border: 1px solid #4a3528;
+        }
+        .game-menu-toggle.active {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: var(--coastal-gold);
+        }
+        .game-menu-toggle .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: #6b5a4a;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .game-menu-toggle.active .knob {
+            left: 22px;
+            background: var(--coastal-gold);
+        }
+
+        .game-menu-slider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        .game-menu-slider input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: #3a281e;
+            outline: none;
+            transition: 0.2s;
+        }
+        .game-menu-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--coastal-gold);
+            cursor: pointer;
+            border: 2px solid var(--near-black);
+        }
+        .game-menu-slider input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--coastal-gold);
+            cursor: pointer;
+            border: 2px solid var(--near-black);
+        }
+        .game-menu-slider-value {
+            min-width: 32px;
+            text-align: center;
+            color: var(--cream-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .game-menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.1), transparent);
+            margin: 6px 0;
+        }
+
+        .game-menu-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .game-menu-row .game-menu-item {
+            flex: 1;
+            min-width: 80px;
+            justify-content: center;
+        }
+        .game-menu-row .game-menu-item .game-menu-item-label {
+            font-size: 0.85rem;
+        }
+
+        /* ─── AUDIO TOGGLE (floating, repositioned) ─── */
         #audio-toggle {
             position: fixed;
-            bottom: 20px;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 64px + 5px);
             right: 20px;
-            z-index: 500;
+            z-index: 240;
             background: rgba(20, 18, 24, 0.8);
             border: 1px solid rgba(201, 162, 39, 0.3);
             border-radius: 50%;
@@ -1423,10 +1688,82 @@
         #audio-toggle:active {
             transform: scale(0.92);
         }
+        #audio-toggle.hidden {
+            display: none;
+        }
+
+        /* ─── MEDIA QUERIES ─── */
+        @media (max-width: 480px) {
+            #game-menu-panel {
+                padding: 16px 16px 20px 16px;
+                margin: 12px;
+                max-width: 100%;
+                border-radius: 20px;
+            }
+            .game-menu-item {
+                padding: 8px 6px;
+                min-height: 44px;
+            }
+            .game-menu-item-label {
+                font-size: 0.85rem;
+            }
+            .game-menu-toggle {
+                width: 42px;
+                height: 24px;
+            }
+            .game-menu-toggle .knob {
+                width: 18px;
+                height: 18px;
+            }
+            .game-menu-toggle.active .knob {
+                left: 20px;
+            }
+            .game-menu-slider input[type="range"] {
+                height: 3px;
+            }
+            .game-menu-slider input[type="range"]::-webkit-slider-thumb {
+                width: 14px;
+                height: 14px;
+            }
+            .game-menu-slider-value {
+                min-width: 28px;
+                font-size: 0.8rem;
+            }
+            #audio-toggle {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+                right: 12px;
+                bottom: calc(env(safe-area-inset-bottom, 0px) + 56px + 5px);
+            }
+        }
+
+        @media (max-width: 380px) {
+            #game-menu-panel {
+                padding: 12px 12px 16px 12px;
+            }
+            .game-menu-item-label {
+                font-size: 0.8rem;
+                gap: 6px;
+            }
+            .game-menu-item-label .icon {
+                font-size: 0.9rem;
+                width: 20px;
+            }
+            .game-menu-title {
+                font-size: 1.1rem;
+            }
+            #audio-toggle {
+                width: 34px;
+                height: 34px;
+                font-size: 0.9rem;
+                bottom: calc(env(safe-area-inset-bottom, 0px) + 50px + 5px);
+                right: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-
     <!-- ════════════════════════════════════════════════════════════════ -->
     <!-- MAIN MENU -->
     <!-- ════════════════════════════════════════════════════════════════ -->
@@ -1585,6 +1922,7 @@
                     <button data-action="build-raft"><span class="action-icon">🪵</span><span class="action-label">Build Raft</span></button>
                     <button data-action="build-sawpit" class="sawpit-btn" style="display:none;"><span class="action-icon">🪵</span><span class="action-label">Build Sawpit</span></button>
                     <button data-action="build-mine" class="mine-btn" style="display:none;"><span class="action-icon">⛏️</span><span class="action-label">Build Mine</span></button>
+                    <button data-action="build-gem-mine" class="gem-btn" style="display:none;"><span class="action-icon">💎</span><span class="action-label">Build Gem Mine</span></button>
                     <button data-action="build-quarry" class="quarry-btn" style="display:none;"><span class="action-icon">🪨</span><span class="action-label">Build Quarry</span></button>
                     <button data-action="launch-fishing" class="fish-btn" style="display:none;"><span class="action-icon">🎣</span><span class="action-label">Launch Fishing Boats</span></button>
                     <button data-action="build-farm" class="farm-btn" style="display:none;"><span class="action-icon">🌾</span><span class="action-label">Build Farm</span></button>
@@ -1624,7 +1962,114 @@
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════ -->
-    <!-- AUDIO TOGGLE -->
+    <!-- IN-GAME MENU (Mobile Style) -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div id="game-menu-overlay">
+        <div id="game-menu-panel">
+            <div class="game-menu-header">
+                <span class="game-menu-title">⚔ Menu</span>
+                <button class="game-menu-close" onclick="closeInGameMenu()">✕</button>
+            </div>
+
+            <!-- Game Info -->
+            <div class="game-menu-section">
+                <div class="game-menu-section-title">Game</div>
+                <div class="game-menu-item">
+                    <span class="game-menu-item-label">
+                        <span class="icon">📊</span>
+                        <span id="menu-game-info">Turn 0 · Gold: 0</span>
+                    </span>
+                </div>
+                <div class="game-menu-item" onclick="showProgressModal(); closeInGameMenu();">
+                    <span class="game-menu-item-label">
+                        <span class="icon">🏆</span>
+                        <span>Rankings</span>
+                    </span>
+                    <span class="game-menu-item-action">➜</span>
+                </div>
+                <div class="game-menu-item" onclick="showTechTree(); closeInGameMenu();">
+                    <span class="game-menu-item-label">
+                        <span class="icon">📜</span>
+                        <span>Technology Tree</span>
+                    </span>
+                    <span class="game-menu-item-action">➜</span>
+                </div>
+            </div>
+
+            <div class="game-menu-divider"></div>
+
+            <!-- Audio -->
+            <div class="game-menu-section">
+                <div class="game-menu-section-title">Sound</div>
+                <div class="game-menu-item">
+                    <span class="game-menu-item-label">
+                        <span class="icon" id="menu-audio-icon">🔊</span>
+                        <span id="menu-audio-label">Music</span>
+                    </span>
+                    <div class="game-menu-toggle active" id="menu-audio-toggle" onclick="toggleAudioFromMenu()">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+                <div class="game-menu-item">
+                    <span class="game-menu-item-label">
+                        <span class="icon">🔉</span>
+                        <span>Volume</span>
+                    </span>
+                    <div class="game-menu-slider">
+                        <input type="range" id="menu-volume-slider" min="0" max="100" value="40" oninput="updateVolume(this.value)" />
+                        <span class="game-menu-slider-value" id="menu-volume-display">40%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-menu-divider"></div>
+
+            <!-- Actions -->
+            <div class="game-menu-section">
+                <div class="game-menu-section-title">Actions</div>
+                <div class="game-menu-row">
+                    <div class="game-menu-item" onclick="saveGame(true); closeInGameMenu();">
+                        <span class="game-menu-item-label">
+                            <span class="icon">💾</span>
+                            <span>Save</span>
+                        </span>
+                    </div>
+                    <div class="game-menu-item" onclick="confirmRestart();">
+                        <span class="game-menu-item-label">
+                            <span class="icon">🔄</span>
+                            <span>Restart</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="game-menu-item" onclick="confirmQuit();">
+                    <span class="game-menu-item-label">
+                        <span class="icon">🚪</span>
+                        <span>Quit to Menu</span>
+                    </span>
+                    <span class="game-menu-item-action danger">✕</span>
+                </div>
+            </div>
+
+            <div class="game-menu-divider"></div>
+
+            <!-- Controls Help -->
+            <div class="game-menu-section">
+                <div class="game-menu-section-title">Quick Controls</div>
+                <div class="game-menu-item" style="background:rgba(20,18,24,0.15); justify-content:center; gap:12px; flex-wrap:wrap;">
+                    <span style="color:#6b5a4a; font-size:0.7rem; display:flex; gap:8px; flex-wrap:wrap;">
+                        <span><kbd style="background:#1a0e08; padding:2px 8px; border-radius:4px; border:1px solid #3a281e;">M</kbd> Move</span>
+                        <span><kbd style="background:#1a0e08; padding:2px 8px; border-radius:4px; border:1px solid #3a281e;">A</kbd> Attack</span>
+                        <span><kbd style="background:#1a0e08; padding:2px 8px; border-radius:4px; border:1px solid #3a281e;">H</kbd> Heal</span>
+                        <span><kbd style="background:#1a0e08; padding:2px 8px; border-radius:4px; border:1px solid #3a281e;">Space</kbd> Skip</span>
+                        <span><kbd style="background:#1a0e08; padding:2px 8px; border-radius:4px; border:1px solid #3a281e;">E</kbd> End Turn</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- AUDIO TOGGLE (floating, repositioned above End Turn button) -->
     <!-- ════════════════════════════════════════════════════════════════ -->
     <button id="audio-toggle" onclick="toggleAudio()" title="Toggle Music">🔊</button>
 
@@ -1640,12 +2085,13 @@
         let audioEnabled = true;
         let audioGainNode = null;
         let currentScreen = 'menu-screen';
-        
+        let volumeLevel = 0.4;
+
         function initAudio() {
             try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx = new(window.AudioContext || window.webkitAudioContext)();
                 audioGainNode = audioCtx.createGain();
-                audioGainNode.gain.value = 0.4;
+                audioGainNode.gain.value = volumeLevel;
                 audioGainNode.connect(audioCtx.destination);
                 loadMenuAudio();
                 loadBattleAudio();
@@ -1655,7 +2101,7 @@
                 document.getElementById('audio-toggle').style.display = 'none';
             }
         }
-        
+
         function loadMenuAudio() {
             if (!audioCtx) return;
             fetch('menu.mp3')
@@ -1669,7 +2115,7 @@
                 })
                 .catch(() => console.log('menu.mp3 not found'));
         }
-        
+
         function loadBattleAudio() {
             if (!audioCtx) return;
             fetch('battle.mp3')
@@ -1683,7 +2129,7 @@
                 })
                 .catch(() => console.log('battle.mp3 not found'));
         }
-        
+
         function playMenuMusic() {
             if (!audioEnabled || !audioCtx || !menuAudioBuffer) return;
             stopAudio();
@@ -1694,7 +2140,7 @@
             source.start(0);
             currentAudioSource = source;
         }
-        
+
         function playBattleMusic() {
             if (!audioEnabled || !audioCtx || !battleAudioBuffer) return;
             stopAudio();
@@ -1705,7 +2151,7 @@
             source.start(0);
             currentAudioSource = source;
         }
-        
+
         function stopAudio() {
             if (currentAudioSource) {
                 try {
@@ -1714,16 +2160,22 @@
                 currentAudioSource = null;
             }
         }
-        
+
         function toggleAudio() {
             audioEnabled = !audioEnabled;
             const btn = document.getElementById('audio-toggle');
+            const toggle = document.getElementById('menu-audio-toggle');
+            const icon = document.getElementById('menu-audio-icon');
+            const label = document.getElementById('menu-audio-label');
+
             if (audioEnabled) {
                 btn.textContent = '🔊';
+                toggle.classList.add('active');
+                icon.textContent = '🔊';
+                label.textContent = 'Music';
                 if (audioCtx && audioCtx.state === 'suspended') {
                     audioCtx.resume();
                 }
-                // Resume music based on current screen
                 if (currentScreen === 'menu-screen') {
                     playMenuMusic();
                 } else if (currentScreen === 'game-screen') {
@@ -1731,19 +2183,111 @@
                 }
             } else {
                 btn.textContent = '🔇';
+                toggle.classList.remove('active');
+                icon.textContent = '🔇';
+                label.textContent = 'Muted';
                 stopAudio();
                 if (audioCtx) {
                     audioCtx.suspend();
                 }
             }
+            updateVolumeDisplay();
         }
-        
+
+        function toggleAudioFromMenu() {
+            toggleAudio();
+        }
+
+        function updateVolume(value) {
+            volumeLevel = parseInt(value) / 100;
+            if (audioGainNode) {
+                audioGainNode.gain.value = volumeLevel;
+            }
+            document.getElementById('menu-volume-display').textContent = Math.round(volumeLevel * 100) + '%';
+            if (volumeLevel > 0 && !audioEnabled) {
+                audioEnabled = true;
+                document.getElementById('audio-toggle').textContent = '🔊';
+                document.getElementById('menu-audio-toggle').classList.add('active');
+                document.getElementById('menu-audio-icon').textContent = '🔊';
+                document.getElementById('menu-audio-label').textContent = 'Music';
+                if (currentScreen === 'menu-screen') {
+                    playMenuMusic();
+                } else if (currentScreen === 'game-screen') {
+                    playBattleMusic();
+                }
+            }
+        }
+
+        function updateVolumeDisplay() {
+            const pct = Math.round(volumeLevel * 100);
+            document.getElementById('menu-volume-display').textContent = pct + '%';
+            document.getElementById('menu-volume-slider').value = pct;
+            const toggle = document.getElementById('menu-audio-toggle');
+            const icon = document.getElementById('menu-audio-icon');
+            const label = document.getElementById('menu-audio-label');
+            if (audioEnabled) {
+                toggle.classList.add('active');
+                icon.textContent = '🔊';
+                label.textContent = 'Music';
+                document.getElementById('audio-toggle').textContent = '🔊';
+            } else {
+                toggle.classList.remove('active');
+                icon.textContent = '🔇';
+                label.textContent = 'Muted';
+                document.getElementById('audio-toggle').textContent = '🔇';
+            }
+        }
+
+        // ─── IN-GAME MENU ──────────────────────────────────────────────
+        function showInGameMenu() {
+            const overlay = document.getElementById('game-menu-overlay');
+            const player = G.tribes.find(t => t.isPlayer);
+            if (player) {
+                document.getElementById('menu-game-info').textContent = `Turn ${G.turn} · Gold: ${Math.floor(player.gold)}`;
+            }
+            updateVolumeDisplay();
+            overlay.classList.add('active');
+            document.getElementById('audio-toggle').classList.add('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeInGameMenu() {
+            document.getElementById('game-menu-overlay').classList.remove('active');
+            document.getElementById('audio-toggle').classList.remove('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function confirmRestart() {
+            if (confirm('Are you sure you want to restart the game? All progress will be lost.')) {
+                closeInGameMenu();
+                restartGame();
+            }
+        }
+
+        function confirmQuit() {
+            if (confirm('Are you sure you want to quit to the main menu? Your game will be saved.')) {
+                // Save without showing popup
+                try {
+                    const data = {
+                        G: G,
+                        camera: camera,
+                        usedSettlementNames: usedSettlementNames,
+                    };
+                    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.warn('Save failed:', e);
+                }
+                closeInGameMenu();
+                showScreen('menu-screen');
+            }
+        }
+
         // ─── OVERRIDE showScreen for audio ────────────────────────────
         const originalShowScreen = window.showScreen;
         window.showScreen = function(id) {
             currentScreen = id;
             if (originalShowScreen) originalShowScreen(id);
-            
+
             if (audioEnabled && audioCtx) {
                 if (id === 'menu-screen') {
                     playMenuMusic();
@@ -1754,9 +2298,9 @@
                 }
             }
         };
-        
+
         // ─── GAME VERSION ──────────────────────────────────────────────
-        const GAME_VERSION = '0.21.0';
+        const GAME_VERSION = '0.24.0';
 
         // ─── ASSET PATHS ──────────────────────────────────────────────
         const TRIBE_IDS = ['zulu', 'ashanti', 'yoruba', 'maasai', 'berber', 'hausa', 'dogon', 'songhai', 'oromo', 'tutsi', 'swahili',
@@ -1776,6 +2320,7 @@
         ASSET_PATHS['settlement_town'] = 'settlement_town.png';
         ASSET_PATHS['settlement_city'] = 'settlement_city.png';
         ASSET_PATHS['settlement_capital'] = 'settlement_capital.png';
+        ASSET_PATHS['settlement_neutral'] = 'settlement_neutral.png';
         ASSET_PATHS['hex_plains'] = 'hex_plains.png';
         ASSET_PATHS['hex_forest'] = 'hex_forest.png';
         ASSET_PATHS['hex_mountain'] = 'hex_mountain.png';
@@ -1783,6 +2328,7 @@
         ASSET_PATHS['hex_hill'] = 'hex_hill.png';
         ASSET_PATHS['hex_desert'] = 'hex_desert.png';
         ASSET_PATHS['resource_gold'] = 'resource_gold.png';
+        ASSET_PATHS['resource_gem'] = 'resource_gem.png';
         ASSET_PATHS['resource_food'] = 'resource_food.png';
         ASSET_PATHS['resource_wood'] = 'resource_wood.png';
         ASSET_PATHS['resource_stone'] = 'resource_stone.png';
@@ -1806,12 +2352,14 @@
         ASSET_PATHS['library'] = 'library.png';
         ASSET_PATHS['university'] = 'university.png';
         ASSET_PATHS['mine'] = 'mine.png';
+        ASSET_PATHS['gem_mine'] = 'gem_mine.png';
         ASSET_PATHS['quarry'] = 'quarry.png';
         ASSET_PATHS['harbor'] = 'harbor.png';
         ASSET_PATHS['fog'] = 'fog.png';
 
         const RESOURCE_MAP = {
             '🪙': 'resource_gold',
+            '💎': 'resource_gem',
             '🌾': 'resource_food',
             '🪵': 'resource_wood',
             '🪨': 'resource_stone',
@@ -2640,9 +3188,10 @@
             closeModal();
             updateUI();
             render();
-            showAlert('Construction started', `Building ${wonder.name} in ${city.name}!`);
+            // Show notification instead of alert
+            queueMessage(`🏛️ Building ${wonder.name} in ${city.name}!`);
             showTechTree();
-            saveGame();
+            saveGame(false);
         }
 
         // ─── TECH RESEARCH ASSIGNMENT ──────────────────────────────
@@ -2725,9 +3274,10 @@
             closeModal();
             updateUI();
             render();
-            showAlert('Research started', `Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
+            // Show notification instead of alert
+            queueMessage(`🔬 Researching ${TECH_TREE.find(t=>t.id===techId).name} in ${city.name}!`);
             showTechTree();
-            saveGame();
+            saveGame(false);
         }
 
         // ─── GAME STATE ──────────────────────────────────────────────
@@ -2767,6 +3317,7 @@
             eliminationMessages: [],
             turnHealBonus: 3,
             aiTurnLock: false,
+            autoSaveCounter: 0,
         };
 
         const camera = { x: 0, y: 0, zoom: 1.0, minZoom: 0.3, maxZoom: 3.0, centered: false };
@@ -2795,7 +3346,7 @@
         // ─── SAVE / LOAD ──────────────────────────────────────────────
         const SAVE_KEY = 'oba_save';
 
-        function saveGame() {
+        function saveGame(showNotification = true) {
             try {
                 const data = {
                     G: G,
@@ -2803,8 +3354,33 @@
                     usedSettlementNames: usedSettlementNames,
                 };
                 localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                if (showNotification) {
+                    queueMessage('💾 Game saved successfully!');
+                }
+                return true;
             } catch (e) {
                 console.warn('Save failed:', e);
+                if (showNotification) {
+                    queueMessage('❌ Save failed!');
+                }
+                return false;
+            }
+        }
+
+        // Auto-save without notification
+        function autoSaveGame() {
+            G.autoSaveCounter = (G.autoSaveCounter || 0) + 1;
+            if (G.autoSaveCounter % 3 === 0) { // Save every 3 turns
+                try {
+                    const data = {
+                        G: G,
+                        camera: camera,
+                        usedSettlementNames: usedSettlementNames,
+                    };
+                    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.warn('Auto-save failed:', e);
+                }
             }
         }
 
@@ -2837,6 +3413,7 @@
                 updateUI();
                 render();
                 showScreen('game-screen');
+                queueMessage('📂 Game loaded successfully!');
                 return true;
             } catch (e) {
                 console.warn('Load failed:', e);
@@ -3042,6 +3619,7 @@
                                     break;
                             }
                             if (tileData.mine) yieldTotal += 2;
+                            if (tileData.gemMine) yieldTotal += 3;
                         }
                     }
                 }
@@ -3049,7 +3627,7 @@
             return yieldTotal;
         }
 
-        // ─── CITY DISCOUNT (including sawpit) ──────────────────────
+        // ─── CITY DISCOUNT (including sawpit and gem mine) ──────────
         function getCityDiscount(city) {
             if (!city) return 0;
             const influence = getCityInfluence(city);
@@ -3059,8 +3637,8 @@
                 if (tileData) {
                     if (tileData.fishing) discount = Math.max(discount, 0.2);
                     if (tileData.farm) discount = Math.max(discount, 0.2);
-                    if (tileData.sawpit) discount = Math.max(discount, 0.1); // 10% for units & settlements
-                    // quarry handled separately in unit production
+                    if (tileData.sawpit) discount = Math.max(discount, 0.1);
+                    if (tileData.gemMine) discount = Math.max(discount, 0.15);
                 }
             }
             return discount;
@@ -3073,7 +3651,10 @@
             for (const tile of influence) {
                 const tileData = G.map[tile.r]?.[tile.q];
                 if (tileData && tileData.sawpit) {
-                    discount = Math.max(discount, 0.25); // 25% for ships
+                    discount = Math.max(discount, 0.25);
+                }
+                if (tileData && tileData.gemMine) {
+                    discount = Math.max(discount, 0.1);
                 }
             }
             return discount;
@@ -3090,6 +3671,7 @@
                     if (tileData.fishing) discount = Math.max(discount, 0.2);
                     if (tileData.farm) discount = Math.max(discount, 0.2);
                     if (tileData.sawpit) discount = Math.max(discount, 0.1);
+                    if (tileData.gemMine) discount = Math.max(discount, 0.15);
                 }
             }
             return discount;
@@ -3105,6 +3687,7 @@
                     if (tileData.fishing) discount = Math.max(discount, 0.2);
                     if (tileData.farm) discount = Math.max(discount, 0.2);
                     if (tileData.sawpit) discount = Math.max(discount, 0.1);
+                    if (tileData.gemMine) discount = Math.max(discount, 0.15);
                 }
             }
             return discount;
@@ -3320,13 +3903,13 @@
                         if (terrain === 'water' && !G.map[r]?.[q]?.isRiver) terrain = 'plains';
                     }
                     G.map[r][q] = { q, r, terrain, owner: null, city: null, unit: null, harbor: null, explored: false,
-                        visible: false, isRiver: false, resource: null, mine: false, quarry: false, fishing: false,
-                        farm: false, sawpit: false, wonderIcon: null };
+                        visible: false, isRiver: false, resource: null, mine: false, gemMine: false, quarry: false,
+                        fishing: false, farm: false, sawpit: false, wonderIcon: null };
                 }
             }
 
             const resourceTypes = {
-                mountain: ['🪙'],
+                mountain: ['💎'],
                 plains: ['🌾'],
                 forest: ['🪵'],
                 hill: ['🪨'],
@@ -3355,7 +3938,7 @@
             }
 
             // Neutral villages – number based on tribes, minimum distance 3
-            const totalTribes = G.tribes ? G.tribes.length : 6; // fallback
+            const totalTribes = G.tribes ? G.tribes.length : 6;
             const numVillages = Math.max(3, Math.floor(totalTribes * 1.5) + 2);
             let placed = 0,
                 attempts = 0;
@@ -3404,8 +3987,8 @@
                 for (const tilePos of influence) {
                     const tile = G.map[tilePos.r]?.[tilePos.q];
                     if (!tile) continue;
-                    if (tile.city || tile.unit || tile.harbor || tile.resource || tile.mine || tile.quarry || tile.fishing ||
-                        tile.farm || tile.sawpit || tile.wonderIcon) continue;
+                    if (tile.city || tile.unit || tile.harbor || tile.resource || tile.mine || tile.gemMine || tile.quarry ||
+                        tile.fishing || tile.farm || tile.sawpit || tile.wonderIcon) continue;
                     if (tile.terrain === 'water') continue;
                     candidates.push(tile);
                 }
@@ -3754,49 +4337,75 @@
             return 1;
         }
 
-        // ─── FIXED: findPath with increased visited limit ────────────
+        // ─── IMPROVED PATHFINDING ──────────────────────────────────
         function findPath(startQ, startR, endQ, endR, unit, tribeId) {
-            const queue = [{ q: startQ, r: startR, path: [{ q: startQ, r: startR }] }];
-            const visited = new Set();
-            visited.add(hexKey(startQ, startR));
-            let iterations = 0;
-            const MAX_VISITED = 2000; // Increased from 500
+            const queue = [{ q: startQ, r: startR, dist: 0, path: [{ q: startQ, r: startR }] }];
+            const visited = new Map();
+            visited.set(hexKey(startQ, startR), 0);
+            const unitMove = unit.move;
 
-            while (queue.length > 0 && iterations < MAX_VISITED) {
-                iterations++;
+            while (queue.length > 0) {
+                queue.sort((a, b) => a.dist - b.dist);
                 const current = queue.shift();
-                if (current.q === endQ && current.r === endR) return current.path;
+
+                // If we reached the target or are within attack range
+                const distToTarget = hexDistance({ q: current.q, r: current.r }, { q: endQ, r: endR });
+                if (current.q === endQ && current.r === endR) {
+                    return current.path;
+                }
+
+                // If we're within attack range, return path to current position (for attacking)
+                if (distToTarget <= unit.attackRange && current.q !== startQ) {
+                    return current.path;
+                }
+
+                if (current.dist >= unitMove) continue;
 
                 const neighbors = hexNeighbors(current.q, current.r);
                 for (const n of neighbors) {
-                    const key = hexKey(n.q, n.r);
-                    if (visited.has(key)) continue;
                     if (!inMap(n.q, n.r)) continue;
+                    const key = hexKey(n.q, n.r);
                     const tile = G.map[n.r]?.[n.q];
                     if (!tile) continue;
+
+                    // Check if tile has enemy unit (can't move through, but can target)
                     if (tile.unit && tile.unit.tribeId !== tribeId) {
-                        // Can't step on enemy unit unless it's the target and in attack range
-                        if (n.q === endQ && n.r === endR && hexDistance({ q: startQ, r: startR }, { q: endQ, r: endR }) <=
-                            unit.attackRange) {} else {
+                        // If this is the target, we can move adjacent to attack
+                        if (n.q === endQ && n.r === endR) {
+                            // We can move to adjacent tile to attack
                             continue;
                         }
+                        continue;
                     }
+
+                    // Check passability
                     const isNaval = unit.isNaval || (unit.type === 'raft');
                     let passable = true;
                     if (isNaval) {
-                        passable = true;
+                        // Naval units can only move on water
+                        passable = tile.terrain === 'water';
                     } else {
                         passable = tile.terrain !== 'water';
                     }
                     if (!passable) continue;
+
+                    // If tile has friendly unit, can't move there
+                    if (tile.unit && tile.unit.tribeId === tribeId) continue;
+
                     const cost = getUnitMoveCost(unit, n.q, n.r);
-                    if (current.path.length + cost > unit.move + 1) continue;
-                    visited.add(key);
+                    const newDist = current.dist + cost;
+
+                    // If we've visited this tile with a shorter or equal path, skip
+                    if (visited.has(key) && visited.get(key) <= newDist) continue;
+
+                    // Don't exceed movement
+                    if (newDist > unitMove) continue;
+
+                    visited.set(key, newDist);
                     const newPath = [...current.path, { q: n.q, r: n.r }];
-                    queue.push({ q: n.q, r: n.r, path: newPath });
+                    queue.push({ q: n.q, r: n.r, dist: newDist, path: newPath });
                 }
             }
-            console.warn('findPath: visited limit reached, returning null');
             return null;
         }
 
@@ -3826,7 +4435,7 @@
             player.gold -= goldCost;
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -3857,7 +4466,7 @@
             player.gold -= goldCost;
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -3876,7 +4485,8 @@
             city.hasLibrary = true;
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
+            queueMessage('📚 Library built in ' + city.name + '! (+2 research/turn)');
             return true;
         }
 
@@ -3895,7 +4505,8 @@
             city.hasUniversity = true;
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
+            queueMessage('🏛️ University built in ' + city.name + '! (+4 research/turn)');
             return true;
         }
 
@@ -3912,7 +4523,7 @@
             return true;
         }
 
-        // ─── MINE / QUARRY (now tile-based with productivity cost) ──
+        // ─── MINE / GEM MINE / QUARRY ──────────────────────────────
         function buildMineOnTile(tile, city) {
             if (!tile || !city) return false;
             if (tile.resource !== '🪙') return false;
@@ -3934,7 +4545,32 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
+            return true;
+        }
+
+        function buildGemMineOnTile(tile, city) {
+            if (!tile || !city) return false;
+            if (tile.resource !== '💎') return false;
+            if (tile.gemMine) return false;
+            const cost = 6;
+            if (!deductCityResources(city, cost)) {
+                showAlert('Not enough resources', 'You need 6 productivity (stockpile + project progress) to build a gem mine.');
+                return false;
+            }
+            const influence = getCityInfluence(city);
+            let isInfluenced = false;
+            for (const t of influence) {
+                if (t.q === tile.q && t.r === tile.r) { isInfluenced = true; break; }
+            }
+            if (!isInfluenced) return false;
+            tile.gemMine = true;
+            tile.resource = null;
+            queueMessage('💎 Gem Mine built! +3 production/turn, -15% improvement & wonder cost.');
+            updateVisibility();
+            updateUI();
+            render();
+            saveGame(false);
             return true;
         }
 
@@ -3959,7 +4595,7 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -3999,7 +4635,7 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -4038,7 +4674,7 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -4078,7 +4714,7 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -4120,7 +4756,7 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -4179,7 +4815,7 @@
                     tribe.gold -= 20;
                     unit.hasMoved = true;
                     updateVisibility();
-                    saveGame();
+                    saveGame(false);
                     queueMessage('🪵 Raft built! Boarded and moved to water.');
                     return true;
                 }
@@ -4232,7 +4868,7 @@
             queueMessage(`🚢 ${unit.name} has disembarked!`);
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -4272,7 +4908,7 @@
                         harbor.project = null;
                         harbor.production = 0;
                         updateVisibility();
-                        saveGame();
+                        saveGame(false);
                     }
                 }
             }
@@ -4311,7 +4947,7 @@
                     eliminateTribe(oldOwner, newOwnerId);
                 }
             }
-            saveGame();
+            saveGame(false);
         }
 
         function captureCity(city, newOwnerId) {
@@ -4343,7 +4979,7 @@
             if (oldTribe && oldTribe.cities.length === 0) {
                 eliminateTribe(oldOwnerId, newOwnerId);
             }
-            saveGame();
+            saveGame(false);
         }
 
         function eliminateTribe(tribeId, killerId) {
@@ -4367,7 +5003,7 @@
                 showGameOverModal('💀 Defeat', 'Your kingdom has fallen…');
             }
             checkWinConditions();
-            saveGame();
+            saveGame(false);
         }
 
         // ─── COMBAT ──────────────────────────────────────────────
@@ -4419,7 +5055,7 @@
                     eliminateTribe(attacker.tribeId, defender.tribeId);
                 }
             }
-            saveGame();
+            saveGame(false);
             return { killed, damage: damageToDefender, defDamage: damageToAttacker };
         }
 
@@ -4443,7 +5079,7 @@
                         'AI';
                     showGameOverModal('💀 Defeat', 'The enemy controls more territory.'); }
             }
-            saveGame();
+            saveGame(false);
         }
 
         function showGameOverModal(title, msg) {
@@ -4499,6 +5135,7 @@
                     if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                     if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                     if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
+                    if (tileData && tileData.gemMine) { discount = Math.max(discount, 0.15); }
                 }
                 cost = Math.ceil(cost * (1 - discount));
                 progressTarget = () => {
@@ -4515,10 +5152,11 @@
                         if (placed) {
                             city.project = null;
                             city.progress = 0;
+                            queueMessage(`🏹 ${unitDef.name} produced in ${city.name}!`);
                         } else {
                             city.progress = cost;
                         }
-                        saveGame();
+                        saveGame(false);
                     }
                 };
             } else if (city.project.type === 'tech') {
@@ -4540,7 +5178,9 @@
                                 c.progress = 0;
                             }
                         }
-                        saveGame();
+                        const techName = TECH_TREE.find(t => t.id === techId).name;
+                        queueMessage(`🔬 Research complete: ${techName}!`);
+                        saveGame(false);
                     }
                 };
             } else if (city.project.type === 'wonder') {
@@ -4559,10 +5199,11 @@
                         if (!isWonderBuilt(tribe, city.project.id)) {
                             tribe.wonders.push(city.project.id);
                             placeWonderIcon(tribe, city.project.id);
+                            queueMessage(`🏛️ Wonder built: ${wonder.name}!`);
                         }
                         city.project = null;
                         city.progress = 0;
-                        saveGame();
+                        saveGame(false);
                     }
                 };
             }
@@ -4583,6 +5224,14 @@
             if (!tribe) return;
             let productionPerTurn = city.level * 2;
             if (tribe.wonders && tribe.wonders.includes('great_zimbabwe')) productionPerTurn += 3;
+            // Check for gem mines in influence
+            const influence = getCityInfluence(city);
+            for (const tile of influence) {
+                const tileData = G.map[tile.r]?.[tile.q];
+                if (tileData && tileData.gemMine) {
+                    productionPerTurn += 3;
+                }
+            }
             city.stockpile += productionPerTurn;
             applyStockpileToProject(city);
         }
@@ -4613,7 +5262,7 @@
             _turnSafetyTimer = setTimeout(() => {
                 console.warn('⏰ TURN SAFETY TIMEOUT – forcing finish');
                 if (!G.gameOver) {
-                    finishTurn(true); // force finish
+                    finishTurn(true);
                 }
                 clearTurnSafety();
             }, 25000);
@@ -4641,14 +5290,17 @@
             if (player) {
                 let income = getTribeYield(player.id);
                 let mineCount = 0;
+                let gemCount = 0;
                 for (const city of player.cities) {
                     const influence = getCityInfluence(city);
                     for (const tile of influence) {
                         const tileData = G.map[tile.r]?.[tile.q];
                         if (tileData && tileData.mine) mineCount++;
+                        if (tileData && tileData.gemMine) gemCount++;
                     }
                 }
                 income += mineCount * 2;
+                income += gemCount * 3; // Gem mines produce +3 gold per turn
                 if (player.wonders && player.wonders.includes('pyramids')) income += 5;
                 if (player.techs && player.techs.includes('trade')) income += 2 * player.cities.length;
                 player.gold += income;
@@ -4674,14 +5326,17 @@
                 if (!t.isPlayer) {
                     let income = getTribeYield(t.id);
                     let mineCount = 0;
+                    let gemCount = 0;
                     for (const city of t.cities) {
                         const influence = getCityInfluence(city);
                         for (const tile of influence) {
                             const tileData = G.map[tile.r]?.[tile.q];
                             if (tileData && tileData.mine) mineCount++;
+                            if (tileData && tileData.gemMine) gemCount++;
                         }
                     }
                     income += mineCount * 2;
+                    income += gemCount * 3;
                     t.gold += income;
                     if (t.wonders && t.wonders.includes('pyramids')) t.gold += 5;
                     if (t.techs && t.techs.includes('trade')) t.gold += 2 * t.cities.length;
@@ -4713,7 +5368,7 @@
             }, 300);
         }
 
-        // ─── IMPROVED AI with fallback strategies ─────────────────────
+        // ─── IMPROVED AI with enhanced pathfinding ─────────────────────
         async function runAI() {
             if (G.aiTurnLock) {
                 console.warn('runAI: lock was already true – resetting stale lock');
@@ -4760,7 +5415,7 @@
             }
         }
 
-        // ─── IMPROVED AI PROCESSING with fallback strategies ──────────
+        // ─── IMPROVED AI PROCESSING with smart movement ──────────────
         function processAITribe(tribe) {
             return new Promise((resolve) => {
                 const overlay = document.getElementById('ai-turn-overlay');
@@ -4802,12 +5457,9 @@
                         const enemyCities = enemyTribes.reduce((acc, t) => acc + t.cities.length, 0);
                         const myUnits = tribe.units.filter(u => u.active).length;
                         const enemyUnits = enemyTribes.reduce((acc, t) => acc + t.units.filter(u => u.active).length, 0);
-                        const myTiles = getTribeControlledTiles(tribe.id);
-                        const enemyTiles = enemyTribes.reduce((acc, t) => acc + getTribeControlledTiles(t.id), 0);
 
                         // ---- Strategy ----
                         let strategy = { attack: false, defend: false, expand: false, targetTribeId: null };
-                        // Always be aggressive if we have more units, otherwise defend/expand
                         if (myUnits > enemyUnits * 0.7 && myCities >= enemyCities * 0.5) {
                             strategy.attack = true;
                             let weakest = null;
@@ -4892,30 +5544,114 @@
                             try {
                                 // ---- Build target list ----
                                 let targets = [];
-                                
-                                // Enemy units
-                                for (const e of allEnemyUnits) {
+
+                                // Enemy units - prioritize low HP
+                                const sortedEnemies = [...allEnemyUnits].sort((a, b) => {
+                                    const aHpPct = a.hp / a.maxHp;
+                                    const bHpPct = b.hp / b.maxHp;
+                                    return aHpPct - bHpPct;
+                                });
+                                for (const e of sortedEnemies) {
                                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: e.q, r: e.r });
-                                    targets.push({ type: 'unit', target: e, dist: dist });
+                                    targets.push({ type: 'unit', target: e, dist: dist, priority: 3 - (e.hp / e.maxHp) });
                                 }
-                                
+
                                 // Enemy cities
                                 for (const c of allEnemyCities) {
                                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                                    targets.push({ type: 'city', target: c, dist: dist });
+                                    targets.push({ type: 'city', target: c, dist: dist, priority: 2 });
                                 }
-                                
+
                                 // Neutral villages
                                 for (const c of neutralVillages) {
                                     const dist = hexDistance({ q: unit.q, r: unit.r }, { q: c.q, r: c.r });
-                                    targets.push({ type: 'neutral', target: c, dist: dist });
+                                    targets.push({ type: 'neutral', target: c, dist: dist, priority: 1 });
                                 }
 
-                                // Sort by distance
-                                targets.sort((a, b) => a.dist - b.dist);
+                                // Sort by priority (higher first) then distance
+                                targets.sort((a, b) => (b.priority || 0) - (a.priority || 0) || a.dist - b.dist);
 
-                                // ---- If no targets, find any enemy/neutral city or settlement ----
-                                if (targets.length === 0) {
+                                // ---- Prioritise attackTarget if set ----
+                                let chosenTarget = null;
+                                if (attackTarget) {
+                                    const distToTarget = hexDistance({ q: unit.q, r: unit.r }, { q: attackTarget.q, r: attackTarget.r });
+                                    // If we can reach the attack target within move + attack range
+                                    if (distToTarget <= unit.move + unit.attackRange + 2) {
+                                        chosenTarget = { type: 'city', target: attackTarget, dist: distToTarget, priority: 5 };
+                                    }
+                                }
+
+                                // ---- If no chosen target, pick best from targets ----
+                                if (!chosenTarget && targets.length > 0) {
+                                    chosenTarget = targets[0];
+                                }
+
+                                if (chosenTarget) {
+                                    const t = chosenTarget;
+                                    const targetPos = t.type === 'unit' ? { q: t.target.q, r: t.target.r } : { q: t.target.q, r: t.target.r };
+                                    const distToTarget = hexDistance({ q: unit.q, r: unit.r }, targetPos);
+
+                                    // ---- Check if we can attack ----
+                                    let attacked = false;
+                                    if (t.type === 'unit' && distToTarget <= unit.attackRange) {
+                                        console.log(`   ${unit.name} attacks ${t.target.name}`);
+                                        performAttack(unit, t.target);
+                                        attacked = true;
+                                    }
+
+                                    // ---- If not attacked, try to move ----
+                                    if (!attacked && !unit.hasMoved) {
+                                        // Try to move towards target
+                                        const path = findPath(unit.q, unit.r, targetPos.q, targetPos.r, unit, tribe.id);
+
+                                        if (path && path.length > 1) {
+                                            // Move as far as possible within movement range
+                                            const maxSteps = Math.min(path.length - 1, unit.move);
+                                            const step = path[maxSteps];
+                                            const tile = G.map[step.r]?.[step.q];
+
+                                            if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
+                                                // Move
+                                                G.map[unit.r][unit.q].unit = null;
+                                                unit.q = step.q;
+                                                unit.r = step.r;
+                                                G.map[unit.r][unit.q].unit = unit;
+                                                unit.hasMoved = true;
+                                                console.log(`   ${unit.name} moved to (${step.q}, ${step.r})`);
+
+                                                // ---- Naval disembark ----
+                                                if (unit.isNaval && tile.terrain !== 'water') {
+                                                    disembarkNavalUnit(unit);
+                                                }
+
+                                                // ---- City capture after move ----
+                                                if (tile.city) {
+                                                    if (tile.city.isNeutral) {
+                                                        console.log(`   ${unit.name} captured neutral village ${tile.city.name}`);
+                                                        captureNeutralVillage(tile.city, unit.tribeId);
+                                                    } else if (tile.city.owner !== unit.tribeId) {
+                                                        console.log(`   ${unit.name} captured city ${tile.city.name}`);
+                                                        captureCity(tile.city, unit.tribeId);
+                                                    }
+                                                }
+
+                                                // ---- Check if we can attack after moving ----
+                                                if (t.type === 'unit' && !unit.hasAttacked) {
+                                                    const newDist = hexDistance({ q: unit.q, r: unit.r }, { q: t.target.q, r: t.target.r });
+                                                    if (newDist <= unit.attackRange) {
+                                                        console.log(`   ${unit.name} attacks ${t.target.name} after moving`);
+                                                        performAttack(unit, t.target);
+                                                    }
+                                                }
+                                            } else {
+                                                console.log(`   ${unit.name} couldn't move to target tile (blocked)`);
+                                            }
+                                        } else {
+                                            console.log(`   ${unit.name} couldn't find path to target`);
+                                        }
+                                    }
+                                } else {
+                                    // ---- No targets - try to move towards nearest enemy city or explore ----
                                     let fallbackTarget = null;
                                     let fallbackDist = Infinity;
                                     for (const c of G.cities) {
@@ -4926,91 +5662,26 @@
                                             fallbackTarget = c;
                                         }
                                     }
-                                    if (fallbackTarget) {
-                                        targets.push({ type: 'city', target: fallbackTarget, dist: fallbackDist });
-                                    }
-                                }
 
-                                // ---- Prioritise attackTarget if set ----
-                                let chosenTarget = null;
-                                if (attackTarget) {
-                                    const distToTarget = hexDistance({ q: unit.q, r: unit.r }, { q: attackTarget.q, r: attackTarget.r });
-                                    if (distToTarget <= unit.move + unit.attackRange + 3) {
-                                        chosenTarget = { type: 'city', target: attackTarget, dist: distToTarget };
-                                    }
-                                }
-
-                                // ---- If no chosen target, pick closest enemy unit or city ----
-                                if (!chosenTarget) {
-                                    // Prefer enemy units (highest priority), then enemy cities, then neutral
-                                    const enemyUnitTargets = targets.filter(t => t.type === 'unit');
-                                    const enemyCityTargets = targets.filter(t => t.type === 'city');
-                                    const neutralTargets = targets.filter(t => t.type === 'neutral');
-                                    
-                                    if (enemyUnitTargets.length > 0) {
-                                        chosenTarget = enemyUnitTargets[0];
-                                    } else if (enemyCityTargets.length > 0) {
-                                        chosenTarget = enemyCityTargets[0];
-                                    } else if (neutralTargets.length > 0) {
-                                        chosenTarget = neutralTargets[0];
-                                    } else if (targets.length > 0) {
-                                        chosenTarget = targets[0];
-                                    }
-                                }
-
-                                if (chosenTarget) {
-                                    const t = chosenTarget;
-                                    
-                                    // ---- If target is a unit and in attack range ----
-                                    if (t.type === 'unit' && t.dist <= unit.attackRange) {
-                                        console.log(`   ${unit.name} attacks ${t.target.name}`);
-                                        performAttack(unit, t.target);
-                                    } 
-                                    // ---- Otherwise try to move towards target ----
-                                    else if (t.dist <= unit.move + 2) {
-                                        const targetPos = t.type === 'unit' ? { q: t.target.q, r: t.target.r } : { q: t.target.q, r: t.target.r };
+                                    if (fallbackTarget && !unit.hasMoved) {
+                                        const targetPos = { q: fallbackTarget.q, r: fallbackTarget.r };
                                         const path = findPath(unit.q, unit.r, targetPos.q, targetPos.r, unit, tribe.id);
-                                        
+
                                         if (path && path.length > 1) {
-                                            // Move as far as possible within movement range
                                             const maxSteps = Math.min(path.length - 1, unit.move);
                                             const step = path[maxSteps];
                                             const tile = G.map[step.r]?.[step.q];
-                                            
+
                                             if (tile && !tile.unit && isTilePassable(step.q, step.r, unit.isNaval, unit)) {
-                                                // Move
                                                 G.map[unit.r][unit.q].unit = null;
                                                 unit.q = step.q;
                                                 unit.r = step.r;
                                                 G.map[unit.r][unit.q].unit = unit;
                                                 unit.hasMoved = true;
-
-                                                // ---- Naval disembark ----
-                                                if (unit.isNaval && tile.terrain !== 'water') {
-                                                    disembarkNavalUnit(unit);
-                                                }
-
-                                                // ---- City capture ----
-                                                if (tile.city) {
-                                                    if (tile.city.isNeutral) {
-                                                        console.log(`   ${unit.name} captured neutral village ${tile.city.name}`);
-                                                        captureNeutralVillage(tile.city, unit.tribeId);
-                                                    } else if (tile.city.owner !== unit.tribeId) {
-                                                        console.log(`   ${unit.name} captured city ${tile.city.name}`);
-                                                        captureCity(tile.city, unit.tribeId);
-                                                    }
-                                                }
-                                            } else {
-                                                console.log(`   ${unit.name} couldn't move to target tile (blocked)`);
+                                                console.log(`   ${unit.name} moved towards fallback target (${step.q}, ${step.r})`);
                                             }
-                                        } else {
-                                            console.log(`   ${unit.name} couldn't find path to target`);
                                         }
-                                    } else {
-                                        console.log(`   ${unit.name} is too far from target (${t.dist})`);
                                     }
-                                } else {
-                                    console.log(`   ${unit.name} has no targets`);
                                 }
 
                                 await sleep(150);
@@ -5020,12 +5691,10 @@
                             }
                         }
 
-                        // ---- Defensive repositioning: move units near cities back if under attack ----
-                        // (simplified: just ensure units are not standing on water unless naval)
+                        // ---- Defensive repositioning for naval units ----
                         for (const unit of G.units.filter(u => u.tribeId === tribe.id && u.active && !u.hasMoved)) {
                             const tile = G.map[unit.r]?.[unit.q];
                             if (unit.isNaval && tile && tile.terrain !== 'water') {
-                                // Try to move to nearest water
                                 const neighbors = hexNeighbors(unit.q, unit.r);
                                 let moved = false;
                                 for (const n of neighbors) {
@@ -5043,11 +5712,13 @@
                                     }
                                 }
                                 if (!moved) {
-                                    // If no water nearby, just skip
                                     unit.hasMoved = true;
                                 }
                             }
                         }
+
+                        // ---- Auto-save after AI turn ----
+                        autoSaveGame();
 
                         clearTimeout(timeout);
                         safeResolve();
@@ -5075,7 +5746,6 @@
             updateVisibility();
             updateUI();
             render();
-            saveGame();
             console.log('✅ Turn finished, phase = player');
         }
 
@@ -5119,7 +5789,7 @@
             updateUI();
             render();
             updateActionPopup();
-            saveGame();
+            saveGame(false);
             return true;
         }
 
@@ -5140,7 +5810,7 @@
             render();
             updateActionPopup();
             checkWinConditions();
-            saveGame();
+            saveGame(false);
         }
 
         function tryHealUnit() {
@@ -5153,7 +5823,7 @@
                 updateUI();
                 render();
                 updateActionPopup();
-                saveGame();
+                saveGame(false);
             }
         }
 
@@ -5170,7 +5840,7 @@
                 updateActionPopup();
                 const msg = `✨ Invigorated! ${result.healedCount} units healed, ${result.boostedCount} units boosted!`;
                 queueMessage(msg);
-                saveGame();
+                saveGame(false);
             }
         }
 
@@ -5244,7 +5914,7 @@
             closeModal();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
         }
 
         // ─── CITY PRODUCTION UI ──────────────────────────────────
@@ -5277,6 +5947,7 @@
                             if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                             if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                             if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
+                            if (tileData && tileData.gemMine) { discount = Math.max(discount, 0.15); }
                         }
                         costDisplay = Math.ceil(cost * (1 - discount));
                     }
@@ -5348,6 +6019,7 @@
                         if (tileData && tileData.fishing) { discount = Math.max(discount, 0.2); }
                         if (tileData && tileData.farm) { discount = Math.max(discount, 0.2); }
                         if (tileData && tileData.sawpit) { discount = Math.max(discount, 0.1); }
+                        if (tileData && tileData.gemMine) { discount = Math.max(discount, 0.15); }
                     }
                     const reducedCost = Math.ceil(cost * (1 - discount));
                     const goldCost = Math.ceil(cost * 2 * (1 - discount));
@@ -5432,7 +6104,7 @@
             closeModal();
             updateUI();
             render();
-            saveGame();
+            saveGame(false);
         }
 
         function upgradeCity(city) {
@@ -5446,11 +6118,13 @@
             if (city.level >= 4) { showAlert('Max level', 'City is already at maximum level.'); return; }
             player.gold -= cost;
             city.level++;
+            const levelNames = ['Village', 'Town', 'City', 'Metropolis'];
+            queueMessage(`⬆ ${city.name} upgraded to ${levelNames[Math.min(city.level - 1, 3)]}!`);
             updateUI();
             render();
             closeModal();
             openCityProduction();
-            saveGame();
+            saveGame(false);
         }
 
         // ─── PROGRESS MODAL ──────────────────────────────────────────
@@ -5585,6 +6259,7 @@
             const player = G.tribes.find(t => t.isPlayer);
 
             const mineBtn = popup.querySelector('[data-action="build-mine"]');
+            const gemBtn = popup.querySelector('[data-action="build-gem-mine"]');
             const quarryBtn = popup.querySelector('[data-action="build-quarry"]');
             const fishBtn = popup.querySelector('[data-action="launch-fishing"]');
             const farmBtn = popup.querySelector('[data-action="build-farm"]');
@@ -5600,24 +6275,26 @@
                 const isWood = resourceTile.resource === '🪵' && !resourceTile.sawpit && canBuildSawpit(resourceTile,
                     player.id);
                 const isGold = resourceTile.resource === '🪙' && !resourceTile.mine;
+                const isGem = resourceTile.resource === '💎' && !resourceTile.gemMine;
                 const isStone = resourceTile.resource === '🪨' && !resourceTile.quarry;
 
                 fishBtn.style.display = isFish ? 'flex' : 'none';
                 farmBtn.style.display = isFood ? 'flex' : 'none';
                 sawpitBtn.style.display = isWood ? 'flex' : 'none';
                 mineBtn.style.display = isGold ? 'flex' : 'none';
+                gemBtn.style.display = isGem ? 'flex' : 'none';
                 quarryBtn.style.display = isStone ? 'flex' : 'none';
                 harborBtn.style.display = 'none';
 
                 popup.querySelectorAll('button').forEach(b => {
                     const action = b.dataset.action;
                     if (action !== 'launch-fishing' && action !== 'build-farm' && action !== 'build-sawpit' &&
-                        action !== 'build-mine' && action !== 'build-quarry') {
+                        action !== 'build-mine' && action !== 'build-gem-mine' && action !== 'build-quarry') {
                         b.style.display = 'none';
                     }
                 });
                 const dividers = popup.querySelectorAll('.popup-divider');
-                const anyVisible = isFish || isFood || isWood || isGold || isStone;
+                const anyVisible = isFish || isFood || isWood || isGold || isGem || isStone;
                 dividers.forEach(d => d.style.display = anyVisible ? 'block' : 'none');
                 return;
             }
@@ -5630,6 +6307,7 @@
                 farmBtn.style.display = 'none';
                 sawpitBtn.style.display = 'none';
                 mineBtn.style.display = 'none';
+                gemBtn.style.display = 'none';
                 quarryBtn.style.display = 'none';
                 popup.querySelectorAll('button').forEach(b => {
                     const action = b.dataset.action;
@@ -5647,6 +6325,7 @@
             farmBtn.style.display = 'none';
             sawpitBtn.style.display = 'none';
             mineBtn.style.display = 'none';
+            gemBtn.style.display = 'none';
             quarryBtn.style.display = 'none';
             harborBtn.style.display = 'none';
 
@@ -5681,7 +6360,8 @@
 
             // Show default unit actions
             popup.querySelectorAll('button').forEach(b => {
-                if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-quarry' ||
+                if (b.dataset.action === 'build-mine' || b.dataset.action === 'build-gem-mine' ||
+                    b.dataset.action === 'build-quarry' ||
                     b.dataset.action === 'launch-fishing' || b.dataset.action === 'build-farm' ||
                     b.dataset.action === 'build-sawpit' || b.dataset.action === 'build-harbor-from-tile') return;
                 b.style.display = 'flex';
@@ -5761,7 +6441,7 @@
                         G.selectedUnit = null;
                         updateUI();
                         render();
-                        saveGame();
+                        saveGame(false);
                     }
                     hideActionPopup();
                 } else if (action === 'heal') {
@@ -5808,6 +6488,19 @@
                         const city = getCityForTile(G.selectedResourceTile, G.playerTribeId);
                         if (city) {
                             if (buildMineOnTile(G.selectedResourceTile, city)) {
+                                G.selectedResourceTile = null;
+                                updateVisibility();
+                                updateUI();
+                                render();
+                            }
+                        }
+                    }
+                    hideActionPopup();
+                } else if (action === 'build-gem-mine') {
+                    if (G.selectedResourceTile) {
+                        const city = getCityForTile(G.selectedResourceTile, G.playerTribeId);
+                        if (city) {
+                            if (buildGemMineOnTile(G.selectedResourceTile, city)) {
                                 G.selectedResourceTile = null;
                                 updateVisibility();
                                 updateUI();
@@ -5937,6 +6630,9 @@
             } else if (tile.mine) {
                 tooltipText = '⛏️ Gold Mine (+2 gold/turn)';
                 show = true;
+            } else if (tile.gemMine) {
+                tooltipText = '💎 Gem Mine (+3 production/turn, -15% improvement & wonder cost)';
+                show = true;
             } else if (tile.quarry) {
                 tooltipText = '🪨 Quarry (-20% unit cost)';
                 show = true;
@@ -5961,6 +6657,7 @@
             } else if (tile.resource) {
                 const resName = {
                     '🪙': 'Gold',
+                    '💎': 'Gem',
                     '🌾': 'Food',
                     '🪵': 'Wood',
                     '🪨': 'Stone',
@@ -5983,6 +6680,7 @@
                 tooltip.style.width = 'auto';
             } else {
                 tooltip.classList.remove('show');
+                lastTooltipTile = null;
             }
         });
 
@@ -6095,10 +6793,17 @@
                                 bgImageKey = iconKey;
                             }
                         } else if (hasCity && city) {
-                            if (city.level === 1) bgImageKey = 'settlement_village';
-                            else if (city.level === 2) bgImageKey = 'settlement_town';
-                            else if (city.level === 3) bgImageKey = 'settlement_city';
-                            else if (city.level >= 4) bgImageKey = 'settlement_capital';
+                            if (city.isNeutral) {
+                                bgImageKey = 'settlement_neutral';
+                            } else if (city.level === 1) {
+                                bgImageKey = 'settlement_village';
+                            } else if (city.level === 2) {
+                                bgImageKey = 'settlement_town';
+                            } else if (city.level === 3) {
+                                bgImageKey = 'settlement_city';
+                            } else if (city.level >= 4) {
+                                bgImageKey = 'settlement_capital';
+                            }
                         } else if (tile.sawpit) {
                             bgImageKey = 'sawpit';
                         } else if (tile.farm) {
@@ -6107,6 +6812,8 @@
                             bgImageKey = 'quarry';
                         } else if (tile.mine) {
                             bgImageKey = 'mine';
+                        } else if (tile.gemMine) {
+                            bgImageKey = 'gem_mine';
                         } else if (hasHarbor) {
                             bgImageKey = 'harbor';
                         } else if (tile.fishing) {
@@ -6271,7 +6978,7 @@
                         if (isVisible) {
                             // ─── Resource icon ─── (only if no city/improvement replacing it)
                             if (tile.resource && !hasCity && !hasHarbor && !tile.fishing && !tile.farm && !tile
-                                .sawpit && !tile.mine && !tile.quarry) {
+                                .sawpit && !tile.mine && !tile.gemMine && !tile.quarry) {
                                 const resKey = RESOURCE_MAP[tile.resource];
                                 const resImg = resKey ? images[resKey] : null;
                                 if (resImg && resImg.complete && resImg.naturalWidth > 0) {
@@ -6391,6 +7098,8 @@
                                                         discount, 0.2); }
                                                     if (tileData && tileData.sawpit) { discount = Math.max(
                                                         discount, 0.1); }
+                                                    if (tileData && tileData.gemMine) { discount = Math.max(
+                                                        discount, 0.15); }
                                                 }
                                                 cost = Math.ceil(cost * (1 - discount));
                                             }
@@ -6843,14 +7552,15 @@
                 // fall through
             }
 
-            // --- Resource tile (wood, gold, stone, fish, food) ---
+            // --- Resource tile (wood, gold, gem, stone, fish, food) ---
             if (tile && tile.visible && !tile.unit && !tile.city && !tile.harbor) {
                 const isFish = tile.resource === '🐟' && !tile.fishing && canLaunchFishing(tile, player.id);
                 const isFood = tile.resource === '🌾' && !tile.farm && canBuildFarm(tile, player.id);
                 const isWood = tile.resource === '🪵' && !tile.sawpit && canBuildSawpit(tile, player.id);
                 const isGold = tile.resource === '🪙' && !tile.mine;
+                const isGem = tile.resource === '💎' && !tile.gemMine;
                 const isStone = tile.resource === '🪨' && !tile.quarry;
-                if (isFish || isFood || isWood || isGold || isStone) {
+                if (isFish || isFood || isWood || isGold || isGem || isStone) {
                     G.selectedResourceTile = tile;
                     G.selectedUnit = null;
                     G.selectedCity = null;
@@ -7186,12 +7896,13 @@
               When a wonder is completed, a special icon appears on a nearby tile within the city's influence.</p>
               <br>
               <p><strong>🔹 Resources & Improvements</strong><br>
-              Resources (gold, food, wood, stone, fish) appear on the map. You can improve them:</p>
+              Resources appear on the map. You can improve them:</p>
               <ul style="margin-left: 20px; color: #b8957a; list-style: disc;">
-                <li><strong>Mine (⛏️):</strong> Built on gold deposits. Costs 5 productivity. Gives +2 gold per turn to the controlling city.</li>
-                <li><strong>Quarry (🪨):</strong> Built on stone deposits. Costs 5 productivity. Reduces unit production cost by 20% in the controlling city.</li>
-                <li><strong>Farm (🌾):</strong> Built on food resources. Costs 2 productivity. Reduces cost of city upgrades and unit production by 20% in that city.</li>
-                <li><strong>Fishing Boats (🎣):</strong> Launched on fish tiles. Costs 2 productivity. Also provides a 20% discount on city upgrades and unit production.</li>
+                <li><strong>Gold Mine (⛏️):</strong> Built on gold deposits. Costs 5 productivity. Gives +2 gold per turn.</li>
+                <li><strong>Gem Mine (💎):</strong> Built on gem deposits (found on mountains). Costs 6 productivity. Gives +3 production per turn and -15% improvement & wonder costs.</li>
+                <li><strong>Quarry (🪨):</strong> Built on stone deposits. Costs 5 productivity. Reduces unit production cost by 20%.</li>
+                <li><strong>Farm (🌾):</strong> Built on food resources. Costs 2 productivity. Reduces cost of city upgrades and unit production by 20%.</li>
+                <li><strong>Fishing Boats (🎣):</strong> Launched on fish tiles. Costs 2 productivity. Provides a 20% discount on city upgrades and unit production.</li>
                 <li><strong>Sawpit (🪵):</strong> Built on wood resources. Costs 2 productivity. Reduces shipbuilding cost by 25%, and city upgrades & unit production by 10%.</li>
               </ul>
               <p style="margin-top: 6px;">These improvements stack – having multiple improvements in the same city gives cumulative discounts.</p>
@@ -7211,16 +7922,48 @@
             overlay.classList.add('active');
         }
 
+        // ─── IN-GAME MENU (Mobile Style) ─────────────────────────────
         function showInGameMenu() {
-            const overlay = document.getElementById('modal-overlay');
-            document.getElementById('modal-title').textContent = '☰ Menu';
-            document.getElementById('modal-body').innerHTML = `<p>Return to main menu or continue your campaign.</p>`;
-            const actions = document.getElementById('modal-actions');
-            actions.innerHTML =
-                `<button onclick="closeModal()">Resume</button>
-                       <button class="primary" onclick="closeModal();showScreen('menu-screen');">Main Menu</button>
-                       <button class="danger" onclick="closeModal();restartGame();">Restart</button>`;
+            const overlay = document.getElementById('game-menu-overlay');
+            const player = G.tribes.find(t => t.isPlayer);
+            if (player) {
+                document.getElementById('menu-game-info').textContent = `Turn ${G.turn} · Gold: ${Math.floor(player.gold)}`;
+            }
+            updateVolumeDisplay();
             overlay.classList.add('active');
+            document.getElementById('audio-toggle').classList.add('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeInGameMenu() {
+            document.getElementById('game-menu-overlay').classList.remove('active');
+            document.getElementById('audio-toggle').classList.remove('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function confirmRestart() {
+            if (confirm('Are you sure you want to restart the game? All progress will be lost.')) {
+                closeInGameMenu();
+                restartGame();
+            }
+        }
+
+        function confirmQuit() {
+            if (confirm('Are you sure you want to quit to the main menu? Your game will be saved.')) {
+                // Save without showing popup
+                try {
+                    const data = {
+                        G: G,
+                        camera: camera,
+                        usedSettlementNames: usedSettlementNames,
+                    };
+                    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.warn('Save failed:', e);
+                }
+                closeInGameMenu();
+                showScreen('menu-screen');
+            }
         }
 
         function restartGame() {
@@ -7244,6 +7987,7 @@
             G.turnPhase = 'player';
             G.playerGold = 80;
             G.eliminationMessages = [];
+            G.autoSaveCounter = 0;
             resetSettlementNames();
             const activeTribe = document.querySelector('#step-tribe .ng-tribe-item.active');
             const tribeId = activeTribe ? activeTribe.dataset.tribe : 'zulu';
@@ -7256,7 +8000,7 @@
             updateUI();
             render();
             showScreen('game-screen');
-            saveGame();
+            saveGame(false);
         }
 
         function setupNewGame() {
@@ -7281,6 +8025,7 @@
                 G.turnPhase = 'player';
                 G.playerGold = 80;
                 G.eliminationMessages = [];
+                G.autoSaveCounter = 0;
                 resetSettlementNames();
                 const numTribes = G.opponents.length + 1;
                 scaleMapSize(numTribes);
@@ -7292,7 +8037,7 @@
                 updateUI();
                 render();
                 showScreen('game-screen');
-                saveGame();
+                saveGame(false);
                 return;
             }
 
@@ -7337,6 +8082,7 @@
             G.turnPhase = 'player';
             G.playerGold = 80;
             G.eliminationMessages = [];
+            G.autoSaveCounter = 0;
             resetSettlementNames();
 
             const numTribes = G.opponents.length + 1;
@@ -7350,7 +8096,7 @@
             updateUI();
             render();
             showScreen('game-screen');
-            saveGame();
+            saveGame(false);
         }
 
         function scaleMapSize(numTribes) {
@@ -7396,7 +8142,7 @@
 
         // ─── MAIN INIT ──────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', () => {
-            console.log(`Oba v${GAME_VERSION} – AI improved, wonders as background, tooltip fix, audio support.`);
+            console.log(`Oba v${GAME_VERSION} – Notifications for save, wonder, research, and improvements.`);
             const textLogo = document.getElementById('menu-text-logo');
             if (textLogo) textLogo.style.display = 'block';
 
@@ -7489,7 +8235,7 @@
                                 hideActionPopup();
                                 updateUI();
                                 render();
-                                saveGame(); } }
+                                saveGame(false); } }
                         if (e.key === 'Escape') showInGameMenu();
                         if (e.key === 'b' || e.key === 'B') {
                             if (G.selectedCity) openCityProduction();
@@ -7502,7 +8248,7 @@
 
                 setupPopupDismissal();
 
-                console.log('Oba v0.21.0 – AI improved, wonders as background, tooltip fix, audio support.');
+                console.log(`Oba v${GAME_VERSION} – All notifications use queueMessage (non-modal).`);
             });
         });
     </script>
